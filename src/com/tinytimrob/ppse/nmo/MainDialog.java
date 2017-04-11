@@ -35,6 +35,7 @@ public class MainDialog extends Application
 	public static Scene scene;
 
 	// zap every 10 seconds after 5 minutes has passed without the mouse moving 
+	public static volatile boolean PAUSED = false;
 	public static volatile long initialZapTimeDiff = 300000;
 	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
 	public static volatile long incrementZapTimeDiff = 10000;
@@ -79,36 +80,45 @@ public class MainDialog extends Application
 			public void handle(long now)
 			{
 				Point epoint = MouseInfo.getPointerInfo().getLocation();
-				if (!epoint.equals(lastCursorPoint))
+				if (!epoint.equals(lastCursorPoint) || PAUSED)
 				{
 					lastCursorTime = System.currentTimeMillis();
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
-				lastCursorTimeString.set("Last cursor movement: " + lastCursorTime);
-				lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
-				long timeDiff = System.currentTimeMillis() - lastCursorTime;
-				if (timeDiff > nextZapTimeDiff)
+				if (PAUSED)
 				{
-					try
-					{
-						// the first time, you get a vibration instead of a zap, just in case you forgot to pause
-						if (nextZapTimeDiff == initialZapTimeDiff)
-						{
-							Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
-						}
-						else
-						{
-							Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
-						}
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-					nextZapTimeDiff += incrementZapTimeDiff;
+					lastCursorTimeString.set("PAUSED");
+					lastCursorPositionString.set("");
+					timeDiffString.set("");
 				}
-				timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
+				else
+				{
+					lastCursorTimeString.set("Last cursor movement: " + lastCursorTime);
+					lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
+					long timeDiff = PAUSED ? 0 : (System.currentTimeMillis() - lastCursorTime);
+					if (timeDiff > nextZapTimeDiff)
+					{
+						try
+						{
+							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
+							if (nextZapTimeDiff == initialZapTimeDiff)
+							{
+								Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+							}
+							else
+							{
+								Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+							}
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+						nextZapTimeDiff += incrementZapTimeDiff;
+					}
+					timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
+				}
 			}
 		};
 
@@ -135,6 +145,23 @@ public class MainDialog extends Application
 			label.setGraphic(JavaFxHelper.createIcon(FontAwesomeIcon.BED, "16", Color.WHITE));
 			innerTopPane.getChildren().add(label);
 			innerPane.setTop(innerTopPane);
+		}
+
+		final HBox innerBottomPane = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 35, new Insets(8, 4, 8, 4));
+		{ // Bottom section
+			innerBottomPane.setStyle("-fx-background-color: #3a3a3a;");
+			final Button pauseButton = new Button("PAUSE");
+			pauseButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					PAUSED = !PAUSED;
+					pauseButton.setText(PAUSED ? "UNPAUSE" : "PAUSE");
+				}
+			});
+			innerBottomPane.getChildren().add(pauseButton);
+			innerPane.setBottom(innerBottomPane);
 		}
 
 		final GridPane centerPane = new GridPane();
