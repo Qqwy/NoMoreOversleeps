@@ -4,6 +4,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
@@ -11,14 +12,18 @@ import com.tinytimrob.ppse.nmo.utils.Utils;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -36,15 +41,18 @@ public class MainDialog extends Application
 	public static Scene scene;
 
 	// zap every 10 seconds after 5 minutes has passed without the mouse moving 
+	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
 	public static volatile long initialZapTimeDiff = 300000;
 	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
 	public static volatile long incrementZapTimeDiff = 10000;
 	public static volatile long lastCursorTime = System.currentTimeMillis();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
+	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastCursorTimeString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
+	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 
 	@Override
 	public void start(Stage stage) throws Exception
@@ -82,6 +90,7 @@ public class MainDialog extends Application
 			{
 				now = System.currentTimeMillis();
 				boolean paused = pausedUntil > now;
+				isCurrentlyPaused.set(paused);
 
 				Point epoint = MouseInfo.getPointerInfo().getLocation();
 				if (!epoint.equals(lastCursorPoint) || paused)
@@ -90,9 +99,10 @@ public class MainDialog extends Application
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
+				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + Utils.dateFormatter.format(1000 * (Configuration.instance.pavlokAuth.created_at + Configuration.instance.pavlokAuth.expires_in)));
 				if (paused)
 				{
-					lastCursorTimeString.set("PAUSED until " + Utils.dateFormatter.format(pausedUntil));
+					lastCursorTimeString.set("PAUSED for \"" + pauseReason + "\" until " + Utils.dateFormatter.format(pausedUntil));
 					lastCursorPositionString.set("");
 					timeDiffString.set("");
 				}
@@ -151,63 +161,46 @@ public class MainDialog extends Application
 			innerPane.setTop(innerTopPane);
 		}
 
-		final HBox innerBottomPane = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 35, new Insets(8, 4, 8, 4));
-		{ // Bottom section
-			innerBottomPane.setStyle("-fx-background-color: #3a3a3a;");
-			final Button pauseButton = new Button("PAUSE");
-			pauseButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					long now = System.currentTimeMillis();
-					if (pausedUntil > now)
-					{
-						pausedUntil = 0;
-						pauseButton.setText("PAUSE");
-					}
-					else
-					{
-						pausedUntil = now + 1800000;
-						pauseButton.setText("UNPAUSE");
-					}
-				}
-			});
-			innerBottomPane.getChildren().add(pauseButton);
-			innerPane.setBottom(innerBottomPane);
-		}
-
 		final GridPane centerPane = new GridPane();
 		{ // Center pane
+			final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			loginTokenValidUntil.textProperty().bind(loginTokenValidUntilString);
+			loginTokenValidUntil.setPadding(new Insets(6, 0, 10, 8));
+			centerPane.addRow(0, loginTokenValidUntil);
+
 			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			lastCursorTime.textProperty().bind(lastCursorTimeString);
 			lastCursorTime.setPadding(new Insets(6, 0, 0, 8));
-			centerPane.addRow(0, lastCursorTime);
+			centerPane.addRow(1, lastCursorTime);
 
 			final Label lastCursorPosition = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			lastCursorPosition.textProperty().bind(lastCursorPositionString);
-			lastCursorPosition.setPadding(new Insets(6, 0, 0, 8));
-			centerPane.addRow(1, lastCursorPosition);
+			lastCursorPosition.setPadding(new Insets(3, 0, 0, 8));
+			centerPane.addRow(2, lastCursorPosition);
 
 			final Label timeDiff = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			timeDiff.textProperty().bind(timeDiffString);
-			timeDiff.setPadding(new Insets(6, 0, 0, 8));
-			centerPane.addRow(2, timeDiff);
+			timeDiff.setPadding(new Insets(3, 0, 0, 8));
+			centerPane.addRow(3, timeDiff);
 
 			innerPane.setCenter(centerPane);
 		}
 
 		final GridPane innerRightPane = new GridPane();
 		{ // Manual Pavlok controls
+			int row = 0;
 			innerRightPane.setMinWidth(200);
 			innerRightPane.setMaxWidth(200);
 			innerRightPane.setStyle("-fx-background-color: #444;");
 			innerRightPane.setVgap(10);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
+			innerRightPane.addRow(row++, label);
 			final Button beepButton = JavaFxHelper.createButton("BEEP", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
 			beepButton.setMinWidth(180);
 			beepButton.setMaxWidth(180);
+			beepButton.setAlignment(Pos.BASELINE_LEFT);
+			beepButton.setContentDisplay(ContentDisplay.RIGHT);
 			beepButton.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
@@ -223,9 +216,12 @@ public class MainDialog extends Application
 					}
 				}
 			});
+			innerRightPane.addRow(row++, beepButton);
 			final Button vibrateButton = new Button("VIBRATE");
 			vibrateButton.setMinWidth(180);
 			vibrateButton.setMaxWidth(180);
+			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
+			vibrateButton.setContentDisplay(ContentDisplay.RIGHT);
 			vibrateButton.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
@@ -241,9 +237,12 @@ public class MainDialog extends Application
 					}
 				}
 			});
+			innerRightPane.addRow(row++, vibrateButton);
 			final Button shockButton = new Button("SHOCK");
 			shockButton.setMinWidth(180);
 			shockButton.setMaxWidth(180);
+			shockButton.setAlignment(Pos.BASELINE_LEFT);
+			shockButton.setContentDisplay(ContentDisplay.RIGHT);
 			shockButton.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
@@ -259,10 +258,60 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			innerRightPane.addRow(0, label);
-			innerRightPane.addRow(1, beepButton);
-			innerRightPane.addRow(2, vibrateButton);
-			innerRightPane.addRow(3, shockButton);
+			innerRightPane.addRow(row++, shockButton);
+
+			// Pause controls
+			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
+			innerRightPane.addRow(row++, label2);
+
+			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 480, 720, 1440 };
+			for (int p = 0; p < periods.length; p++)
+			{
+				final int pp = periods[p];
+				int hours = pp / 60;
+				int minutes = pp % 60;
+				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
+				final Button pauseButton = JavaFxHelper.createButton("Pause for " + hm);
+				pauseButton.setMinWidth(180);
+				pauseButton.setMaxWidth(180);
+				pauseButton.setAlignment(Pos.BASELINE_LEFT);
+				pauseButton.setOnAction(new EventHandler<ActionEvent>()
+				{
+					@Override
+					public void handle(ActionEvent arg0)
+					{
+						TextInputDialog dialog = new TextInputDialog("");
+						dialog.setTitle("Pause for " + hm);
+						dialog.setContentText("Please input why you are pausing:");
+
+						// Traditional way to get the response value.
+						Optional<String> result = dialog.showAndWait();
+						if (result.isPresent() && !result.get().isEmpty())
+						{
+							long now = System.currentTimeMillis();
+							pausedUntil = now + (pp * 60000);
+							pauseReason = result.get();
+						}
+					}
+				});
+				pauseButton.disableProperty().bind(isCurrentlyPaused);
+				innerRightPane.addRow(row++, pauseButton);
+			}
+			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
+			unpauseButton.setMinWidth(180);
+			unpauseButton.setMaxWidth(180);
+			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
+			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					pausedUntil = 0;
+				}
+			});
+			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
+			innerRightPane.addRow(row++, unpauseButton);
+
 			innerPane.setRight(innerRightPane);
 		}
 
