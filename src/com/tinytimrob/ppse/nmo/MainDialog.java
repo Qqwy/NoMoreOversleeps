@@ -1,12 +1,16 @@
 package com.tinytimrob.ppse.nmo;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -30,6 +34,16 @@ public class MainDialog extends Application
 	private static final Logger log = LogManager.getLogger();
 	public static Scene scene;
 
+	// zap every 10 seconds after 5 minutes has passed without the mouse moving 
+	public static volatile long initialZapTimeDiff = 300000;
+	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
+	public static volatile long incrementZapTimeDiff = 10000;
+	public static volatile long lastCursorTime = System.currentTimeMillis();
+	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
+	public static volatile SimpleStringProperty lastCursorTimeString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
+
 	@Override
 	public void start(Stage stage) throws Exception
 	{
@@ -38,7 +52,7 @@ public class MainDialog extends Application
 		Configuration.load();
 		try
 		{
-			//Pavlok.vibration(255, "Connection test");
+			Pavlok.vibration(255, "Connection test");
 		}
 		catch (Throwable t)
 		{
@@ -54,6 +68,49 @@ public class MainDialog extends Application
 		stage.setResizable(false);
 		stage.setMinWidth(800);
 		stage.setMinHeight(600);
+
+		//==================================================================
+		// CONFIGURE ANIMATION TIMER
+		//==================================================================
+		// this is an absurd workaround
+		final AnimationTimer at = new AnimationTimer()
+		{
+			@Override
+			public void handle(long now)
+			{
+				Point epoint = MouseInfo.getPointerInfo().getLocation();
+				if (!epoint.equals(lastCursorPoint))
+				{
+					lastCursorTime = System.currentTimeMillis();
+					lastCursorPoint = epoint;
+					nextZapTimeDiff = initialZapTimeDiff;
+				}
+				lastCursorTimeString.set("Last cursor movement: " + lastCursorTime);
+				lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
+				long timeDiff = System.currentTimeMillis() - lastCursorTime;
+				if (timeDiff > nextZapTimeDiff)
+				{
+					try
+					{
+						// the first time, you get a vibration instead of a zap, just in case you forgot to pause
+						if (nextZapTimeDiff == initialZapTimeDiff)
+						{
+							Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+						}
+						else
+						{
+							Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					nextZapTimeDiff += incrementZapTimeDiff;
+				}
+				timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
+			}
+		};
 
 		//==================================================================
 		// CONFIGURE THE SCENE
@@ -78,6 +135,26 @@ public class MainDialog extends Application
 			label.setGraphic(JavaFxHelper.createIcon(FontAwesomeIcon.BED, "16", Color.WHITE));
 			innerTopPane.getChildren().add(label);
 			innerPane.setTop(innerTopPane);
+		}
+
+		final GridPane centerPane = new GridPane();
+		{ // Center pane
+			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			lastCursorTime.textProperty().bind(lastCursorTimeString);
+			lastCursorTime.setPadding(new Insets(6, 0, 0, 8));
+			centerPane.addRow(0, lastCursorTime);
+
+			final Label lastCursorPosition = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			lastCursorPosition.textProperty().bind(lastCursorPositionString);
+			lastCursorPosition.setPadding(new Insets(6, 0, 0, 8));
+			centerPane.addRow(1, lastCursorPosition);
+
+			final Label timeDiff = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			timeDiff.textProperty().bind(timeDiffString);
+			timeDiff.setPadding(new Insets(6, 0, 0, 8));
+			centerPane.addRow(2, timeDiff);
+
+			innerPane.setCenter(centerPane);
 		}
 
 		final GridPane innerRightPane = new GridPane();
@@ -192,6 +269,7 @@ public class MainDialog extends Application
 								Pavlok.vibration(255, "Connection test");
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);
+								at.start();
 							}
 							catch (Exception e)
 							{
@@ -206,6 +284,7 @@ public class MainDialog extends Application
 		else
 		{
 			outerPane.getChildren().add(innerPane);
+			at.start();
 		}
 
 		//==================================================================
