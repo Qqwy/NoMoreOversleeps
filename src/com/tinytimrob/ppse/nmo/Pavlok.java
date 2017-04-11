@@ -1,11 +1,14 @@
 package com.tinytimrob.ppse.nmo;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
 
 public class Pavlok
 {
+	private static final Logger log = LogManager.getLogger();
 	public static OAuthResponse RESPONSE = null;
 
 	public static class OAuthToken
@@ -96,16 +99,19 @@ public class Pavlok
 
 	public static void beep(long amount, String reason) throws Exception
 	{
+		log.info("Sending: beep " + amount + " (" + reason + ")");
 		Communicator.basicJsonMessage("beep", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/beep/" + amount, new Stimuli(amount, Configuration.instance.pavlokAuth.access_token, reason), null, false, Configuration.instance.pavlokAuth.access_token);
 	}
 
 	public static void vibration(long amount, String reason) throws Exception
 	{
+		log.info("Sending: vibration " + amount + " (" + reason + ")");
 		Communicator.basicJsonMessage("vibration", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/vibration/" + amount, new Stimuli(amount, Configuration.instance.pavlokAuth.access_token, reason), null, false, Configuration.instance.pavlokAuth.access_token);
 	}
 
 	public static void shock(long amount, String reason) throws Exception
 	{
+		log.info("Sending: shock " + amount + " (" + reason + ")");
 		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, Configuration.instance.pavlokAuth.access_token, reason), null, false, Configuration.instance.pavlokAuth.access_token);
 	}
 }
