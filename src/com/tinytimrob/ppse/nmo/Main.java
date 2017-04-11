@@ -24,7 +24,7 @@ public class Main
 	//-------------------------------------------
 	public static String CLIENT_ID = "daf97645073a9cb9e0deefdc9fc9d6a4ac7ebeabd67e65268e1cbdfd6165eb85";
 	public static String CLIENT_SECRET = "48cd03c31a0f1df56403bf5368ea2245df11887c8289079ce02b1025e43c82c0";
-	public static String CLIENT_CALLBACK = "urn:ietf:wg:oauth:2.0:oob";
+	public static String CLIENT_CALLBACK = "https://www.tinytimrob.com/nmo-oauth-intercept";
 
 	//-------------------------------------------
 
