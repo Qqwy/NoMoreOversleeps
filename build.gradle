@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+sourceCompatibility = 1.7
+
+repositories {
+	mavenCentral()
+	maven {
+		url "https://maven.ginever.net/"
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'src'
+		}
+	}
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+	compile 'commons-codec:commons-codec:1.10'
+	compile 'org.apache.commons:commons-collections4:4.0'
+	compile 'org.apache.commons:commons-lang3:3.3.2'
+	compile 'commons-io:commons-io:2.4'
+	compile 'com.lmax:disruptor:3.3.0'
+	compile 'org.apache.logging.log4j:log4j-api:2.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.2'
+	compile 'org.apache.logging.log4j:log4j-jul:2.2'
+	compile 'com.google.code.gson:gson:2.3.1'
+	compile 'de.jensd:fontawesomefx:8.5'
+	compile 'com.apple:AppleJavaExtensions:1.5.4'
+}
