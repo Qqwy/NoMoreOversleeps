@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
+import com.tinytimrob.ppse.nmo.utils.Utils;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -35,7 +36,7 @@ public class MainDialog extends Application
 	public static Scene scene;
 
 	// zap every 10 seconds after 5 minutes has passed without the mouse moving 
-	public static volatile boolean PAUSED = false;
+	public static volatile long pausedUntil = 0;
 	public static volatile long initialZapTimeDiff = 300000;
 	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
 	public static volatile long incrementZapTimeDiff = 10000;
@@ -79,24 +80,27 @@ public class MainDialog extends Application
 			@Override
 			public void handle(long now)
 			{
+				now = System.currentTimeMillis();
+				boolean paused = pausedUntil > now;
+
 				Point epoint = MouseInfo.getPointerInfo().getLocation();
-				if (!epoint.equals(lastCursorPoint) || PAUSED)
+				if (!epoint.equals(lastCursorPoint) || paused)
 				{
-					lastCursorTime = System.currentTimeMillis();
+					lastCursorTime = now;
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
-				if (PAUSED)
+				if (paused)
 				{
-					lastCursorTimeString.set("PAUSED");
+					lastCursorTimeString.set("PAUSED until " + Utils.dateFormatter.format(pausedUntil));
 					lastCursorPositionString.set("");
 					timeDiffString.set("");
 				}
 				else
 				{
-					lastCursorTimeString.set("Last cursor movement: " + lastCursorTime);
+					lastCursorTimeString.set("Last cursor movement: " + Utils.dateFormatter.format(lastCursorTime));
 					lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
-					long timeDiff = PAUSED ? 0 : (System.currentTimeMillis() - lastCursorTime);
+					long timeDiff = paused ? 0 : (now - lastCursorTime);
 					if (timeDiff > nextZapTimeDiff)
 					{
 						try
@@ -156,8 +160,17 @@ public class MainDialog extends Application
 				@Override
 				public void handle(ActionEvent arg0)
 				{
-					PAUSED = !PAUSED;
-					pauseButton.setText(PAUSED ? "UNPAUSE" : "PAUSE");
+					long now = System.currentTimeMillis();
+					if (pausedUntil > now)
+					{
+						pausedUntil = 0;
+						pauseButton.setText("PAUSE");
+					}
+					else
+					{
+						pausedUntil = now + 1800000;
+						pauseButton.setText("UNPAUSE");
+					}
 				}
 			});
 			innerBottomPane.getChildren().add(pauseButton);
