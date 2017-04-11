@@ -14,6 +14,9 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,6 +26,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -53,16 +57,25 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
+	public static ObservableList<String> events = FXCollections.observableArrayList();
+
+	public static void addEvent(String event)
+	{
+		log.info("APPEVENT: " + event);
+		events.add(Utils.dateFormatter.format(System.currentTimeMillis()) + ": " + event);
+	}
 
 	@Override
 	public void start(Stage stage) throws Exception
 	{
 		log.info("JavaFX application start");
+		addEvent("Application started");
 
 		Configuration.load();
 		try
 		{
 			Pavlok.vibration(255, "Connection test");
+			addEvent("Sent connection test vibration");
 		}
 		catch (Throwable t)
 		{
@@ -90,7 +103,13 @@ public class MainDialog extends Application
 			{
 				now = System.currentTimeMillis();
 				boolean paused = pausedUntil > now;
+				boolean wasPaused = isCurrentlyPaused.get();
 				isCurrentlyPaused.set(paused);
+
+				if (!paused && wasPaused)
+				{
+					addEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired");
+				}
 
 				Point epoint = MouseInfo.getPointerInfo().getLocation();
 				if (!epoint.equals(lastCursorPoint) || paused)
@@ -118,10 +137,12 @@ public class MainDialog extends Application
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
+								addEvent("Sending VIBRATION: Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 							else
 							{
+								addEvent("Sending SHOCK: Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 						}
@@ -161,6 +182,11 @@ public class MainDialog extends Application
 			innerPane.setTop(innerTopPane);
 		}
 
+		final BorderPane centerPaneI = new BorderPane();
+		{ // Real center pane
+			innerPane.setCenter(centerPaneI);
+		}
+
 		final GridPane centerPane = new GridPane();
 		{ // Center pane
 			final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
@@ -183,8 +209,19 @@ public class MainDialog extends Application
 			timeDiff.setPadding(new Insets(3, 0, 0, 8));
 			centerPane.addRow(3, timeDiff);
 
-			innerPane.setCenter(centerPane);
+			centerPaneI.setCenter(centerPane);
 		}
+
+		final ListView<String> listView = new ListView<String>(events);
+		listView.getItems().addListener(new ListChangeListener<String>()
+		{
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends String> c)
+			{
+				listView.scrollTo(c.getList().size() - 1);
+			}
+		});
+		centerPaneI.setBottom(listView);
 
 		final GridPane innerRightPane = new GridPane();
 		{ // Manual Pavlok controls
@@ -209,6 +246,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.beep(255, "Manually triggered beep");
+						addEvent("Manually triggered beep");
 					}
 					catch (Exception e)
 					{
@@ -230,6 +268,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.vibration(255, "Manually triggered vibration");
+						addEvent("Manually triggered vibration");
 					}
 					catch (Exception e)
 					{
@@ -251,6 +290,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.shock(255, "Manually triggered shock");
+						addEvent("Manually triggered shock");
 					}
 					catch (Exception e)
 					{
@@ -291,6 +331,7 @@ public class MainDialog extends Application
 							long now = System.currentTimeMillis();
 							pausedUntil = now + (pp * 60000);
 							pauseReason = result.get();
+							addEvent("Paused for " + hm + " (until " + Utils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"");
 						}
 					}
 				});
@@ -307,6 +348,8 @@ public class MainDialog extends Application
 				public void handle(ActionEvent arg0)
 				{
 					pausedUntil = 0;
+					isCurrentlyPaused.set(false);
+					addEvent("Unpaused manually");
 				}
 			});
 			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
@@ -356,6 +399,7 @@ public class MainDialog extends Application
 								Configuration.instance.pavlokAuth = Pavlok.RESPONSE;
 								Configuration.save();
 								Pavlok.vibration(255, "Connection test");
+								addEvent("Sent connection test vibration");
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);
 								at.start();
