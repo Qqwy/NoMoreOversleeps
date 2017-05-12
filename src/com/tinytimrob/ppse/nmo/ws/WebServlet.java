@@ -41,13 +41,17 @@ public class WebServlet extends HttpServlet
 		if (PATH.equals("/log"))
 		{
 			// send log
+			int x = 0;
 			StringWriter writer = new StringWriter();
 			writer.write("log updated " + CommonUtils.convertTimestamp(System.currentTimeMillis()) + "\n\n");
 			ListIterator<String> li = MainDialog.events.listIterator(MainDialog.events.size());
 			while (li.hasPrevious())
 			{
+				x++;
 				String s = li.previous();
 				writer.write(s + "\n");
+				if (x == 20)
+					return;
 			}
 			response.getWriter().append(writer.toString());
 		}

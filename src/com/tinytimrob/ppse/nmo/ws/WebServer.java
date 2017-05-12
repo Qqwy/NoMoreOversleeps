@@ -9,6 +9,8 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
@@ -33,8 +35,20 @@ public class WebServer
 		statsHandler.setHandler(handlerCollection);
 		SERVER.setStopTimeout(5000);
 		SERVER.setHandler(statsHandler);
+		WebSocketServlet websocketServlet = new WebSocketServlet()
+		{
+			private static final long serialVersionUID = -4394403163936790144L;
+
+			@Override
+			public void configure(WebSocketServletFactory factory)
+			{
+				factory.register(WebcamWebSocketHandler.class);
+			}
+		};
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setContextPath("/");
+		ServletHolder webcamServletHolder = new ServletHolder("webcam", websocketServlet);
+		contextHandler.addServlet(webcamServletHolder, "/webcam");
 		ServletHolder napchartServlet = new ServletHolder("default", new WebServlet());
 		contextHandler.addServlet(napchartServlet, "/*");
 		handlerCollection.addHandler(contextHandler);

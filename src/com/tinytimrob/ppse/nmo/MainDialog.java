@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
@@ -22,7 +21,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -67,6 +65,7 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
+	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 
 	public static void addEvent(final String event)
@@ -106,6 +105,8 @@ public class MainDialog extends Application
 		stage.setResizable(false);
 		stage.setMinWidth(600);
 		stage.setMinHeight(1000);
+
+		ImageView webcamImageView = new ImageView();
 
 		//==================================================================
 		// CONFIGURE ANIMATION TIMER
@@ -171,49 +172,28 @@ public class MainDialog extends Application
 					}
 					timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
 				}
+
+				try
+				{
+					BufferedImage img = WebcamCapture.getImage();
+					if (img != null)
+					{
+						writableImage = SwingFXUtils.toFXImage(img, writableImage);
+						img.flush();
+						lastWebcamImage.set(writableImage);
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		};
 
 		//==================================================================
 		// CONFIGURE WEBCAM CAPTURE
 		//==================================================================
-		ImageView webcamImageView = new ImageView();
-		Task<Void> task = new Task<Void>()
-		{
-			@Override
-			protected Void call() throws Exception
-			{
-				final AtomicReference<WritableImage> ref = new AtomicReference<>();
-				BufferedImage img = null;
-				while (true)
-				{
-					try
-					{
-						img = WebcamCapture.getImage();
-						if (img != null)
-						{
-							ref.set(SwingFXUtils.toFXImage(img, ref.get()));
-							img.flush();
-							Platform.runLater(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									lastWebcamImage.set(ref.get());
-								}
-							});
-						}
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			}
-		};
-		Thread captureThread = new Thread(task);
-		captureThread.setDaemon(true);
-		captureThread.start();
+
 		webcamImageView.imageProperty().bind(lastWebcamImage);
 		webcamImageView.setFitWidth(256);
 		webcamImageView.setPreserveRatio(true);

@@ -42,14 +42,15 @@
       </tr>
     </tbody>
   </table>
+  <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
-  <form method="POST" action="/beep" style="padding-right: 4px; float: left;">
+  <form method="POST" action="/beep">
       <button type="submit" class="btn-lg btn-success">BEEP</button>
   </form>
-  <form method="POST" action="/vibration" style="padding-right: 4px; float: left;">
+  <form method="POST" action="/vibration">
       <button type="submit" class="btn-lg btn-warning">VIBRATE</button>
   </form>
-  <form method="POST" action="/shock" style="padding-right: 4px; float: left;">
+  <form method="POST" action="/shock">
       <button type="submit" class="btn-lg btn-danger">SHOCK</button>
   </form>
   <div style="clear:both;"></div>
@@ -81,6 +82,35 @@
         request();
         setInterval(request, 1863);
     });
+$(document).ready(function() {
+	var ws = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/webcam");
+	ws.onopen = function(e) {
+		if (typeof console !== 'undefined') {
+			console.info('WS open');
+		}
+	};
+	ws.onmessage = function (e) {
+		var data = JSON.parse(e.data), type = data.type, i = 0, $webcams = $('#webcams'), $img = null;
+		if (typeof console !== 'undefined') {
+			console.info('WS message', type);
+		}
+		$img = $('#webcamImage');
+		$img.attr("src", "data:image/jpeg;base64," + data.image).addClass('shadow').trigger("change");
+		setTimeout(function() {
+			$img.removeClass('shadow').trigger("change");
+		}, 1000);
+	};
+	ws.onclose = function() {
+		if (typeof console !== 'undefined') {
+			console.info('WS close');
+		}
+	};
+	ws.onerror = function(err) {
+		if (typeof console !== 'undefined') {
+			console.info('WS error');
+		}
+	};
+});
 </script>
 </body>
 </html>

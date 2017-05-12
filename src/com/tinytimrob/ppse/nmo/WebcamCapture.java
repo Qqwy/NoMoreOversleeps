@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamListener;
 
 public class WebcamCapture
 {
@@ -25,5 +26,15 @@ public class WebcamCapture
 	public static void shutdown()
 	{
 		webcam.close();
+	}
+
+	public static void addListener(WebcamListener listener)
+	{
+		webcam.addWebcamListener(listener);
+	}
+
+	public static void removeListener(WebcamListener listener)
+	{
+		webcam.removeWebcamListener(listener);
 	}
 }
