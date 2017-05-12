@@ -113,10 +113,15 @@ public class WebcamWebSocketHandler implements WebcamListener
 		// TODO Auto-generated method stub
 	}
 
+	boolean send = true;
+
 	@Override
 	public void webcamImageObtained(WebcamEvent we)
 	{
-		BufferedImage image = we.getImage();
+		this.send = !this.send;
+		if (!this.send)
+			return;
+		BufferedImage image = WebcamCapture.getImage();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try
 		{
