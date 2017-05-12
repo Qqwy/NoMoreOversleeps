@@ -108,6 +108,8 @@ public class MainDialog extends Application
 			@Override
 			public void handle(long now)
 			{
+				ControllerTrapper.poll();
+
 				now = System.currentTimeMillis();
 				boolean paused = pausedUntil > now;
 				boolean wasPaused = isCurrentlyPaused.get();

@@ -35,6 +35,11 @@ public class ControllerTrapper
 		});
 	}
 
+	public static void poll()
+	{
+		device.poll();
+	}
+
 	public static void shutdown()
 	{
 		if (device != null && listener != null)
