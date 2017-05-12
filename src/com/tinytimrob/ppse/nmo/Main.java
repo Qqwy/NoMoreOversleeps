@@ -62,7 +62,9 @@ public class Main
 					AppleHelper.integrate();
 				}
 				WebServer.initialize();
+				KeyboardTrapper.init();
 				MainDialog.launch(MainDialog.class, args);
+				KeyboardTrapper.shutdown();
 				WebServer.shutdown();
 				Logging.shutdown();
 				MasterLock.release();

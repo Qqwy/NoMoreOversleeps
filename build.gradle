@@ -7,6 +7,9 @@ repositories {
 	maven {
 		url "https://maven.ginever.net/"
 	}
+	maven {
+		url "https://raw.github.com/kristian/system-hook/mvn-repo/"
+	}
 }
 
 sourceSets {
@@ -42,4 +45,5 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.3.1'
 	compile 'de.jensd:fontawesomefx:8.5'
 	compile 'com.apple:AppleJavaExtensions:1.5.4'
+	compile 'lc.kra.system:system-hook:2.5'
 }

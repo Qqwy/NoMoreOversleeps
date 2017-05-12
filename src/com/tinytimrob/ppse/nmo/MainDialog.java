@@ -52,10 +52,10 @@ public class MainDialog extends Application
 	public static volatile long initialZapTimeDiff = 300000;
 	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
 	public static volatile long incrementZapTimeDiff = 10000;
-	public static volatile long lastCursorTime = System.currentTimeMillis();
+	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
-	public static volatile SimpleStringProperty lastCursorTimeString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty lastActivityTimeString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
@@ -121,22 +121,22 @@ public class MainDialog extends Application
 				Point epoint = MouseInfo.getPointerInfo().getLocation();
 				if (!epoint.equals(lastCursorPoint) || paused)
 				{
-					lastCursorTime = now;
+					lastActivityTime = now;
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
 				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.pavlokAuth.created_at + NMOConfiguration.instance.pavlokAuth.expires_in)));
 				if (paused)
 				{
-					lastCursorTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
+					lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
 					lastCursorPositionString.set("");
 					timeDiffString.set("");
 				}
 				else
 				{
-					lastCursorTimeString.set("Last cursor movement: " + CommonUtils.dateFormatter.format(lastCursorTime));
+					lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
 					lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
-					long timeDiff = paused ? 0 : (now - lastCursorTime);
+					long timeDiff = paused ? 0 : (now - lastActivityTime);
 					if (timeDiff > nextZapTimeDiff)
 					{
 						try
@@ -202,7 +202,7 @@ public class MainDialog extends Application
 			centerPane.addRow(0, loginTokenValidUntil);
 
 			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			lastCursorTime.textProperty().bind(lastCursorTimeString);
+			lastCursorTime.textProperty().bind(lastActivityTimeString);
 			lastCursorTime.setPadding(new Insets(6, 0, 0, 8));
 			centerPane.addRow(1, lastCursorTime);
 
