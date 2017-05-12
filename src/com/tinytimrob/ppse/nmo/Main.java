@@ -63,7 +63,9 @@ public class Main
 				}
 				WebServer.initialize();
 				KeyboardTrapper.init();
+				ControllerTrapper.init();
 				MainDialog.launch(MainDialog.class, args);
+				ControllerTrapper.shutdown();
 				KeyboardTrapper.shutdown();
 				WebServer.shutdown();
 				Logging.shutdown();

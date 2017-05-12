@@ -29,6 +29,9 @@ public class KeyboardTrapper
 
 	public static void shutdown()
 	{
-		keyboardHook.shutdownHook();
+		if (keyboardHook != null)
+		{
+			keyboardHook.shutdownHook();
+		}
 	}
 }
