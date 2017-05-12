@@ -6,19 +6,21 @@ import java.net.URISyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import com.tinytimrob.common.Configuration;
+import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.common.PlatformType;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
-import com.tinytimrob.ppse.nmo.utils.LauncherLog;
+import com.tinytimrob.ppse.nmo.utils.Logging;
 import com.tinytimrob.ppse.nmo.utils.MasterLock;
-import com.tinytimrob.ppse.nmo.utils.PlatformData;
-import com.tinytimrob.ppse.nmo.utils.PlatformType;
+import com.tinytimrob.ppse.nmo.ws.WebServer;
 import javafx.scene.control.Dialog;
 import javafx.scene.text.Font;
 
 public class Main
 {
 	//-------------------------------------------
-	public static String VERSION = "0.0.1";
+	public static String VERSION = "0.2";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
@@ -46,7 +48,8 @@ public class Main
 					JOptionPane.showMessageDialog(null, "NoMoreOversleeps is already running.", "NoMoreOversleeps", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				LauncherLog.initialize();
+				Logging.initialize();
+				NMOConfiguration.instance = Configuration.load(NMOConfiguration.class);
 				//===========================================================================================
 				// include these fonts so that the software looks the same on every platform
 				//===========================================================================================
@@ -58,8 +61,10 @@ public class Main
 				{
 					AppleHelper.integrate();
 				}
+				WebServer.initialize();
 				MainDialog.launch(MainDialog.class, args);
-				LauncherLog.shutdown();
+				WebServer.shutdown();
+				Logging.shutdown();
 				MasterLock.release();
 			}
 			catch (NoClassDefFoundError e1)

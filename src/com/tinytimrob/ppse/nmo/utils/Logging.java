@@ -14,9 +14,11 @@ import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.OnStartupTriggeringPolicy;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.common.StdOutErrOutputStream;
 import com.tinytimrob.ppse.nmo.Main;
 
-public class LauncherLog
+public class Logging
 {
 	static int minCopyrightYear = 2017; // min year
 	public static Logger log = null;

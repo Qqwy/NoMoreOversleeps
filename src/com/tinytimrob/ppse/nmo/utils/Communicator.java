@@ -6,10 +6,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.exceptions.BadRequestException;
 import com.tinytimrob.ppse.nmo.exceptions.BadResponseException;
 import com.tinytimrob.ppse.nmo.exceptions.BlankResponseException;
@@ -31,7 +32,7 @@ public class Communicator
 		public String message;
 	}
 
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LogWrapper.getLogger();
 
 	public static <T> T basicJsonMessage(String humanDesc, String path, Object constructable, Class<T> clazz, boolean returnGineverFailureData, String bearer) throws Exception
 	{
@@ -52,9 +53,9 @@ public class Communicator
 			}
 			if (constructable != null)
 			{
-				String request = Utils.GSON.toJson(constructable);
+				String request = CommonUtils.GSON.toJson(constructable);
 				System.out.println(request);
-				byte[] data = request.getBytes(Utils.charsetUTF8);
+				byte[] data = request.getBytes(CommonUtils.charsetUTF8);
 				connection.setRequestMethod("POST");
 				connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 				connection.setRequestProperty("Content-Length", Integer.toString(data.length));
@@ -75,9 +76,9 @@ public class Communicator
 				in = connection.getInputStream();
 				if (clazz == null)
 					return null;
-				String REPLY = IOUtils.toString(in, Utils.charsetUTF8);
+				String REPLY = IOUtils.toString(in, CommonUtils.charsetUTF8);
 				System.out.println(REPLY);
-				T response = Utils.GSON.fromJson(REPLY, clazz);
+				T response = CommonUtils.GSON.fromJson(REPLY, clazz);
 				if (response == null)
 					throw new BlankResponseException("Server sent back no data");
 				return response;
@@ -85,7 +86,7 @@ public class Communicator
 			else if (returnGineverFailureData && responseCode == GENERIC_FAILURE)
 			{
 				in = connection.getErrorStream();
-				GenericFailureResponse response = Utils.GSON.fromJson(IOUtils.toString(in, Utils.charsetUTF8), GenericFailureResponse.class);
+				GenericFailureResponse response = CommonUtils.GSON.fromJson(IOUtils.toString(in, CommonUtils.charsetUTF8), GenericFailureResponse.class);
 				if (response != null && response.message != null && !response.message.isEmpty())
 				{
 					throw new BadRequestException(response.message);
@@ -94,7 +95,7 @@ public class Communicator
 			else
 			{
 				in = connection.getErrorStream();
-				System.out.println(IOUtils.toString(in, Utils.charsetUTF8));
+				System.out.println(IOUtils.toString(in, CommonUtils.charsetUTF8));
 			}
 			throw new BadResponseException(responseCode);
 		}

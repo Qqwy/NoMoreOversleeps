@@ -5,13 +5,15 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.common.Configuration;
+import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
-import com.tinytimrob.ppse.nmo.utils.Utils;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -41,10 +43,10 @@ import javafx.stage.Stage;
 
 public class MainDialog extends Application
 {
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LogWrapper.getLogger();
 	public static Scene scene;
 
-	// zap every 10 seconds after 5 minutes has passed without the mouse moving 
+	// zap every 10 seconds after 5 minutes has passed without the mouse moving
 	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
 	public static volatile long initialZapTimeDiff = 300000;
@@ -59,10 +61,17 @@ public class MainDialog extends Application
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 
-	public static void addEvent(String event)
+	public static void addEvent(final String event)
 	{
 		log.info("APPEVENT: " + event);
-		events.add(Utils.dateFormatter.format(System.currentTimeMillis()) + ": " + event);
+		Platform.runLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + event);
+			}
+		});
 	}
 
 	@Override
@@ -70,17 +79,15 @@ public class MainDialog extends Application
 	{
 		log.info("JavaFX application start");
 		addEvent("Application started");
-
-		Configuration.load();
 		try
 		{
 			Pavlok.vibration(255, "Connection test");
-			addEvent("Sent connection test vibration");
+			addEvent("<VIBRATION> Connection test");
 		}
 		catch (Throwable t)
 		{
 			t.printStackTrace();
-			Configuration.instance.pavlokAuth = null;
+			NMOConfiguration.instance.pavlokAuth = null;
 		}
 
 		//==================================================================
@@ -89,8 +96,8 @@ public class MainDialog extends Application
 		stage.setTitle("NoMoreOversleeps v" + Main.VERSION);
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(false);
-		stage.setMinWidth(800);
-		stage.setMinHeight(600);
+		stage.setMinWidth(600);
+		stage.setMinHeight(1000);
 
 		//==================================================================
 		// CONFIGURE ANIMATION TIMER
@@ -118,16 +125,16 @@ public class MainDialog extends Application
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
-				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + Utils.dateFormatter.format(1000 * (Configuration.instance.pavlokAuth.created_at + Configuration.instance.pavlokAuth.expires_in)));
+				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.pavlokAuth.created_at + NMOConfiguration.instance.pavlokAuth.expires_in)));
 				if (paused)
 				{
-					lastCursorTimeString.set("PAUSED for \"" + pauseReason + "\" until " + Utils.dateFormatter.format(pausedUntil));
+					lastCursorTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
 					lastCursorPositionString.set("");
 					timeDiffString.set("");
 				}
 				else
 				{
-					lastCursorTimeString.set("Last cursor movement: " + Utils.dateFormatter.format(lastCursorTime));
+					lastCursorTimeString.set("Last cursor movement: " + CommonUtils.dateFormatter.format(lastCursorTime));
 					lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
 					long timeDiff = paused ? 0 : (now - lastCursorTime);
 					if (timeDiff > nextZapTimeDiff)
@@ -137,12 +144,12 @@ public class MainDialog extends Application
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
-								addEvent("Sending VIBRATION: Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<VIBRATION> Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 							else
 							{
-								addEvent("Sending SHOCK: Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<SHOCK> Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 						}
@@ -221,6 +228,7 @@ public class MainDialog extends Application
 				listView.scrollTo(c.getList().size() - 1);
 			}
 		});
+		listView.setMinHeight(800);
 		centerPaneI.setBottom(listView);
 
 		final GridPane innerRightPane = new GridPane();
@@ -246,7 +254,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.beep(255, "Manually triggered beep");
-						addEvent("Manually triggered beep");
+						addEvent("<BEEP> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -268,7 +276,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.vibration(255, "Manually triggered vibration");
-						addEvent("Manually triggered vibration");
+						addEvent("<VIBRATION> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -290,7 +298,7 @@ public class MainDialog extends Application
 					try
 					{
 						Pavlok.shock(255, "Manually triggered shock");
-						addEvent("Manually triggered shock");
+						addEvent("<SHOCK> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -304,7 +312,7 @@ public class MainDialog extends Application
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label2);
 
-			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 480, 720, 1440 };
+			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480, 720, 1440 };
 			for (int p = 0; p < periods.length; p++)
 			{
 				final int pp = periods[p];
@@ -331,7 +339,7 @@ public class MainDialog extends Application
 							long now = System.currentTimeMillis();
 							pausedUntil = now + (pp * 60000);
 							pauseReason = result.get();
-							addEvent("Paused for " + hm + " (until " + Utils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"");
+							addEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"");
 						}
 					}
 				});
@@ -362,7 +370,7 @@ public class MainDialog extends Application
 		// PAVLOK CRAP
 		//==================================================================
 
-		if (Configuration.instance.pavlokAuth == null)
+		if (NMOConfiguration.instance.pavlokAuth == null)
 		{
 			final String url = "https://pavlok-mvp.herokuapp.com/oauth/authorize?client_id=" + Main.CLIENT_ID + "&redirect_uri=" + Main.CLIENT_CALLBACK + "&response_type=code";
 			BorderPane authPane = new BorderPane();
@@ -396,10 +404,10 @@ public class MainDialog extends Application
 									map.put(name, value);
 								}
 								Pavlok.postAuthToken(map.get("code"));
-								Configuration.instance.pavlokAuth = Pavlok.RESPONSE;
+								NMOConfiguration.instance.pavlokAuth = Pavlok.RESPONSE;
 								Configuration.save();
 								Pavlok.vibration(255, "Connection test");
-								addEvent("Sent connection test vibration");
+								addEvent("<VIBRATION> Connection test");
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);
 								at.start();

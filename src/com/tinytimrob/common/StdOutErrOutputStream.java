@@ -1,11 +1,15 @@
-package com.tinytimrob.ppse.nmo.utils;
+package com.tinytimrob.common;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
-class StdOutErrOutputStream extends OutputStream
+/**
+ * Redirects an OutputStream to a Log4j2 logger
+ * @author Robert Dennington
+ */
+public class StdOutErrOutputStream extends OutputStream
 {
 	private final Logger logger;
 	private final Level logLevel;
@@ -33,11 +37,21 @@ class StdOutErrOutputStream extends OutputStream
 			this.logger.log(this.logLevel, string);
 	}
 
+	String msg = "";
+
 	@Override
 	public void write(int b) throws IOException
 	{
 		String string = String.valueOf((char) b);
-		if (!string.trim().isEmpty())
-			this.logger.log(this.logLevel, string);
+		if (b == '\n' || b == '\r')
+		{
+			if (!this.msg.trim().isEmpty())
+				this.logger.log(this.logLevel, this.msg);
+			this.msg = "";
+		}
+		else
+		{
+			this.msg += string;
+		}
 	}
 }

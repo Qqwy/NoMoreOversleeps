@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.utils;
+package com.tinytimrob.common;
 
 /** Enum representing the type of platform (Windows/Mac/Linux/Unknown).
  * @author Robert Dennington */

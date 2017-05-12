@@ -25,6 +25,12 @@ configurations.all {
 }
 
 dependencies {
+	compile 'org.eclipse.jetty:jetty-project:9.4.3.v20170317'
+	compile 'org.eclipse.jetty:jetty-server:9.4.3.v20170317'
+	compile 'org.eclipse.jetty:jetty-servlet:9.4.3.v20170317'
+	compile 'org.eclipse.jetty:jetty-util:9.4.3.v20170317'
+	compile 'org.eclipse.jetty:jetty-continuation:9.4.3.v20170317'
+	compile 'org.freemarker:freemarker:2.3.25-incubating'
 	compile 'commons-codec:commons-codec:1.10'
 	compile 'org.apache.commons:commons-collections4:4.0'
 	compile 'org.apache.commons:commons-lang3:3.3.2'

@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.utils;
+package com.tinytimrob.common;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -7,6 +7,10 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Locale;
 
+/**
+ * Stores information about the system and location from which the application is currently running
+ * @author Robert Dennington
+ */
 public class PlatformData
 {
 	public static final String pathSeparator = System.getProperty("path.separator");

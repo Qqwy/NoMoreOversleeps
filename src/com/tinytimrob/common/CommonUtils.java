@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.utils;
+package com.tinytimrob.common;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,18 +8,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class Utils
+/**
+ * Random utilities
+ * @author Robert Dennington
+ */
+public class CommonUtils
 {
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss.SSS", Locale.ENGLISH);
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LogWrapper.getLogger();
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
 	public static final Charset charsetUTF8 = Charset.forName("UTF-8");
 
+	/**
+	 * Returns the SHA1 hash of a file
+	 * @param file The file
+	 * @return That file's SHA1 hash
+	 */
 	public static String getFileHashSHA1(File file)
 	{
 		FileInputStream stream = null;
@@ -46,11 +54,21 @@ public class Utils
 		}
 	}
 
+	/**
+	 * Returns whether or not a string is null or empty
+	 * @param s The string
+	 * @return whether or not it is null or empty
+	 */
 	public static boolean isNullOrEmpty(String s)
 	{
 		return s == null || s.isEmpty();
 	}
 
+	/** 
+	 * Converts epoch timestamp to human readable format 
+	 * @param timestamp The timestamp to convert
+	 * @return A human readable version of the timestamp
+	 */
 	public static String convertTimestamp(long timestamp)
 	{
 		return dateFormatter.format(new Date(timestamp));
