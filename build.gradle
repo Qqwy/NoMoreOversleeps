@@ -31,11 +31,7 @@ configurations.all {
 }
 
 dependencies {
-	compile 'org.eclipse.jetty:jetty-project:9.4.3.v20170317'
-	compile 'org.eclipse.jetty:jetty-server:9.4.3.v20170317'
-	compile 'org.eclipse.jetty:jetty-servlet:9.4.3.v20170317'
-	compile 'org.eclipse.jetty:jetty-util:9.4.3.v20170317'
-	compile 'org.eclipse.jetty:jetty-continuation:9.4.3.v20170317'
+	compile 'org.eclipse.jetty.aggregate:jetty-all:9.4.3.v20170317'
 	compile 'org.freemarker:freemarker:2.3.25-incubating'
 	compile 'commons-codec:commons-codec:1.10'
 	compile 'org.apache.commons:commons-collections4:4.0'
@@ -50,4 +46,5 @@ dependencies {
 	compile 'com.apple:AppleJavaExtensions:1.5.4'
 	compile 'lc.kra.system:system-hook:2.5'
 	compile 'com.github.strikerx3:jxinput:ca55984'
+	compile 'com.github.sarxos:webcam-capture:0.3.10'
 }

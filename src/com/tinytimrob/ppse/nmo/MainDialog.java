@@ -2,9 +2,11 @@ package com.tinytimrob.ppse.nmo;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
@@ -15,10 +17,13 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,6 +36,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -59,6 +66,7 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
+	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 
 	public static void addEvent(final String event)
@@ -167,6 +175,53 @@ public class MainDialog extends Application
 		};
 
 		//==================================================================
+		// CONFIGURE WEBCAM CAPTURE
+		//==================================================================
+		ImageView webcamImageView = new ImageView();
+		Task<Void> task = new Task<Void>()
+		{
+			@Override
+			protected Void call() throws Exception
+			{
+				final AtomicReference<WritableImage> ref = new AtomicReference<>();
+				BufferedImage img = null;
+				while (true)
+				{
+					try
+					{
+						img = WebcamCapture.getImage();
+						if (img != null)
+						{
+							ref.set(SwingFXUtils.toFXImage(img, ref.get()));
+							img.flush();
+							Platform.runLater(new Runnable()
+							{
+								@Override
+								public void run()
+								{
+									lastWebcamImage.set(ref.get());
+								}
+							});
+						}
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		Thread captureThread = new Thread(task);
+		captureThread.setDaemon(true);
+		captureThread.start();
+		webcamImageView.imageProperty().bind(lastWebcamImage);
+		webcamImageView.setFitWidth(256);
+		webcamImageView.setPreserveRatio(true);
+		final BorderPane webcamPane = new BorderPane();
+		webcamPane.setPadding(new Insets(2, 2, 2, 2));
+		webcamPane.setCenter(webcamImageView);
+
+		//==================================================================
 		// CONFIGURE THE SCENE
 		//==================================================================
 		final StackPane outerPane = new StackPane();
@@ -230,22 +285,28 @@ public class MainDialog extends Application
 				listView.scrollTo(c.getList().size() - 1);
 			}
 		});
-		listView.setMinHeight(800);
+		listView.setMinHeight(740);
 		centerPaneI.setBottom(listView);
+
+		final BorderPane rightPaneI = new BorderPane();
+		{ // Real center pane
+			innerPane.setRight(rightPaneI);
+		}
+		rightPaneI.setTop(webcamPane);
 
 		final GridPane innerRightPane = new GridPane();
 		{ // Manual Pavlok controls
 			int row = 0;
-			innerRightPane.setMinWidth(200);
-			innerRightPane.setMaxWidth(200);
+			innerRightPane.setMinWidth(260);
+			innerRightPane.setMaxWidth(260);
 			innerRightPane.setStyle("-fx-background-color: #444;");
 			innerRightPane.setVgap(10);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
 			final Button beepButton = JavaFxHelper.createButton("BEEP", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
-			beepButton.setMinWidth(180);
-			beepButton.setMaxWidth(180);
+			beepButton.setMinWidth(240);
+			beepButton.setMaxWidth(240);
 			beepButton.setAlignment(Pos.BASELINE_LEFT);
 			beepButton.setContentDisplay(ContentDisplay.RIGHT);
 			beepButton.setOnAction(new EventHandler<ActionEvent>()
@@ -266,8 +327,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, beepButton);
 			final Button vibrateButton = new Button("VIBRATE");
-			vibrateButton.setMinWidth(180);
-			vibrateButton.setMaxWidth(180);
+			vibrateButton.setMinWidth(240);
+			vibrateButton.setMaxWidth(240);
 			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
 			vibrateButton.setContentDisplay(ContentDisplay.RIGHT);
 			vibrateButton.setOnAction(new EventHandler<ActionEvent>()
@@ -288,8 +349,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, vibrateButton);
 			final Button shockButton = new Button("SHOCK");
-			shockButton.setMinWidth(180);
-			shockButton.setMaxWidth(180);
+			shockButton.setMinWidth(240);
+			shockButton.setMaxWidth(240);
 			shockButton.setAlignment(Pos.BASELINE_LEFT);
 			shockButton.setContentDisplay(ContentDisplay.RIGHT);
 			shockButton.setOnAction(new EventHandler<ActionEvent>()
@@ -322,8 +383,8 @@ public class MainDialog extends Application
 				int minutes = pp % 60;
 				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
 				final Button pauseButton = JavaFxHelper.createButton("Pause for " + hm);
-				pauseButton.setMinWidth(180);
-				pauseButton.setMaxWidth(180);
+				pauseButton.setMinWidth(240);
+				pauseButton.setMaxWidth(240);
 				pauseButton.setAlignment(Pos.BASELINE_LEFT);
 				pauseButton.setOnAction(new EventHandler<ActionEvent>()
 				{
@@ -349,8 +410,8 @@ public class MainDialog extends Application
 				innerRightPane.addRow(row++, pauseButton);
 			}
 			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
-			unpauseButton.setMinWidth(180);
-			unpauseButton.setMaxWidth(180);
+			unpauseButton.setMinWidth(240);
+			unpauseButton.setMaxWidth(240);
 			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
 			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
 			{
@@ -365,7 +426,7 @@ public class MainDialog extends Application
 			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
 			innerRightPane.addRow(row++, unpauseButton);
 
-			innerPane.setRight(innerRightPane);
+			rightPaneI.setCenter(innerRightPane);
 		}
 
 		//==================================================================

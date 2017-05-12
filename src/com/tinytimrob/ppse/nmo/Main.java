@@ -64,7 +64,9 @@ public class Main
 				WebServer.initialize();
 				KeyboardTrapper.init();
 				ControllerTrapper.init();
+				WebcamCapture.init();
 				MainDialog.launch(MainDialog.class, args);
+				WebcamCapture.shutdown();
 				ControllerTrapper.shutdown();
 				KeyboardTrapper.shutdown();
 				WebServer.shutdown();
