@@ -2,6 +2,7 @@ package com.tinytimrob.ppse.nmo;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,7 +130,8 @@ public class MainDialog extends Application
 					addEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired");
 				}
 
-				Point epoint = MouseInfo.getPointerInfo().getLocation();
+				PointerInfo pi = MouseInfo.getPointerInfo();
+				Point epoint = pi == null ? lastCursorPoint : pi.getLocation();
 				if (!epoint.equals(lastCursorPoint) || paused)
 				{
 					lastActivityTime = now;
