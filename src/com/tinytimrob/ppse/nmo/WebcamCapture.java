@@ -36,10 +36,13 @@ public class WebcamCapture
 		System.out.println(webcam.getViewSize());
 	}
 
-	public static BufferedImage getImage()
+	public static BufferedImage getImage(BufferedImage image)
 	{
 		BufferedImage source = webcam.getImage();
-		BufferedImage image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_RGB);
+		if (image == null)
+		{
+			image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_RGB);
+		}
 		Graphics2D graphics = image.createGraphics();
 		graphics.drawImage(source, 0, 0, null);
 		Font font = new Font("ARIAL", Font.PLAIN, 48);
