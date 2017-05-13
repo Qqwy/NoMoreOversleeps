@@ -51,7 +51,7 @@ public class WebServlet extends HttpServlet
 				String s = li.previous();
 				writer.write(s + "\n");
 				if (x == 20)
-					return;
+					break;
 			}
 			response.getWriter().append(writer.toString());
 		}
