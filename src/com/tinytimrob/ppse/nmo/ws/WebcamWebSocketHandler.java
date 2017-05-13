@@ -71,7 +71,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 
 	private void send(String message)
 	{
-		if (this.session.isOpen())
+		if (this.session != null && this.session.isOpen())
 		{
 			try
 			{
