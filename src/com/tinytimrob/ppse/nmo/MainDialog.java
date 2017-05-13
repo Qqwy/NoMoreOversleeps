@@ -69,6 +69,7 @@ public class MainDialog extends Application
 	public static volatile BufferedImage img = null;
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
+	public static volatile int wiloop = 0;
 
 	public static void addEvent(final String event)
 	{
@@ -182,6 +183,12 @@ public class MainDialog extends Application
 					if (img != null)
 					{
 						writableImage = SwingFXUtils.toFXImage(img, writableImage);
+						wiloop++;
+						if (wiloop > 60)
+						{
+							wiloop=0;
+							System.gc();
+						}
 						img.flush();
 						lastWebcamImage.set(writableImage);
 					}
