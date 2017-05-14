@@ -207,7 +207,7 @@ public class MainDialog extends Application
 		//==================================================================
 
 		webcamImageView.imageProperty().bind(lastWebcamImage);
-		webcamImageView.setFitWidth(256);
+		webcamImageView.setFitWidth(236);
 		webcamImageView.setPreserveRatio(true);
 		final BorderPane webcamPane = new BorderPane();
 		webcamPane.setPadding(new Insets(2, 2, 2, 2));
@@ -289,16 +289,16 @@ public class MainDialog extends Application
 		final GridPane innerRightPane = new GridPane();
 		{ // Manual Pavlok controls
 			int row = 0;
-			innerRightPane.setMinWidth(260);
-			innerRightPane.setMaxWidth(260);
+			innerRightPane.setMinWidth(240);
+			innerRightPane.setMaxWidth(240);
 			innerRightPane.setStyle("-fx-background-color: #444;");
 			innerRightPane.setVgap(10);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
 			final Button beepButton = JavaFxHelper.createButton("BEEP", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
-			beepButton.setMinWidth(240);
-			beepButton.setMaxWidth(240);
+			beepButton.setMinWidth(220);
+			beepButton.setMaxWidth(220);
 			beepButton.setAlignment(Pos.BASELINE_LEFT);
 			beepButton.setContentDisplay(ContentDisplay.RIGHT);
 			beepButton.setOnAction(new EventHandler<ActionEvent>()
@@ -319,8 +319,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, beepButton);
 			final Button vibrateButton = new Button("VIBRATE");
-			vibrateButton.setMinWidth(240);
-			vibrateButton.setMaxWidth(240);
+			vibrateButton.setMinWidth(220);
+			vibrateButton.setMaxWidth(220);
 			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
 			vibrateButton.setContentDisplay(ContentDisplay.RIGHT);
 			vibrateButton.setOnAction(new EventHandler<ActionEvent>()
@@ -341,8 +341,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, vibrateButton);
 			final Button shockButton = new Button("SHOCK");
-			shockButton.setMinWidth(240);
-			shockButton.setMaxWidth(240);
+			shockButton.setMinWidth(220);
+			shockButton.setMaxWidth(220);
 			shockButton.setAlignment(Pos.BASELINE_LEFT);
 			shockButton.setContentDisplay(ContentDisplay.RIGHT);
 			shockButton.setOnAction(new EventHandler<ActionEvent>()
@@ -363,11 +363,57 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, shockButton);
 
+			final Button switchboardButton = new Button("CALL SWITCHBOARD: " + NMOConfiguration.instance.phoneSwitchboard);
+			switchboardButton.setMinWidth(220);
+			switchboardButton.setMaxWidth(220);
+			switchboardButton.setAlignment(Pos.BASELINE_LEFT);
+			switchboardButton.setContentDisplay(ContentDisplay.RIGHT);
+			switchboardButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						PhoneControl.callSwitchboard();
+						addEvent("<CALL " + NMOConfiguration.instance.phoneSwitchboard + "> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, switchboardButton);
+
+			final Button mobileButton = new Button("CALL MOBILE: " + NMOConfiguration.instance.phoneMobile);
+			mobileButton.setMinWidth(220);
+			mobileButton.setMaxWidth(220);
+			mobileButton.setAlignment(Pos.BASELINE_LEFT);
+			mobileButton.setContentDisplay(ContentDisplay.RIGHT);
+			mobileButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						PhoneControl.callMobile();
+						addEvent("<CALL " + NMOConfiguration.instance.phoneMobile + "> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, mobileButton);
+
 			// Pause controls
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label2);
 
-			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480, 720, 1440 };
+			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480, 720 };
 			for (int p = 0; p < periods.length; p++)
 			{
 				final int pp = periods[p];
@@ -375,8 +421,8 @@ public class MainDialog extends Application
 				int minutes = pp % 60;
 				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
 				final Button pauseButton = JavaFxHelper.createButton("Pause for " + hm);
-				pauseButton.setMinWidth(240);
-				pauseButton.setMaxWidth(240);
+				pauseButton.setMinWidth(220);
+				pauseButton.setMaxWidth(220);
 				pauseButton.setAlignment(Pos.BASELINE_LEFT);
 				pauseButton.setOnAction(new EventHandler<ActionEvent>()
 				{
@@ -402,8 +448,8 @@ public class MainDialog extends Application
 				innerRightPane.addRow(row++, pauseButton);
 			}
 			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
-			unpauseButton.setMinWidth(240);
-			unpauseButton.setMaxWidth(240);
+			unpauseButton.setMinWidth(220);
+			unpauseButton.setMaxWidth(220);
 			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
 			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
 			{

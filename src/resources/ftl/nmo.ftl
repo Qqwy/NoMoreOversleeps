@@ -45,13 +45,19 @@
   <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
   <form method="POST" action="/beep">
-      <button type="submit" class="btn-lg btn-success">BEEP</button>
+      <button type="submit" class="btn btn-success">BEEP</button>
   </form>
   <form method="POST" action="/vibration">
-      <button type="submit" class="btn-lg btn-warning">VIBRATE</button>
+      <button type="submit" class="btn btn-warning">VIBRATE</button>
   </form>
   <form method="POST" action="/shock">
-      <button type="submit" class="btn-lg btn-danger">SHOCK</button>
+      <button type="submit" class="btn btn-danger">SHOCK</button>
+  </form>
+  <form method="POST" action="/call_switchboard">
+      <button type="submit" class="btn btn-primary">CALL SWITCHBOARD: ${phoneSwitchboard}</button>
+  </form>
+  <form method="POST" action="/call_mobile">
+      <button type="submit" class="btn btn-primary">CALL MOBILE: ${phoneMobile}</button>
   </form>
   <div style="clear:both;"></div>
   <h4>Log</h4>

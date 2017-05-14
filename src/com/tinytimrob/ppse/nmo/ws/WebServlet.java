@@ -12,7 +12,9 @@ import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.Pavlok;
+import com.tinytimrob.ppse.nmo.PhoneControl;
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -78,6 +80,8 @@ public class WebServlet extends HttpServlet
 			// send main web page
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("version", Main.VERSION);
+			model.put("phoneSwitchboard", NMOConfiguration.instance.phoneSwitchboard);
+			model.put("phoneMobile", NMOConfiguration.instance.phoneMobile);
 			try
 			{
 				WebTemplate.renderTemplate("nmo.ftl", response, model);
@@ -116,6 +120,18 @@ public class WebServlet extends HttpServlet
 			{
 				Pavlok.shock(255, "WEB UI remotely triggered shock");
 				MainDialog.addEvent("<SHOCK> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/call_switchboard"))
+			{
+				PhoneControl.callSwitchboard();
+				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.phoneSwitchboard + "> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/call_mobile"))
+			{
+				PhoneControl.callMobile();
+				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.phoneMobile + "> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else
