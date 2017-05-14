@@ -296,7 +296,7 @@ public class MainDialog extends Application
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
-			final Button beepButton = JavaFxHelper.createButton("BEEP", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
+			final Button beepButton = JavaFxHelper.createButton("BEEP PAVLOK", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
 			beepButton.setMinWidth(220);
 			beepButton.setMaxWidth(220);
 			beepButton.setAlignment(Pos.BASELINE_LEFT);
@@ -318,7 +318,7 @@ public class MainDialog extends Application
 				}
 			});
 			innerRightPane.addRow(row++, beepButton);
-			final Button vibrateButton = new Button("VIBRATE");
+			final Button vibrateButton = new Button("VIBRATE PAVLOK");
 			vibrateButton.setMinWidth(220);
 			vibrateButton.setMaxWidth(220);
 			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
@@ -340,7 +340,7 @@ public class MainDialog extends Application
 				}
 			});
 			innerRightPane.addRow(row++, vibrateButton);
-			final Button shockButton = new Button("SHOCK");
+			final Button shockButton = new Button("SHOCK PAVLOK");
 			shockButton.setMinWidth(220);
 			shockButton.setMaxWidth(220);
 			shockButton.setAlignment(Pos.BASELINE_LEFT);
