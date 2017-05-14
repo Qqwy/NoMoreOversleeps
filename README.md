@@ -26,6 +26,10 @@ It would be nice to turn this into a general tool to help people adapt to and tr
 
 I probably won't implement any of these, but we will see.
 
+### Known issues ###
+
+* The RAM usage is too high. There may be a possible memory leak somewhere I haven't found. It appears to be related to the webcam code, as it worked fine prior to that :/
+
 ### Contribution guidelines ###
 
 This program is open source and completely free. If you want to contribute then you can fork the project, patch it, and submit a pull request. As long as your patch works and your code is not awful, I'll probably accept it.

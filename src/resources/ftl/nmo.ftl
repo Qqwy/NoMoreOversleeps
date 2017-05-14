@@ -23,7 +23,7 @@
 </head>
 <body>
 <div class="container">
-<h1>NoMoreOversleeps WEB UI <small>v${version}</small></h1>
+<h1>NoMoreOversleeps WEB UI <small>v${version}</small> <a href="https://bitbucket.org/Tinytimrob/nomoreoversleeps"><button type="submit" class="btn-sm btn-primary" style="padding:2px; position:relative; top:-4px;">Download source</button></a></h1>
   <div style="clear:both; padding-top:4px;"></div>
   <h4>Status</h4>
   <table class="table table-striped">
