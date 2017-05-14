@@ -4,8 +4,12 @@ NoMoreOversleeps is a very simple cross-platform JavaFX application which is des
 Currently it does this by zapping your Pavlok if it detects no activity on your computer within a certain time interval (in case you fell asleep or failed to wake up on time).
 Activity detection is supported on keyboard, mouse and Xbox360-compatible controller.
 
-In addition it includes a port-forwardable web UI which includes buttons so your Pavlok can be beeped/vibrated/shocked, along with a live webcam feed. This allows others to check on
-you and attempt to wake you up via whatever means they feel is necessary if you appear to be oversleeping.
+In addition, it includes a port-forwardable password-protected web UI with a live webcam feed, along with buttons to get your attention in various ways:
+
+* Send beep/vibrate/shock to a Pavlok
+* Call a switchboard or mobile using Twilio
+
+This gives people the ability attempt to wake you up via whatever means they feel is necessary if you appear to be oversleeping.
 
 You can pause the activity detection feature of NoMoreOversleeps while you're intentionally doing other stuff, e.g. if you're going shopping or going to work and thus you will be AFK
 for a while. The pause reason and duration is displayed on both the JavaFX frontend and on the web UI.
