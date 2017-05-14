@@ -120,6 +120,14 @@ public class MainDialog extends Application
 			@Override
 			public void handle(long now)
 			{
+				wiloop++;
+				if (wiloop > 180)
+				{
+					wiloop = 0;
+					System.gc();
+				}
+				else if (wiloop % 2 == 1)
+					return;
 				ControllerTrapper.poll();
 
 				now = System.currentTimeMillis();
@@ -180,15 +188,9 @@ public class MainDialog extends Application
 				try
 				{
 					img = WebcamCapture.getImage(img);
-					if (img != null)
+					if (img != null && wiloop % 4 < 2)
 					{
 						writableImage = SwingFXUtils.toFXImage(img, writableImage);
-						wiloop++;
-						if (wiloop > 60)
-						{
-							wiloop=0;
-							System.gc();
-						}
 						img.flush();
 						lastWebcamImage.set(writableImage);
 					}

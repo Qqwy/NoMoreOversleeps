@@ -31,7 +31,7 @@ public class WebcamCapture
 		webcam = Webcam.getDefault();
 		webcam.setImageTransformer(new WebcamTransformer());
 		Dimension[] sizes = webcam.getViewSizes();
-		webcam.setViewSize(sizes[sizes.length - 1]);
+		webcam.setViewSize(sizes[sizes.length - 2]);
 		webcam.open(true);
 		System.out.println(webcam.getViewSize());
 	}
@@ -45,12 +45,12 @@ public class WebcamCapture
 		}
 		Graphics2D graphics = image.createGraphics();
 		graphics.drawImage(source, 0, 0, null);
-		Font font = new Font("ARIAL", Font.PLAIN, 48);
+		Font font = new Font("ARIAL", Font.PLAIN, 12);
 		graphics.setFont(font);
 		graphics.setColor(Color.BLACK);
-		graphics.fillRect(10, 10, 610, 60);
+		graphics.fillRect(0, 0, 320, 20);
 		graphics.setColor(Color.WHITE);
-		graphics.drawString(CommonUtils.convertTimestamp(System.currentTimeMillis()), 20, 56);
+		graphics.drawString(CommonUtils.convertTimestamp(System.currentTimeMillis()), 4, 14);
 		image.flush();
 		graphics.dispose();
 		return image;
