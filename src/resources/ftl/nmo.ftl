@@ -59,6 +59,9 @@
   <form method="POST" action="/call_mobile">
       <button type="submit" class="btn btn-primary">CALL MOBILE: ${phoneMobile}</button>
   </form>
+  <form method="POST" action="/noise">
+      <button type="submit" class="btn btn-info">PLAY NOISE</button>
+  </form>
   <div style="clear:both;"></div>
   <h4>Log</h4>
   <iframe id="logframe" style="width:100%; height:300px" src="/log"></iframe>

@@ -4,6 +4,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -106,8 +107,8 @@ public class MainDialog extends Application
 		stage.setTitle("NoMoreOversleeps v" + Main.VERSION);
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(false);
-		stage.setMinWidth(600);
-		stage.setMinHeight(1000);
+		stage.setMinWidth(1000);
+		stage.setMinHeight(800);
 
 		ImageView webcamImageView = new ImageView();
 
@@ -167,13 +168,13 @@ public class MainDialog extends Application
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
-								addEvent("<VIBRATION> Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
-								Pavlok.vibration(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<VIBRATION> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								Pavlok.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 							else
 							{
-								addEvent("<SHOCK> Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
-								Pavlok.shock(255, "Mouse hasn't moved in " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<SHOCK> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								Pavlok.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 							}
 						}
 						catch (Exception e)
@@ -207,7 +208,7 @@ public class MainDialog extends Application
 		//==================================================================
 
 		webcamImageView.imageProperty().bind(lastWebcamImage);
-		webcamImageView.setFitWidth(236);
+		webcamImageView.setFitWidth(256);
 		webcamImageView.setPreserveRatio(true);
 		final BorderPane webcamPane = new BorderPane();
 		webcamPane.setPadding(new Insets(2, 2, 2, 2));
@@ -277,7 +278,7 @@ public class MainDialog extends Application
 				listView.scrollTo(c.getList().size() - 1);
 			}
 		});
-		listView.setMinHeight(740);
+		listView.setMinHeight(540);
 		centerPaneI.setBottom(listView);
 
 		final BorderPane rightPaneI = new BorderPane();
@@ -289,16 +290,16 @@ public class MainDialog extends Application
 		final GridPane innerRightPane = new GridPane();
 		{ // Manual Pavlok controls
 			int row = 0;
-			innerRightPane.setMinWidth(240);
-			innerRightPane.setMaxWidth(240);
+			innerRightPane.setMinWidth(260);
+			innerRightPane.setMaxWidth(260);
 			innerRightPane.setStyle("-fx-background-color: #444;");
 			innerRightPane.setVgap(10);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
 			final Button beepButton = JavaFxHelper.createButton("BEEP PAVLOK", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
-			beepButton.setMinWidth(220);
-			beepButton.setMaxWidth(220);
+			beepButton.setMinWidth(240);
+			beepButton.setMaxWidth(240);
 			beepButton.setAlignment(Pos.BASELINE_LEFT);
 			beepButton.setContentDisplay(ContentDisplay.RIGHT);
 			beepButton.setOnAction(new EventHandler<ActionEvent>()
@@ -319,8 +320,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, beepButton);
 			final Button vibrateButton = new Button("VIBRATE PAVLOK");
-			vibrateButton.setMinWidth(220);
-			vibrateButton.setMaxWidth(220);
+			vibrateButton.setMinWidth(240);
+			vibrateButton.setMaxWidth(240);
 			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
 			vibrateButton.setContentDisplay(ContentDisplay.RIGHT);
 			vibrateButton.setOnAction(new EventHandler<ActionEvent>()
@@ -341,8 +342,8 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, vibrateButton);
 			final Button shockButton = new Button("SHOCK PAVLOK");
-			shockButton.setMinWidth(220);
-			shockButton.setMaxWidth(220);
+			shockButton.setMinWidth(240);
+			shockButton.setMaxWidth(240);
 			shockButton.setAlignment(Pos.BASELINE_LEFT);
 			shockButton.setContentDisplay(ContentDisplay.RIGHT);
 			shockButton.setOnAction(new EventHandler<ActionEvent>()
@@ -364,8 +365,8 @@ public class MainDialog extends Application
 			innerRightPane.addRow(row++, shockButton);
 
 			final Button switchboardButton = new Button("CALL SWITCHBOARD: " + NMOConfiguration.instance.phoneSwitchboard);
-			switchboardButton.setMinWidth(220);
-			switchboardButton.setMaxWidth(220);
+			switchboardButton.setMinWidth(240);
+			switchboardButton.setMaxWidth(240);
 			switchboardButton.setAlignment(Pos.BASELINE_LEFT);
 			switchboardButton.setContentDisplay(ContentDisplay.RIGHT);
 			switchboardButton.setOnAction(new EventHandler<ActionEvent>()
@@ -387,8 +388,8 @@ public class MainDialog extends Application
 			innerRightPane.addRow(row++, switchboardButton);
 
 			final Button mobileButton = new Button("CALL MOBILE: " + NMOConfiguration.instance.phoneMobile);
-			mobileButton.setMinWidth(220);
-			mobileButton.setMaxWidth(220);
+			mobileButton.setMinWidth(240);
+			mobileButton.setMaxWidth(240);
 			mobileButton.setAlignment(Pos.BASELINE_LEFT);
 			mobileButton.setContentDisplay(ContentDisplay.RIGHT);
 			mobileButton.setOnAction(new EventHandler<ActionEvent>()
@@ -409,20 +410,76 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, mobileButton);
 
+			final Button noiseButton = new Button("PLAY NOISE");
+			noiseButton.setMinWidth(240);
+			noiseButton.setMaxWidth(240);
+			noiseButton.setAlignment(Pos.BASELINE_LEFT);
+			noiseButton.setContentDisplay(ContentDisplay.RIGHT);
+			noiseButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						Noise.play(new File(NMOConfiguration.instance.noisePath));
+						addEvent("<PLAYING NOISE> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, noiseButton);
+
+			final Button noiseStopButton = new Button("STOP NOISE");
+			noiseStopButton.setMinWidth(240);
+			noiseStopButton.setMaxWidth(240);
+			noiseStopButton.setAlignment(Pos.BASELINE_LEFT);
+			noiseStopButton.setContentDisplay(ContentDisplay.RIGHT);
+			noiseStopButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						Noise.stop();
+						addEvent("<STOPPING NOISE> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, noiseStopButton);
+
 			// Pause controls
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label2);
 
 			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480, 720 };
+			GridPane btnGridPane = null;
 			for (int p = 0; p < periods.length; p++)
 			{
+				if (p % 3 == 0)
+				{
+					if (btnGridPane != null)
+					{
+						innerRightPane.addRow(row++, btnGridPane);
+					}
+					btnGridPane = new GridPane();
+					btnGridPane.setHgap(9);
+				}
 				final int pp = periods[p];
 				int hours = pp / 60;
 				int minutes = pp % 60;
 				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
-				final Button pauseButton = JavaFxHelper.createButton("Pause for " + hm);
-				pauseButton.setMinWidth(220);
-				pauseButton.setMaxWidth(220);
+				final Button pauseButton = JavaFxHelper.createButton(hm);
+				pauseButton.setMinWidth(74);
+				pauseButton.setMaxWidth(74);
 				pauseButton.setAlignment(Pos.BASELINE_LEFT);
 				pauseButton.setOnAction(new EventHandler<ActionEvent>()
 				{
@@ -445,11 +502,15 @@ public class MainDialog extends Application
 					}
 				});
 				pauseButton.disableProperty().bind(isCurrentlyPaused);
-				innerRightPane.addRow(row++, pauseButton);
+				btnGridPane.addColumn(p % 3, pauseButton);
+			}
+			if (btnGridPane != null)
+			{
+				innerRightPane.addRow(row++, btnGridPane);
 			}
 			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
-			unpauseButton.setMinWidth(220);
-			unpauseButton.setMaxWidth(220);
+			unpauseButton.setMinWidth(240);
+			unpauseButton.setMaxWidth(240);
 			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
 			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
 			{

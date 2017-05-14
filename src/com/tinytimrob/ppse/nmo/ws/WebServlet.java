@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo.ws;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.Noise;
 import com.tinytimrob.ppse.nmo.Pavlok;
 import com.tinytimrob.ppse.nmo.PhoneControl;
 import freemarker.template.TemplateException;
@@ -132,6 +134,12 @@ public class WebServlet extends HttpServlet
 			{
 				PhoneControl.callMobile();
 				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.phoneMobile + "> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/noise"))
+			{
+				Noise.play(new File(NMOConfiguration.instance.noisePath));
+				MainDialog.addEvent("<PLAYING NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else

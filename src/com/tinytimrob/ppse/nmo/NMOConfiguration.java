@@ -39,4 +39,8 @@ public class NMOConfiguration
 	@Expose
 	@SerializedName("phoneMobile")
 	public String phoneMobile = "";
+
+	@Expose
+	@SerializedName("noisePath")
+	public String noisePath = "";
 }
