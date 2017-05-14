@@ -61,15 +61,15 @@ public class Main
 				{
 					AppleHelper.integrate();
 				}
-				WebServer.initialize();
 				KeyboardTrapper.init();
 				ControllerTrapper.init();
 				WebcamCapture.init();
+				WebServer.initialize();
 				MainDialog.launch(MainDialog.class, args);
+				WebServer.shutdown();
 				WebcamCapture.shutdown();
 				ControllerTrapper.shutdown();
 				KeyboardTrapper.shutdown();
-				WebServer.shutdown();
 				Logging.shutdown();
 				MasterLock.release();
 			}
