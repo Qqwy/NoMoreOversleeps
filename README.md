@@ -1,6 +1,6 @@
 # NoMoreOversleeps #
 
-NoMoreOversleeps is a very simple cross-platform JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule by preventing you from oversleeping.
+NoMoreOversleeps is a very simple JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule by making oversleeping more difficult.
 Currently it does this by zapping your Pavlok if it detects no activity on your computer within a certain time interval (in case you fell asleep or failed to wake up on time).
 Activity detection is supported on keyboard, mouse and Xbox360-compatible controller.
 
@@ -17,22 +17,30 @@ for a while. The pause reason and duration is displayed on both the JavaFX front
 
 At the moment it has no other features.
 
+### Best usage ###
+
+NoMoreOversleeps is designed for continuous monitoring works best if you have access to all of the integration features, it also 
+
 ### Features that might be added in the future ###
 
 It would be nice to turn this into a general tool to help people adapt to and track their sleeping schedules. On that basis there are lots of good possibilites. Some ideas I've had include:
 
+* Support for controlling smart lighting
+* GPS tracking of phone so you can see where someone is if they aren't at their computer
 * Input your sleeping pattern so you don't have to manually pause during this period
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
 * Automate the calling and noise playback if you fail to wake up
 * Send a message to the polysleeping Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
 * Food tracker so you can monitor what you're eating in case this affects your sleep schedule
 * Productivity tracker so you can input what you're doing in each sleep block to avoid wasting time
+* Integration with EEG to track SWS/REM acquisition
 
-I probably won't implement any of these, but we will see.
+I probably won't implement most of these, but we will see.
 
 ### Known issues ###
 
 * The RAM usage is too high. There may be a possible memory leak somewhere I haven't found. It appears to be related to the webcam code, as it worked fine prior to that :/
+* Some features only work and/or were only tested on Windows. For other platforms YMMV.
 
 ### Contribution guidelines ###
 
