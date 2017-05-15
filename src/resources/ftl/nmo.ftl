@@ -50,6 +50,14 @@ form {
         <td style="width:230px;"><strong>Camera sockets open</strong></td>
         <td id="nmo_conn_count">?</td>
       </tr>
+      <tr>
+        <td><strong>Annoying noise</strong></td>
+        <td id="nmo_noise_state">?</td>
+      </tr>
+      <tr>
+        <td><strong>Light</strong></td>
+        <td id="nmo_light_state">?</td>
+      </tr>
     </tbody>
   </table>
   <div style="float:right;"><img id="webcamImage" height=320/></div>
@@ -63,6 +71,13 @@ form {
   <form method="POST" action="/shock">
       <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">SHOCK</button>
   </form>
+  <div></div>
+  <form method="POST" action="/noise">
+      <button type="submit" class="btn btn-info" style="width:141px;text-align:left;">PLAY NOISE</button>
+  </form>
+  <form method="POST" action="/noise_off">
+      <button type="submit" class="btn btn-info" style="width:141px;text-align:left;">STOP NOISE</button>
+  </form> 
   <div></div>
   <form method="POST" action="/light_on">
       <button type="submit" class="btn btn-success" style="width:141px;text-align:left;">LIGHT ON</button>
@@ -79,12 +94,9 @@ form {
       <button type="submit" class="btn btn-primary" style="width:286px;text-align:left;">CALL MOBILE: ${phoneMobile}</button>
   </form>
   <div></div>
-  <form method="POST" action="/noise">
-      <button type="submit" class="btn btn-info" style="width:286px;text-align:left;">PLAY ANNOYING NOISE</button>
-  </form>
   <div style="clear:both;"></div>
   <h4>Log</h4>
-  <iframe id="logframe" style="width:100%; height:300px" src="/log"></iframe>
+  <iframe id="logframe" style="width:100%; height:390px" src="/log"></iframe>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js" integrity="sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC" crossorigin="anonymous" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous" type="text/javascript"></script>
@@ -108,6 +120,8 @@ form {
                     $('#nmo_activity').html(json.activity);
                     $('#nmo_pause_state').html(json.pause_state);
                     $('#nmo_conn_count').html(json.conn_count);
+                    $('#nmo_noise_state').html(json.noise_state);
+                    $('#nmo_light_state').html(json.light_state);
                     $('#logframe').attr('src',function(i,val){return val;});
                 }
             });

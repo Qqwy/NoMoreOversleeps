@@ -5,10 +5,12 @@ import org.apache.logging.log4j.Logger;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
+import com.philips.lighting.hue.sdk.PHMessageType;
 import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
+import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
@@ -20,6 +22,7 @@ public class Lighting
 	public static PHHueSDK SDK;
 	public static PHBridge BRIDGE;
 	public static PHSDKListener listener;
+	public static volatile int LIGHT_STATE;
 
 	public static void init()
 	{
@@ -60,7 +63,15 @@ public class Lighting
 			@Override
 			public void onCacheUpdated(List<Integer> cacheNotificationsList, PHBridge bridge)
 			{
-				// Don't do anything. This happens so frequently that printing anything causes massive log spam.
+				if (cacheNotificationsList.contains(PHMessageType.LIGHTS_CACHE_UPDATED))
+				{
+					List<PHLight> u = bridge.getResourceCache().getAllLights();
+					if (!u.isEmpty())
+					{
+						PHLightState phls = u.get(0).getLastKnownLightState();
+						LIGHT_STATE = phls.isOn() ? phls.getBrightness() : -1;
+					}
+				}
 			}
 
 			@Override
@@ -69,7 +80,7 @@ public class Lighting
 				log.info("Connection to Hue Bridge at " + NMOConfiguration.instance.hueBridgeIP + " has been established");
 				log.info("Bridge API authorization username: " + username);
 				SDK.setSelectedBridge(bridge);
-				SDK.enableHeartbeat(bridge, PHHueSDK.HB_INTERVAL);
+				SDK.enableHeartbeat(bridge, 1000);
 				BRIDGE = bridge;
 				NMOConfiguration.instance.hueBridgeUsername = username;
 				try
@@ -79,6 +90,12 @@ public class Lighting
 				catch (Exception e)
 				{
 					e.printStackTrace();
+				}
+				List<PHLight> u = bridge.getResourceCache().getAllLights();
+				if (!u.isEmpty())
+				{
+					PHLightState phls = u.get(0).getLastKnownLightState();
+					LIGHT_STATE = phls.isOn() ? phls.getBrightness() : -1;
 				}
 			}
 
@@ -114,6 +131,10 @@ public class Lighting
 	{
 		PHLightState lightState = new PHLightState();
 		lightState.setOn(state);
+		if (state)
+		{
+			lightState.setBrightness(Integer.MAX_VALUE, true);
+		}
 		BRIDGE.setLightStateForDefaultGroup(lightState);
 	}
 

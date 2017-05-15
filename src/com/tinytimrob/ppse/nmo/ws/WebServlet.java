@@ -38,6 +38,12 @@ public class WebServlet extends HttpServlet
 
 		@Expose
 		public int conn_count;
+
+		@Expose
+		public String noise_state;
+
+		@Expose
+		public String light_state;
 	}
 
 	private static final long serialVersionUID = 6713485873809808119L;
@@ -80,6 +86,8 @@ public class WebServlet extends HttpServlet
 				data.pause_state = "RUNNING";
 			}
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
+			data.noise_state = Noise.isPlaying() ? "PLAYING" : "STOPPED";
+			data.light_state = Lighting.LIGHT_STATE > -1 ? "ON, LIGHT LEVEL " + Lighting.LIGHT_STATE : "OFF";
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
 		else if (PATH.equals("/"))
@@ -145,6 +153,12 @@ public class WebServlet extends HttpServlet
 			{
 				Noise.play(new File(NMOConfiguration.instance.noisePath));
 				MainDialog.addEvent("<PLAYING NOISE> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/noise_off"))
+			{
+				Noise.stop();
+				MainDialog.addEvent("<STOPPING NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/light_on"))
