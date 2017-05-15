@@ -20,6 +20,12 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+<style>
+form {
+	margin-bottom: 6px;
+	display: inline-block;
+}
+</style>
 </head>
 <body>
 <div class="container">
@@ -33,34 +39,48 @@
         <td id="nmo_last_refresh">never</td>
       </tr>
       <tr>
-        <td><strong>NoMoreOversleeps state</strong></td>
+        <td><strong>Activity detection state</strong></td>
         <td id="nmo_pause_state">?</td>
       </tr>
       <tr>
         <td style="width:230px;"><strong>Last activity detected</strong></td>
         <td id="nmo_activity">?</td>
       </tr>
+      <tr>
+        <td style="width:230px;"><strong>Camera sockets open</strong></td>
+        <td id="nmo_conn_count">?</td>
+      </tr>
     </tbody>
   </table>
   <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
   <form method="POST" action="/beep">
-      <button type="submit" class="btn btn-success">BEEP PAVLOK</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">BEEP</button>
   </form>
   <form method="POST" action="/vibration">
-      <button type="submit" class="btn btn-warning">VIBRATE PAVLOK</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">VIBRATE</button>
   </form>
   <form method="POST" action="/shock">
-      <button type="submit" class="btn btn-danger">SHOCK PAVLOK</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">SHOCK</button>
   </form>
+  <div></div>
+  <form method="POST" action="/light_on">
+      <button type="submit" class="btn btn-success" style="width:141px;text-align:left;">LIGHT ON</button>
+  </form>
+  <form method="POST" action="/light_off">
+      <button type="submit" class="btn btn-success" style="width:141px;text-align:left;">LIGHT OFF</button>
+  </form> 
+  <div></div>
   <form method="POST" action="/call_switchboard">
-      <button type="submit" class="btn btn-primary">CALL SWITCHBOARD: ${phoneSwitchboard}</button>
+      <button type="submit" class="btn btn-primary" style="width:286px;">CALL SWITCHBOARD: ${phoneSwitchboard}</button>
   </form>
+  <div></div>
   <form method="POST" action="/call_mobile">
-      <button type="submit" class="btn btn-primary">CALL MOBILE: ${phoneMobile}</button>
+      <button type="submit" class="btn btn-primary" style="width:286px;text-align:left;">CALL MOBILE: ${phoneMobile}</button>
   </form>
+  <div></div>
   <form method="POST" action="/noise">
-      <button type="submit" class="btn btn-info">PLAY NOISE</button>
+      <button type="submit" class="btn btn-info" style="width:286px;text-align:left;">PLAY ANNOYING NOISE</button>
   </form>
   <div style="clear:both;"></div>
   <h4>Log</h4>
@@ -87,6 +107,7 @@
                     $('#nmo_last_refresh').html(json.update);
                     $('#nmo_activity').html(json.activity);
                     $('#nmo_pause_state').html(json.pause_state);
+                    $('#nmo_conn_count').html(json.conn_count);
                     $('#logframe').attr('src',function(i,val){return val;});
                 }
             });

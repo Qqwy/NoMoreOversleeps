@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.ppse.nmo.Lighting;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
@@ -34,6 +35,9 @@ public class WebServlet extends HttpServlet
 
 		@Expose
 		public String pause_state;
+
+		@Expose
+		public int conn_count;
 	}
 
 	private static final long serialVersionUID = 6713485873809808119L;
@@ -75,6 +79,7 @@ public class WebServlet extends HttpServlet
 			{
 				data.pause_state = "RUNNING";
 			}
+			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
 		else if (PATH.equals("/"))
@@ -140,6 +145,18 @@ public class WebServlet extends HttpServlet
 			{
 				Noise.play(new File(NMOConfiguration.instance.noisePath));
 				MainDialog.addEvent("<PLAYING NOISE> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/light_on"))
+			{
+				Lighting.toggle(true);
+				MainDialog.addEvent("<LIGHT ON> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/light_off"))
+			{
+				Lighting.toggle(false);
+				MainDialog.addEvent("<LIGHT OFF> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else

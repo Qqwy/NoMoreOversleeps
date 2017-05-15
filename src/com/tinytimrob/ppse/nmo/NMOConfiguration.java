@@ -43,4 +43,12 @@ public class NMOConfiguration
 	@Expose
 	@SerializedName("noisePath")
 	public String noisePath = "";
+
+	@Expose
+	@SerializedName("hueBridgeIP")
+	public String hueBridgeIP = "";
+
+	@Expose
+	@SerializedName("hueBridgeUsername")
+	public String hueBridgeUsername = "";
 }

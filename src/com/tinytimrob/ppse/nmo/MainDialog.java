@@ -108,7 +108,7 @@ public class MainDialog extends Application
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(false);
 		stage.setMinWidth(1000);
-		stage.setMinHeight(800);
+		stage.setMinHeight(900);
 
 		ImageView webcamImageView = new ImageView();
 
@@ -455,6 +455,52 @@ public class MainDialog extends Application
 				}
 			});
 			innerRightPane.addRow(row++, noiseStopButton);
+
+			final Button lightOnButton = new Button("LIGHT ON");
+			lightOnButton.setMinWidth(240);
+			lightOnButton.setMaxWidth(240);
+			lightOnButton.setAlignment(Pos.BASELINE_LEFT);
+			lightOnButton.setContentDisplay(ContentDisplay.RIGHT);
+			lightOnButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						Lighting.toggle(true);
+						addEvent("<LIGHT ON> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, lightOnButton);
+
+			final Button lightOffButton = new Button("LIGHT OFF");
+			lightOffButton.setMinWidth(240);
+			lightOffButton.setMaxWidth(240);
+			lightOffButton.setAlignment(Pos.BASELINE_LEFT);
+			lightOffButton.setContentDisplay(ContentDisplay.RIGHT);
+			lightOffButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						Lighting.toggle(false);
+						addEvent("<LIGHT OFF> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, lightOffButton);
 
 			// Pause controls
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);

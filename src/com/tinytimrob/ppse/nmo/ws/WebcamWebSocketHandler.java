@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -24,27 +25,34 @@ import com.tinytimrob.ppse.nmo.WebcamCapture;
 @WebSocket
 public class WebcamWebSocketHandler implements WebcamListener
 {
+	public static final AtomicInteger connectionCounter = new AtomicInteger(0);
 	private static final Logger log = LogWrapper.getLogger();
 	private Session session;
 	private BufferedImage image;
 
 	private void teardown()
 	{
-		try
+		if (this.session != null)
 		{
-			this.session.close();
-			this.session = null;
+			connectionCounter.decrementAndGet();
+			try
+			{
+				this.session.close();
+				this.session = null;
+			}
+			catch (Throwable t)
+			{
+				//
+			}
 		}
-		finally
-		{
-			WebcamCapture.removeListener(this);
-		}
+		WebcamCapture.removeListener(this);
 	}
 
 	@OnWebSocketConnect
 	public void onConnect(Session session)
 	{
 		this.session = session;
+		connectionCounter.incrementAndGet();
 		log.info("WebSocket connect, from = {}", session.getRemoteAddress().getAddress());
 		WebcamCapture.addListener(this);
 	}
