@@ -19,7 +19,7 @@ At the moment it has no other features.
 
 ### Best usage ###
 
-NoMoreOversleeps is designed for continuous monitoring works best if you have access to all of the integration features, it also 
+NoMoreOversleeps is designed for continuous monitoring. It works best if you have access to all of the integration features and a buddy to watch your feed.
 
 ### Features that might be added in the future ###
 
