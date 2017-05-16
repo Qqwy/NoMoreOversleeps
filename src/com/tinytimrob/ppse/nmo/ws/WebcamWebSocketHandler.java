@@ -28,7 +28,6 @@ public class WebcamWebSocketHandler implements WebcamListener
 	public static final AtomicInteger connectionCounter = new AtomicInteger(0);
 	private static final Logger log = LogWrapper.getLogger();
 	private Session session;
-	private BufferedImage image;
 
 	private void teardown()
 	{
@@ -130,11 +129,11 @@ public class WebcamWebSocketHandler implements WebcamListener
 		this.send = !this.send;
 		if (!this.send)
 			return;
-		this.image = WebcamCapture.getImage(this.image);
+		BufferedImage image = WebcamCapture.getImage();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try
 		{
-			ImageIO.write(this.image, "JPG", baos);
+			ImageIO.write(image, "JPG", baos);
 		}
 		catch (IOException e)
 		{

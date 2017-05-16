@@ -67,7 +67,6 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
-	public static volatile BufferedImage img = null;
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static volatile int wiloop = 0;
@@ -188,7 +187,7 @@ public class MainDialog extends Application
 
 				try
 				{
-					img = WebcamCapture.getImage(img);
+					BufferedImage img = WebcamCapture.getImage();
 					if (img != null && wiloop % 4 < 2)
 					{
 						writableImage = SwingFXUtils.toFXImage(img, writableImage);

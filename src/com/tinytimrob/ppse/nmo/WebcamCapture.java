@@ -20,7 +20,17 @@ public class WebcamCapture
 		@Override
 		public BufferedImage transform(BufferedImage image)
 		{
-			return GRAY.filter(image, null);
+			image = GRAY.filter(image, null);
+			Graphics2D graphics = image.createGraphics();
+			Font font = new Font("ARIAL", Font.PLAIN, 12);
+			graphics.setFont(font);
+			graphics.setColor(Color.BLACK);
+			graphics.fillRect(0, 0, 320, 20);
+			graphics.setColor(Color.WHITE);
+			graphics.drawString(CommonUtils.convertTimestamp(System.currentTimeMillis()), 4, 14);
+			image.flush();
+			graphics.dispose();
+			return image;
 		}
 	}
 
@@ -36,24 +46,9 @@ public class WebcamCapture
 		System.out.println(webcam.getViewSize());
 	}
 
-	public static BufferedImage getImage(BufferedImage image)
+	public static BufferedImage getImage()
 	{
-		BufferedImage source = webcam.getImage();
-		if (image == null)
-		{
-			image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_RGB);
-		}
-		Graphics2D graphics = image.createGraphics();
-		graphics.drawImage(source, 0, 0, null);
-		Font font = new Font("ARIAL", Font.PLAIN, 12);
-		graphics.setFont(font);
-		graphics.setColor(Color.BLACK);
-		graphics.fillRect(0, 0, 320, 20);
-		graphics.setColor(Color.WHITE);
-		graphics.drawString(CommonUtils.convertTimestamp(System.currentTimeMillis()), 4, 14);
-		image.flush();
-		graphics.dispose();
-		return image;
+		return webcam.getImage();
 	}
 
 	public static void shutdown()
