@@ -19,7 +19,7 @@ Supported attention methods are as follows:
 * Send vibrate (on first warning) and then shock (on subsequent warnings) to a Pavlok
 * Play a noise of your choice out of computer speakers/headphones
 
-In the event you are deliberatily going to be away from your computer for a certain amount of time, e.g. you're going shopping or going to work, you can pause the activity detection
+In the event you are deliberately going to be away from your computer for a certain amount of time, e.g. you're going shopping or going to work, you can pause the activity detection
 feature of NoMoreOversleeps for a choosable length of time. This will prevent NoMoreOversleeps from trying to get your attention. The pause function is also automatically activated
 at the start of each sleep block, lasting for the duration of that block, in order to avoid a scenario where you go to sleep on time but get woken up mid-nap because you forgot to
 pause the activity tracking.
