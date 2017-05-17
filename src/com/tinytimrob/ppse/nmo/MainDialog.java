@@ -210,7 +210,7 @@ public class MainDialog extends Application
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(false);
 		stage.setMinWidth(1000);
-		stage.setMinHeight(900);
+		stage.setMinHeight(940);
 
 		ImageView webcamImageView = new ImageView();
 
@@ -643,7 +643,7 @@ public class MainDialog extends Application
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label2);
 
-			int[] periods = new int[] { 15, 20, 25, 30, 45, 60, 90, 120, 180, 240, 300, 360, 420, 480, 720 };
+			int[] periods = new int[] { 5, 10, 15, 20, 25, 30, 45, 60, 90, 105, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720 };
 			GridPane btnGridPane = null;
 			for (int p = 0; p < periods.length; p++)
 			{
