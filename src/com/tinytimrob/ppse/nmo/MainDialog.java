@@ -249,16 +249,25 @@ public class MainDialog extends Application
 					{
 						try
 						{
+							boolean playNoise = !Noise.isPlaying();
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
-								addEvent("<VIBRATION> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								if (playNoise)
+								{
+									Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+								}
 							}
 							else
 							{
-								addEvent("<SHOCK> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								Pavlok.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								if (playNoise)
+								{
+									Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+								}
 							}
 						}
 						catch (Exception e)
@@ -494,20 +503,20 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, mobileButton);
 
-			final Button noiseButton = new Button("PLAY NOISE");
-			noiseButton.setMinWidth(240);
-			noiseButton.setMaxWidth(240);
-			noiseButton.setAlignment(Pos.BASELINE_LEFT);
-			noiseButton.setContentDisplay(ContentDisplay.RIGHT);
-			noiseButton.setOnAction(new EventHandler<ActionEvent>()
+			final Button noiseButtonLong = new Button("PLAY LONG NOISE");
+			noiseButtonLong.setMinWidth(240);
+			noiseButtonLong.setMaxWidth(240);
+			noiseButtonLong.setAlignment(Pos.BASELINE_LEFT);
+			noiseButtonLong.setContentDisplay(ContentDisplay.RIGHT);
+			noiseButtonLong.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
 				public void handle(ActionEvent arg0)
 				{
 					try
 					{
-						Noise.play(new File(NMOConfiguration.instance.noisePath));
-						addEvent("<PLAYING NOISE> from frontend");
+						Noise.play(new File(NMOConfiguration.instance.noisePathLong), "LONG NOISE");
+						addEvent("<PLAYING LONG NOISE> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -515,7 +524,30 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			innerRightPane.addRow(row++, noiseButton);
+			innerRightPane.addRow(row++, noiseButtonLong);
+
+			final Button noiseButtonShort = new Button("PLAY SHORT NOISE");
+			noiseButtonShort.setMinWidth(240);
+			noiseButtonShort.setMaxWidth(240);
+			noiseButtonShort.setAlignment(Pos.BASELINE_LEFT);
+			noiseButtonShort.setContentDisplay(ContentDisplay.RIGHT);
+			noiseButtonShort.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+						addEvent("<PLAYING SHORT NOISE> from frontend");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			innerRightPane.addRow(row++, noiseButtonShort);
 
 			final Button noiseStopButton = new Button("STOP NOISE");
 			noiseStopButton.setMinWidth(240);

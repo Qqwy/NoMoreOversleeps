@@ -86,7 +86,7 @@ public class WebServlet extends HttpServlet
 				data.pause_state = "RUNNING";
 			}
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
-			data.noise_state = Noise.isPlaying() ? "PLAYING" : "STOPPED";
+			data.noise_state = Noise.isPlaying() ? "PLAYING " + Noise.noiseID : "STOPPED";
 			data.light_state = Lighting.LIGHT_STATE > -1 ? "ON, LIGHT LEVEL " + Lighting.LIGHT_STATE : "OFF";
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
@@ -152,8 +152,14 @@ public class WebServlet extends HttpServlet
 			}
 			else if (PATH.equals("/noise"))
 			{
-				Noise.play(new File(NMOConfiguration.instance.noisePath));
-				MainDialog.addEvent("<PLAYING NOISE> from WEB UI");
+				Noise.play(new File(NMOConfiguration.instance.noisePathLong), "LONG NOISE");
+				MainDialog.addEvent("<PLAYING LONG NOISE> from WEB UI");
+				response.sendRedirect("/");
+			}
+			else if (PATH.equals("/noise2"))
+			{
+				Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+				MainDialog.addEvent("<PLAYING SHORT NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/noise_off"))

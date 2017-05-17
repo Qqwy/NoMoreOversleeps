@@ -42,8 +42,12 @@ public class NMOConfiguration
 	public String phoneMobile = "";
 
 	@Expose
-	@SerializedName("noisePath")
-	public String noisePath = "";
+	@SerializedName("noisePathLong")
+	public String noisePathLong = "";
+
+	@Expose
+	@SerializedName("noisePathShort")
+	public String noisePathShort = "";
 
 	@Expose
 	@SerializedName("hueBridgeIP")

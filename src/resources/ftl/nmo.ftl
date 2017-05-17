@@ -67,27 +67,31 @@ form {
   <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
   <form method="POST" action="/beep">
-      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">BEEP</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;">BEEP</button>
   </form>
   <form method="POST" action="/vibration">
-      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">VIBRATE</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;">VIBRATE</button>
   </form>
   <form method="POST" action="/shock">
-      <button type="submit" class="btn btn-danger" style="width:93px;text-align:left;">SHOCK</button>
+      <button type="submit" class="btn btn-danger" style="width:93px;">SHOCK</button>
   </form>
   <div></div>
   <form method="POST" action="/noise">
-      <button type="submit" class="btn btn-info" style="width:141px;text-align:left;">PLAY NOISE</button>
+      <button type="submit" class="btn btn-info" style="width:141px;">LONG NOISE</button>
   </form>
+  <form method="POST" action="/noise2">
+      <button type="submit" class="btn btn-info" style="width:141px;">SHORT NOISE</button>
+  </form>
+  <div></div>
   <form method="POST" action="/noise_off">
-      <button type="submit" class="btn btn-info" style="width:141px;text-align:left;">STOP NOISE</button>
+      <button type="submit" class="btn btn-info" style="width:286px;">TURN OFF NOISE</button>
   </form> 
   <div></div>
   <form method="POST" action="/light_on">
-      <button type="submit" class="btn btn-success" style="width:141px;text-align:left;">LIGHT ON</button>
+      <button type="submit" class="btn btn-success" style="width:141px;">LIGHT ON</button>
   </form>
   <form method="POST" action="/light_off">
-      <button type="submit" class="btn btn-success" style="width:141px;text-align:left;">LIGHT OFF</button>
+      <button type="submit" class="btn btn-success" style="width:141px;">LIGHT OFF</button>
   </form> 
   <div></div>
   <form method="POST" action="/call_switchboard">
@@ -95,7 +99,7 @@ form {
   </form>
   <div></div>
   <form method="POST" action="/call_mobile">
-      <button type="submit" class="btn btn-primary" style="width:286px;text-align:left;">CALL MOBILE: ${phoneMobile}</button>
+      <button type="submit" class="btn btn-primary" style="width:286px;">CALL MOBILE: ${phoneMobile}</button>
   </form>
   <div></div>
   <div style="clear:both;"></div>

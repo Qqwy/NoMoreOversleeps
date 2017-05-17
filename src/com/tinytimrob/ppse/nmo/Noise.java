@@ -8,12 +8,22 @@ import javafx.scene.media.MediaPlayer.Status;
 public class Noise
 {
 	public static MediaPlayer player = null;
+	public static String noiseID = null;
 
-	public static void play(File file)
+	public static void play(File file, String noiseID)
 	{
 		Media media = new Media(file.toURI().toString());
 		stop();
+		Noise.noiseID = noiseID;
 		player = new MediaPlayer(media);
+		player.setOnEndOfMedia(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				stop();
+			}
+		});
 		player.play();
 	}
 
