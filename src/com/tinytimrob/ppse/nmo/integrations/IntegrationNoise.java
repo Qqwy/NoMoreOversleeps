@@ -2,6 +2,7 @@ package com.tinytimrob.ppse.nmo.integrations;
 
 import java.io.File;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -9,8 +10,8 @@ import javafx.scene.media.MediaPlayer.Status;
 public class IntegrationNoise extends Integration
 {
 	public static IntegrationNoise INSTANCE = new IntegrationNoise();
-	public static MediaPlayer player = null;
-	public static String noiseID = null;
+	public MediaPlayer player = null;
+	public String noiseID = null;
 
 	public static class NoiseConfiguration
 	{
@@ -30,7 +31,7 @@ public class IntegrationNoise extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return false;
+		return NMOConfiguration.instance.integrations.noise.enabled;
 	}
 
 	@Override
@@ -45,35 +46,35 @@ public class IntegrationNoise extends Integration
 		// TODO Auto-generated method stub
 	}
 
-	public static void play(File file, String noiseID)
+	public void play(File file, String noiseID)
 	{
 		Media media = new Media(file.toURI().toString());
-		stop();
-		IntegrationNoise.noiseID = noiseID;
-		player = new MediaPlayer(media);
-		player.setOnEndOfMedia(new Runnable()
+		this.stop();
+		this.noiseID = noiseID;
+		this.player = new MediaPlayer(media);
+		this.player.setOnEndOfMedia(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				stop();
+				IntegrationNoise.this.stop();
 			}
 		});
-		player.play();
+		this.player.play();
 	}
 
-	public static boolean isPlaying()
+	public boolean isPlaying()
 	{
-		return player != null && player.getStatus() == Status.PLAYING;
+		return this.player != null && this.player.getStatus() == Status.PLAYING;
 	}
 
-	public static void stop()
+	public void stop()
 	{
-		if (player != null)
+		if (this.player != null)
 		{
-			player.stop();
-			player.dispose();
-			player = null;
+			this.player.stop();
+			this.player.dispose();
+			this.player = null;
 		}
 	}
 }

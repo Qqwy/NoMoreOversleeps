@@ -144,10 +144,10 @@ public class MainDialog extends Application
 				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
 				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
 				{
-					if (!IntegrationNoise.isPlaying())
+					if (!IntegrationNoise.INSTANCE.isPlaying())
 					{
 						addEvent("5 minutes until next sleep block - playing audio warning");
-						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathUpcomingNap), "UPCOMING NAP NOISE");
+						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathUpcomingNap), "UPCOMING NAP NOISE");
 					}
 					lastSleepBlockSoundWarning = nextSleepBlockDetected;
 				}
@@ -275,7 +275,7 @@ public class MainDialog extends Application
 					{
 						try
 						{
-							boolean playNoise = !IntegrationNoise.isPlaying();
+							boolean playNoise = !IntegrationNoise.INSTANCE.isPlaying();
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
@@ -283,7 +283,7 @@ public class MainDialog extends Application
 								IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								if (playNoise)
 								{
-									IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
+									IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 								}
 							}
 							else
@@ -292,7 +292,7 @@ public class MainDialog extends Application
 								IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								if (playNoise)
 								{
-									IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
+									IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 								}
 							}
 						}
@@ -541,7 +541,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
+						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
 						addEvent("<PLAYING LONG NOISE> from frontend");
 					}
 					catch (Exception e)
@@ -564,7 +564,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
+						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 						addEvent("<PLAYING SHORT NOISE> from frontend");
 					}
 					catch (Exception e)
@@ -587,7 +587,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						IntegrationNoise.stop();
+						IntegrationNoise.INSTANCE.stop();
 						addEvent("<STOPPING NOISE> from frontend");
 					}
 					catch (Exception e)

@@ -1,6 +1,8 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
+import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
 import lc.kra.system.keyboard.event.GlobalKeyAdapter;
 import lc.kra.system.keyboard.event.GlobalKeyEvent;
@@ -10,11 +12,16 @@ public class IntegrationKeyboard extends Integration
 	public static IntegrationKeyboard INSTANCE = new IntegrationKeyboard();
 	GlobalKeyboardHook keyboardHook;
 
+	public static class KeyboardConfiguration
+	{
+		@Expose
+		public boolean enabled;
+	}
+
 	@Override
 	public boolean isEnabled()
 	{
-		// TODO Auto-generated method stub
-		return true;
+		return NMOConfiguration.instance.integrations.keyboard.enabled;
 	}
 
 	@Override
