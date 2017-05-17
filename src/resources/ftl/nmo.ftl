@@ -39,6 +39,10 @@ form {
         <td id="nmo_last_refresh">never</td>
       </tr>
       <tr>
+        <td style="width:230px;"><strong>Current part of schedule</strong></td>
+        <td id="nmo_schedule">?</td>
+      </tr>
+      <tr>
         <td><strong>Activity detection state</strong></td>
         <td id="nmo_pause_state">?</td>
       </tr>
@@ -120,6 +124,7 @@ form {
                     $('#nmo_activity').html(json.activity);
                     $('#nmo_pause_state').html(json.pause_state);
                     $('#nmo_conn_count').html(json.conn_count);
+                    $('#nmo_schedule').html(json.schedule);
                     $('#nmo_noise_state').html(json.noise_state);
                     $('#nmo_light_state').html(json.light_state);
                     $('#logframe').attr('src',function(i,val){return val;});

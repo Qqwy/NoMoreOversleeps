@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -67,9 +69,89 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
+	public static volatile SleepEntry nextSleepBlock = null;
+	public static volatile String scheduleStatus = "";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static volatile int wiloop = 0;
+
+	public static void updateNapLoop()
+	{
+		Calendar calendar = Calendar.getInstance();
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int currentMinuteOfDay = ((hour * 60) + minute);
+
+		SleepEntry nextSleepBlockDetected = null;
+		Collections.sort(NMOConfiguration.instance.schedule);
+		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		{
+			if (entry.containsTime(currentMinuteOfDay) || entry.start >= currentMinuteOfDay)
+			{
+				nextSleepBlockDetected = entry;
+				break;
+			}
+		}
+		if (nextSleepBlockDetected == null && !NMOConfiguration.instance.schedule.isEmpty())
+		{
+			nextSleepBlockDetected = NMOConfiguration.instance.schedule.get(0);
+		}
+		if (nextSleepBlockDetected != null)
+		{
+			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
+			{
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.end / 60);
+				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.end % 60);
+				calendar2.set(Calendar.SECOND, 0);
+				calendar2.set(Calendar.MILLISECOND, 0);
+				long tims = calendar2.getTimeInMillis();
+				if (nextSleepBlockDetected.end < currentMinuteOfDay)
+				{
+					tims += 86400000L; // nap loops over to next day. add 1 day.
+				}
+				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
+				if (pausedUntil == 0)
+				{
+					addEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started");
+					pausedUntil = tims;
+					pauseReason = "Sleep block: " + nextSleepBlockDetected.name;
+				}
+			}
+			else
+			{
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
+				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
+				calendar2.set(Calendar.SECOND, 0);
+				calendar2.set(Calendar.MILLISECOND, 0);
+				long tims = calendar2.getTimeInMillis();
+				if (nextSleepBlockDetected.start < currentMinuteOfDay)
+				{
+					tims += 86400000L; // nap loops over to next day. add 1 day.
+				}
+				long minutesRemaining = (tims - System.currentTimeMillis()) / 60000;
+				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
+			}
+		}
+		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
+		{
+			nextSleepBlock = nextSleepBlockDetected;
+
+			Calendar calendar3 = Calendar.getInstance();
+			calendar3.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
+			calendar3.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
+			calendar3.set(Calendar.SECOND, 0);
+			calendar3.set(Calendar.MILLISECOND, 0);
+			long tims = calendar3.getTimeInMillis();
+			if (nextSleepBlockDetected.start < currentMinuteOfDay)
+			{
+				tims += 86400000L; // nap loops over to next day. add 1 day.
+			}
+			long minutesRemaining = (tims - System.currentTimeMillis()) / 60000;
+			addEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minutes");
+		}
+	}
 
 	public static void addEvent(final String event)
 	{
@@ -128,6 +210,9 @@ public class MainDialog extends Application
 				}
 				else if (wiloop % 2 == 1)
 					return;
+
+				updateNapLoop();
+
 				ControllerTrapper.poll();
 
 				now = System.currentTimeMillis();

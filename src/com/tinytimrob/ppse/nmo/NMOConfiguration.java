@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo;
 
+import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.ppse.nmo.Pavlok.OAuthResponse;
@@ -51,4 +52,8 @@ public class NMOConfiguration
 	@Expose
 	@SerializedName("hueBridgeUsername")
 	public String hueBridgeUsername = "";
+
+	@Expose
+	@SerializedName("schedule")
+	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
 }

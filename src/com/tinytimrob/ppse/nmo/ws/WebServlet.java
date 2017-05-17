@@ -88,6 +88,7 @@ public class WebServlet extends HttpServlet
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
 			data.noise_state = Noise.isPlaying() ? "PLAYING" : "STOPPED";
 			data.light_state = Lighting.LIGHT_STATE > -1 ? "ON, LIGHT LEVEL " + Lighting.LIGHT_STATE : "OFF";
+			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
 		else if (PATH.equals("/"))

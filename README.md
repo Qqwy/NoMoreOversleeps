@@ -14,7 +14,8 @@ In addition, it includes a port-forwardable password-protected web UI with a liv
 This gives people the ability attempt to wake you up via whatever means they feel is necessary if you appear to be oversleeping.
 
 You can pause the activity detection feature of NoMoreOversleeps while you're intentionally doing other stuff, e.g. if you're going shopping or going to work and thus you will be AFK
-for a while. The pause reason and duration is displayed on both the JavaFX frontend and on the web UI.
+for a while. The pause reason and duration is displayed on both the JavaFX frontend and on the web UI. Your sleep schedule can also be set in the config file in order to allow for
+automatic pauses.
 
 At the moment it has no other features.
 
@@ -27,7 +28,6 @@ NoMoreOversleeps is designed for continuous monitoring. It works best if you hav
 It would be nice to turn this into a general tool to help people adapt to and track their sleeping schedules. On that basis there are lots of good possibilites. Some ideas I've had include:
 
 * GPS tracking of phone so you can see where someone is if they aren't at their computer
-* Input your sleeping pattern so you don't have to manually pause during this period
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
 * Automate the calling, noise playback and lighting control if you fail to wake up
 * Send a message to the polysleeping Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
