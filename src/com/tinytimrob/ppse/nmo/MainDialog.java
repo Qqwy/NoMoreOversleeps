@@ -121,7 +121,9 @@ public class MainDialog extends Application
 					addEvent("Entering sleep block: " + nextSleepBlockDetected.name);
 				}
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
-				if (pausedUntil == 0)
+				long now = System.currentTimeMillis();
+				boolean paused = pausedUntil > now;
+				if (!paused)
 				{
 					addEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started");
 					pausedUntil = tims;
