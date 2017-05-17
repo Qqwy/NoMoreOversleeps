@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
-import com.tinytimrob.ppse.nmo.Lighting;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
-import com.tinytimrob.ppse.nmo.Noise;
-import com.tinytimrob.ppse.nmo.Pavlok;
-import com.tinytimrob.ppse.nmo.PhoneControl;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -86,8 +86,8 @@ public class WebServlet extends HttpServlet
 				data.pause_state = "RUNNING";
 			}
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
-			data.noise_state = Noise.isPlaying() ? "PLAYING " + Noise.noiseID : "STOPPED";
-			data.light_state = Lighting.LIGHT_STATE > -1 ? "ON, LIGHT LEVEL " + Lighting.LIGHT_STATE : "OFF";
+			data.noise_state = IntegrationNoise.isPlaying() ? "PLAYING " + IntegrationNoise.noiseID : "STOPPED";
+			data.light_state = IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF";
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
@@ -96,8 +96,8 @@ public class WebServlet extends HttpServlet
 			// send main web page
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("version", Main.VERSION);
-			model.put("phoneSwitchboard", NMOConfiguration.instance.phoneSwitchboard);
-			model.put("phoneMobile", NMOConfiguration.instance.phoneMobile);
+			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneSwitchboard);
+			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneMobile);
 			try
 			{
 				WebTemplate.renderTemplate("nmo.ftl", response, model);
@@ -122,61 +122,61 @@ public class WebServlet extends HttpServlet
 			String PATH = request.getPathInfo();
 			if (PATH.equals("/beep"))
 			{
-				Pavlok.beep(255, "WEB UI remotely triggered beep");
+				IntegrationPavlok.INSTANCE.beep(255, "WEB UI remotely triggered beep");
 				MainDialog.addEvent("<BEEP> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/vibration"))
 			{
-				Pavlok.vibration(255, "WEB UI remotely triggered vibration");
+				IntegrationPavlok.INSTANCE.vibration(255, "WEB UI remotely triggered vibration");
 				MainDialog.addEvent("<VIBRATION> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/shock"))
 			{
-				Pavlok.shock(255, "WEB UI remotely triggered shock");
+				IntegrationPavlok.INSTANCE.shock(255, "WEB UI remotely triggered shock");
 				MainDialog.addEvent("<SHOCK> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/call_switchboard"))
 			{
-				PhoneControl.callSwitchboard();
-				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.phoneSwitchboard + "> from WEB UI");
+				IntegrationTwilio.INSTANCE.callSwitchboard();
+				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard + "> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/call_mobile"))
 			{
-				PhoneControl.callMobile();
-				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.phoneMobile + "> from WEB UI");
+				IntegrationTwilio.INSTANCE.callMobile();
+				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneMobile + "> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/noise"))
 			{
-				Noise.play(new File(NMOConfiguration.instance.noisePathLong), "LONG NOISE");
+				IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
 				MainDialog.addEvent("<PLAYING LONG NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/noise2"))
 			{
-				Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+				IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 				MainDialog.addEvent("<PLAYING SHORT NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/noise_off"))
 			{
-				Noise.stop();
+				IntegrationNoise.stop();
 				MainDialog.addEvent("<STOPPING NOISE> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/light_on"))
 			{
-				Lighting.toggle(true);
+				IntegrationPhilipsHue.INSTANCE.toggle(true);
 				MainDialog.addEvent("<LIGHT ON> from WEB UI");
 				response.sendRedirect("/");
 			}
 			else if (PATH.equals("/light_off"))
 			{
-				Lighting.toggle(false);
+				IntegrationPhilipsHue.INSTANCE.toggle(false);
 				MainDialog.addEvent("<LIGHT OFF> from WEB UI");
 				response.sendRedirect("/");
 			}

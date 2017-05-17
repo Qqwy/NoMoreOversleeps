@@ -1,7 +1,8 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.integrations;
 
 import java.util.List;
 import org.apache.logging.log4j.Logger;
+import com.google.gson.annotations.Expose;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
@@ -15,21 +16,42 @@ import com.philips.lighting.model.PHLightState;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
-public class Lighting
+public class IntegrationPhilipsHue extends Integration
 {
+	public static IntegrationPhilipsHue INSTANCE = new IntegrationPhilipsHue();
 	private static final Logger log = LogWrapper.getLogger();
-	public static PHHueSDK SDK;
-	public static PHBridge BRIDGE;
-	public static PHSDKListener listener;
-	public static volatile int LIGHT_STATE;
+	public PHHueSDK sdk;
+	public PHBridge activeBridge;
+	public PHSDKListener listener;
+	public volatile int lightState;
 
-	public static void init()
+	public static class PhilipsHueConfiguration
 	{
-		SDK = PHHueSDK.getInstance();
-		SDK.setAppName("NoMoreOversleeps");
-		SDK.setDeviceName(PlatformData.computerName);
-		SDK.getNotificationManager().registerSDKListener(listener = new PHSDKListener()
+		@Expose
+		public boolean enabled;
+
+		@Expose
+		public String bridgeIP = "";
+
+		@Expose
+		public String bridgeUsername = "";
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return NMOConfiguration.instance.integrations.philipsHue.enabled;
+	}
+
+	@Override
+	public void init()
+	{
+		this.sdk = PHHueSDK.getInstance();
+		this.sdk.setAppName("NoMoreOversleeps");
+		this.sdk.setDeviceName(PlatformData.computerName);
+		this.sdk.getNotificationManager().registerSDKListener(this.listener = new PHSDKListener()
 		{
 			@Override
 			public void onParsingErrors(List<PHHueParsingError> arg0)
@@ -43,7 +65,7 @@ public class Lighting
 				log.info("Hue SDK error " + code + ": " + message);
 				if (code == PHHueError.BRIDGE_NOT_RESPONDING)
 				{
-					PHBridgeSearchManager sm = (PHBridgeSearchManager) SDK.getSDKService(PHHueSDK.SEARCH_BRIDGE);
+					PHBridgeSearchManager sm = (PHBridgeSearchManager) IntegrationPhilipsHue.this.sdk.getSDKService(PHHueSDK.SEARCH_BRIDGE);
 					sm.search(true, true);
 				}
 			}
@@ -69,7 +91,7 @@ public class Lighting
 					if (!u.isEmpty())
 					{
 						PHLightState phls = u.get(0).getLastKnownLightState();
-						LIGHT_STATE = phls.isOn() ? phls.getBrightness() : -1;
+						IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
 					}
 				}
 			}
@@ -77,12 +99,12 @@ public class Lighting
 			@Override
 			public void onBridgeConnected(PHBridge bridge, String username)
 			{
-				log.info("Connection to Hue Bridge at " + NMOConfiguration.instance.hueBridgeIP + " has been established");
+				log.info("Connection to Hue Bridge at " + NMOConfiguration.instance.integrations.philipsHue.bridgeIP + " has been established");
 				log.info("Bridge API authorization username: " + username);
-				SDK.setSelectedBridge(bridge);
-				SDK.enableHeartbeat(bridge, 1000);
-				BRIDGE = bridge;
-				NMOConfiguration.instance.hueBridgeUsername = username;
+				IntegrationPhilipsHue.this.sdk.setSelectedBridge(bridge);
+				IntegrationPhilipsHue.this.sdk.enableHeartbeat(bridge, 1000);
+				IntegrationPhilipsHue.this.activeBridge = bridge;
+				NMOConfiguration.instance.integrations.philipsHue.bridgeUsername = username;
 				try
 				{
 					Configuration.save();
@@ -95,7 +117,7 @@ public class Lighting
 				if (!u.isEmpty())
 				{
 					PHLightState phls = u.get(0).getLastKnownLightState();
-					LIGHT_STATE = phls.isOn() ? phls.getBrightness() : -1;
+					IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
 				}
 			}
 
@@ -103,8 +125,8 @@ public class Lighting
 			public void onAuthenticationRequired(PHAccessPoint accessPoint)
 			{
 				log.info("Authentication required. Please push the authentication button on the Hue Bridge!");
-				NMOConfiguration.instance.hueBridgeIP = accessPoint.getIpAddress();
-				SDK.startPushlinkAuthentication(accessPoint);
+				NMOConfiguration.instance.integrations.philipsHue.bridgeIP = accessPoint.getIpAddress();
+				IntegrationPhilipsHue.this.sdk.startPushlinkAuthentication(accessPoint);
 			}
 
 			@Override
@@ -115,19 +137,19 @@ public class Lighting
 				{
 					PHAccessPoint accessPoint = accessPointList.get(0);
 					log.info("Attempting connection to " + accessPoint.getIpAddress());
-					SDK.connect(accessPoint);
+					IntegrationPhilipsHue.this.sdk.connect(accessPoint);
 				}
 			}
 		});
 
 		log.info("Attempting to reconnect to Hue Bridge...");
 		PHAccessPoint accessPoint = new PHAccessPoint();
-		accessPoint.setIpAddress(NMOConfiguration.instance.hueBridgeIP);
-		accessPoint.setUsername(NMOConfiguration.instance.hueBridgeUsername);
-		SDK.connect(accessPoint);
+		accessPoint.setIpAddress(NMOConfiguration.instance.integrations.philipsHue.bridgeIP);
+		accessPoint.setUsername(NMOConfiguration.instance.integrations.philipsHue.bridgeUsername);
+		this.sdk.connect(accessPoint);
 	}
 
-	public static void toggle(boolean state)
+	public void toggle(boolean state)
 	{
 		PHLightState lightState = new PHLightState();
 		lightState.setOn(state);
@@ -135,21 +157,22 @@ public class Lighting
 		{
 			lightState.setBrightness(Integer.MAX_VALUE, true);
 		}
-		BRIDGE.setLightStateForDefaultGroup(lightState);
+		this.activeBridge.setLightStateForDefaultGroup(lightState);
 	}
 
-	public static void shutdown()
+	@Override
+	public void shutdown()
 	{
-		if (SDK != null)
+		if (this.sdk != null)
 		{
-			SDK.disableAllHeartbeat();
-			if (BRIDGE != null)
+			this.sdk.disableAllHeartbeat();
+			if (this.activeBridge != null)
 			{
-				SDK.disconnect(BRIDGE);
-				BRIDGE = null;
+				this.sdk.disconnect(this.activeBridge);
+				this.activeBridge = null;
 			}
-			SDK.destroySDK();
-			SDK = null;
+			this.sdk.destroySDK();
+			this.sdk = null;
 		}
 	}
 }

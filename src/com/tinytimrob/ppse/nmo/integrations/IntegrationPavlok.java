@@ -1,15 +1,26 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.integrations;
 
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.Main;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
 
-public class Pavlok
+public class IntegrationPavlok extends Integration
 {
+	public static IntegrationPavlok INSTANCE = new IntegrationPavlok();
 	private static final Logger log = LogWrapper.getLogger();
-	public static OAuthResponse RESPONSE = null;
+
+	public static class PavlokConfiguration
+	{
+		@Expose
+		public boolean enabled;
+
+		@Expose
+		public OAuthResponse auth = null;
+	}
 
 	public static class OAuthToken
 	{
@@ -70,11 +81,6 @@ public class Pavlok
 		public String device;
 	}
 
-	public static void postAuthToken(String code) throws Exception
-	{
-		RESPONSE = Communicator.basicJsonMessage("get oauthtoken", "http://pavlok-mvp.herokuapp.com/oauth/token", new OAuthToken(code), OAuthResponse.class, false, null);
-	}
-
 	public static class Stimuli
 	{
 		public Stimuli(long value, String access_token, String reason)
@@ -97,21 +103,46 @@ public class Pavlok
 		public String reason;
 	}
 
-	public static void beep(long amount, String reason) throws Exception
+	@Override
+	public boolean isEnabled()
+	{
+		return NMOConfiguration.instance.integrations.pavlok.enabled;
+	}
+
+	@Override
+	public void init()
+	{
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void shutdown()
+	{
+		// TODO Auto-generated method stub
+	}
+
+	public OAuthResponse authResponse = null;
+
+	public void postAuthToken(String code) throws Exception
+	{
+		this.authResponse = Communicator.basicJsonMessage("get oauthtoken", "http://pavlok-mvp.herokuapp.com/oauth/token", new OAuthToken(code), OAuthResponse.class, false, null);
+	}
+
+	public void beep(long amount, String reason) throws Exception
 	{
 		log.info("Sending: beep " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("beep", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/beep/" + amount, new Stimuli(amount, NMOConfiguration.instance.pavlokAuth.access_token, reason), null, false, NMOConfiguration.instance.pavlokAuth.access_token);
+		Communicator.basicJsonMessage("beep", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/beep/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
 	}
 
-	public static void vibration(long amount, String reason) throws Exception
+	public void vibration(long amount, String reason) throws Exception
 	{
 		log.info("Sending: vibration " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("vibration", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/vibration/" + amount, new Stimuli(amount, NMOConfiguration.instance.pavlokAuth.access_token, reason), null, false, NMOConfiguration.instance.pavlokAuth.access_token);
+		Communicator.basicJsonMessage("vibration", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/vibration/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
 	}
 
-	public static void shock(long amount, String reason) throws Exception
+	public void shock(long amount, String reason) throws Exception
 	{
 		log.info("Sending: shock " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.instance.pavlokAuth.access_token, reason), null, false, NMOConfiguration.instance.pavlokAuth.access_token);
+		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
 	}
 }

@@ -15,6 +15,11 @@ import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
@@ -139,10 +144,10 @@ public class MainDialog extends Application
 				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
 				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
 				{
-					if (!Noise.isPlaying())
+					if (!IntegrationNoise.isPlaying())
 					{
 						addEvent("5 minutes until next sleep block - playing audio warning");
-						Noise.play(new File(NMOConfiguration.instance.noisePathUpcomingNap), "UPCOMING NAP NOISE");
+						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathUpcomingNap), "UPCOMING NAP NOISE");
 					}
 					lastSleepBlockSoundWarning = nextSleepBlockDetected;
 				}
@@ -194,13 +199,13 @@ public class MainDialog extends Application
 
 		try
 		{
-			Pavlok.vibration(255, "Connection test");
+			IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
 			addEvent("<VIBRATION> Connection test");
 		}
 		catch (Throwable t)
 		{
 			t.printStackTrace();
-			NMOConfiguration.instance.pavlokAuth = null;
+			NMOConfiguration.instance.integrations.pavlok.auth = null;
 		}
 
 		//==================================================================
@@ -234,7 +239,7 @@ public class MainDialog extends Application
 
 				updateNapLoop();
 
-				ControllerTrapper.poll();
+				IntegrationXboxController.INSTANCE.poll();
 
 				now = System.currentTimeMillis();
 				boolean paused = pausedUntil > now;
@@ -254,7 +259,7 @@ public class MainDialog extends Application
 					lastCursorPoint = epoint;
 					nextZapTimeDiff = initialZapTimeDiff;
 				}
-				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.pavlokAuth.created_at + NMOConfiguration.instance.pavlokAuth.expires_in)));
+				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
 				if (paused)
 				{
 					lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
@@ -270,24 +275,24 @@ public class MainDialog extends Application
 					{
 						try
 						{
-							boolean playNoise = !Noise.isPlaying();
+							boolean playNoise = !IntegrationNoise.isPlaying();
 							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
 							if (nextZapTimeDiff == initialZapTimeDiff)
 							{
 								addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								Pavlok.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								if (playNoise)
 								{
-									Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+									IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 								}
 							}
 							else
 							{
 								addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								Pavlok.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+								IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
 								if (playNoise)
 								{
-									Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+									IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 								}
 							}
 						}
@@ -423,7 +428,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Pavlok.beep(255, "Manually triggered beep");
+						IntegrationPavlok.INSTANCE.beep(255, "Manually triggered beep");
 						addEvent("<BEEP> from frontend");
 					}
 					catch (Exception e)
@@ -445,7 +450,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Pavlok.vibration(255, "Manually triggered vibration");
+						IntegrationPavlok.INSTANCE.vibration(255, "Manually triggered vibration");
 						addEvent("<VIBRATION> from frontend");
 					}
 					catch (Exception e)
@@ -467,7 +472,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Pavlok.shock(255, "Manually triggered shock");
+						IntegrationPavlok.INSTANCE.shock(255, "Manually triggered shock");
 						addEvent("<SHOCK> from frontend");
 					}
 					catch (Exception e)
@@ -478,7 +483,7 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, shockButton);
 
-			final Button switchboardButton = new Button("CALL SWITCHBOARD: " + NMOConfiguration.instance.phoneSwitchboard);
+			final Button switchboardButton = new Button("CALL SWITCHBOARD: " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard);
 			switchboardButton.setMinWidth(240);
 			switchboardButton.setMaxWidth(240);
 			switchboardButton.setAlignment(Pos.BASELINE_LEFT);
@@ -490,8 +495,8 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						PhoneControl.callSwitchboard();
-						addEvent("<CALL " + NMOConfiguration.instance.phoneSwitchboard + "> from frontend");
+						IntegrationTwilio.INSTANCE.callSwitchboard();
+						addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard + "> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -501,7 +506,7 @@ public class MainDialog extends Application
 			});
 			innerRightPane.addRow(row++, switchboardButton);
 
-			final Button mobileButton = new Button("CALL MOBILE: " + NMOConfiguration.instance.phoneMobile);
+			final Button mobileButton = new Button("CALL MOBILE: " + NMOConfiguration.instance.integrations.twilio.phoneMobile);
 			mobileButton.setMinWidth(240);
 			mobileButton.setMaxWidth(240);
 			mobileButton.setAlignment(Pos.BASELINE_LEFT);
@@ -513,8 +518,8 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						PhoneControl.callMobile();
-						addEvent("<CALL " + NMOConfiguration.instance.phoneMobile + "> from frontend");
+						IntegrationTwilio.INSTANCE.callMobile();
+						addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneMobile + "> from frontend");
 					}
 					catch (Exception e)
 					{
@@ -536,7 +541,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Noise.play(new File(NMOConfiguration.instance.noisePathLong), "LONG NOISE");
+						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
 						addEvent("<PLAYING LONG NOISE> from frontend");
 					}
 					catch (Exception e)
@@ -559,7 +564,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Noise.play(new File(NMOConfiguration.instance.noisePathShort), "SHORT NOISE");
+						IntegrationNoise.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
 						addEvent("<PLAYING SHORT NOISE> from frontend");
 					}
 					catch (Exception e)
@@ -582,7 +587,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Noise.stop();
+						IntegrationNoise.stop();
 						addEvent("<STOPPING NOISE> from frontend");
 					}
 					catch (Exception e)
@@ -605,7 +610,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Lighting.toggle(true);
+						IntegrationPhilipsHue.INSTANCE.toggle(true);
 						addEvent("<LIGHT ON> from frontend");
 					}
 					catch (Exception e)
@@ -628,7 +633,7 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						Lighting.toggle(false);
+						IntegrationPhilipsHue.INSTANCE.toggle(false);
 						addEvent("<LIGHT OFF> from frontend");
 					}
 					catch (Exception e)
@@ -715,7 +720,7 @@ public class MainDialog extends Application
 		// PAVLOK CRAP
 		//==================================================================
 
-		if (NMOConfiguration.instance.pavlokAuth == null)
+		if (NMOConfiguration.instance.integrations.pavlok.auth == null)
 		{
 			final String url = "https://pavlok-mvp.herokuapp.com/oauth/authorize?client_id=" + Main.CLIENT_ID + "&redirect_uri=" + Main.CLIENT_CALLBACK + "&response_type=code";
 			BorderPane authPane = new BorderPane();
@@ -748,10 +753,10 @@ public class MainDialog extends Application
 									String value = param.split("=")[1];
 									map.put(name, value);
 								}
-								Pavlok.postAuthToken(map.get("code"));
-								NMOConfiguration.instance.pavlokAuth = Pavlok.RESPONSE;
+								IntegrationPavlok.INSTANCE.postAuthToken(map.get("code"));
+								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.INSTANCE.authResponse;
 								Configuration.save();
-								Pavlok.vibration(255, "Connection test");
+								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
 								addEvent("<VIBRATION> Connection test");
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);

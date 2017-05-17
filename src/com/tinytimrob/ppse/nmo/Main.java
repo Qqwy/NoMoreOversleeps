@@ -9,6 +9,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import com.tinytimrob.ppse.nmo.utils.Logging;
@@ -61,17 +64,17 @@ public class Main
 				{
 					AppleHelper.integrate();
 				}
-				KeyboardTrapper.init();
-				ControllerTrapper.init();
+				IntegrationKeyboard.INSTANCE.init();
+				IntegrationXboxController.INSTANCE.init();
 				WebcamCapture.init();
-				Lighting.init();
+				IntegrationPhilipsHue.INSTANCE.init();
 				WebServer.initialize();
 				MainDialog.launch(MainDialog.class, args);
 				WebServer.shutdown();
-				Lighting.shutdown();
+				IntegrationPhilipsHue.INSTANCE.shutdown();
 				WebcamCapture.shutdown();
-				ControllerTrapper.shutdown();
-				KeyboardTrapper.shutdown();
+				IntegrationXboxController.INSTANCE.shutdown();
+				IntegrationKeyboard.INSTANCE.shutdown();
 				Logging.shutdown();
 				MasterLock.release();
 			}
