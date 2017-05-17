@@ -50,6 +50,10 @@ public class NMOConfiguration
 	public String noisePathShort = "";
 
 	@Expose
+	@SerializedName("noisePathUpcomingNap")
+	public String noisePathUpcomingNap = "";
+
+	@Expose
 	@SerializedName("hueBridgeIP")
 	public String hueBridgeIP = "";
 

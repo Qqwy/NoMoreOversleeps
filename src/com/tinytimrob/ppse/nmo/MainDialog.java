@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
@@ -69,6 +70,7 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
+	public static volatile SleepEntry lastSleepBlockSoundWarning = null;
 	public static volatile SleepEntry nextSleepBlock = null;
 	public static volatile String scheduleStatus = "";
 	public static volatile WritableImage writableImage = null;
@@ -83,7 +85,6 @@ public class MainDialog extends Application
 		int currentMinuteOfDay = ((hour * 60) + minute);
 
 		SleepEntry nextSleepBlockDetected = null;
-		Collections.sort(NMOConfiguration.instance.schedule);
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
 			if (entry.containsTime(currentMinuteOfDay) || entry.start >= currentMinuteOfDay)
@@ -110,6 +111,10 @@ public class MainDialog extends Application
 				{
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
+				if (!scheduleStatus.startsWith("SLEEPING"))
+				{
+					addEvent("Entering sleep block: " + nextSleepBlockDetected.name);
+				}
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
 				if (pausedUntil == 0)
 				{
@@ -130,8 +135,17 @@ public class MainDialog extends Application
 				{
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
-				long minutesRemaining = (tims - System.currentTimeMillis()) / 60000;
+				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
+				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
+				{
+					if (!Noise.isPlaying())
+					{
+						addEvent("5 minutes until next sleep block - playing audio warning");
+						Noise.play(new File(NMOConfiguration.instance.noisePathUpcomingNap), "UPCOMING NAP NOISE");
+					}
+					lastSleepBlockSoundWarning = nextSleepBlockDetected;
+				}
 			}
 		}
 		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
@@ -148,7 +162,7 @@ public class MainDialog extends Application
 			{
 				tims += 86400000L; // nap loops over to next day. add 1 day.
 			}
-			long minutesRemaining = (tims - System.currentTimeMillis()) / 60000;
+			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 			addEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minutes");
 		}
 	}
@@ -171,6 +185,13 @@ public class MainDialog extends Application
 	{
 		log.info("JavaFX application start");
 		addEvent("Application started");
+
+		Collections.sort(NMOConfiguration.instance.schedule);
+		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		{
+			addEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"));
+		}
+
 		try
 		{
 			Pavlok.vibration(255, "Connection test");
