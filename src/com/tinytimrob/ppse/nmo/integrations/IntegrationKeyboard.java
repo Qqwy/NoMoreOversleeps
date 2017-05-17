@@ -1,6 +1,8 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
+import java.util.LinkedHashMap;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import lc.kra.system.keyboard.GlobalKeyboardHook;
@@ -51,5 +53,13 @@ public class IntegrationKeyboard extends Integration
 		{
 			this.keyboardHook.shutdownHook();
 		}
+	}
+
+	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
+
+	@Override
+	public LinkedHashMap<String, ClickableButton> getButtons()
+	{
+		return this.buttons;
 	}
 }

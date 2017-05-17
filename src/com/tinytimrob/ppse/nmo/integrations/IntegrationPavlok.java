@@ -1,9 +1,11 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
+import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
@@ -144,5 +146,13 @@ public class IntegrationPavlok extends Integration
 	{
 		log.info("Sending: shock " + amount + " (" + reason + ")");
 		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
+	}
+
+	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
+
+	@Override
+	public LinkedHashMap<String, ClickableButton> getButtons()
+	{
+		return this.buttons;
 	}
 }

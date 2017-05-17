@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
@@ -16,6 +17,7 @@ import com.philips.lighting.model.PHLightState;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationPhilipsHue extends Integration
@@ -174,5 +176,13 @@ public class IntegrationPhilipsHue extends Integration
 			this.sdk.destroySDK();
 			this.sdk = null;
 		}
+	}
+
+	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
+
+	@Override
+	public LinkedHashMap<String, ClickableButton> getButtons()
+	{
+		return this.buttons;
 	}
 }

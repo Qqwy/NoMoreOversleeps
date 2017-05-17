@@ -1,7 +1,9 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -76,5 +78,13 @@ public class IntegrationNoise extends Integration
 			this.player.dispose();
 			this.player = null;
 		}
+	}
+
+	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
+
+	@Override
+	public LinkedHashMap<String, ClickableButton> getButtons()
+	{
+		return this.buttons;
 	}
 }

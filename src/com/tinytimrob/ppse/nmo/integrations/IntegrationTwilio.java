@@ -1,9 +1,11 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.twilio.http.TwilioRestClient;
 import com.twilio.rest.api.v2010.account.Call;
@@ -74,5 +76,13 @@ public class IntegrationTwilio extends Integration
 	public void shutdown()
 	{
 		// TODO Auto-generated method stub
+	}
+
+	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
+
+	@Override
+	public LinkedHashMap<String, ClickableButton> getButtons()
+	{
+		return this.buttons;
 	}
 }
