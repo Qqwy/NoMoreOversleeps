@@ -187,11 +187,9 @@ public class IntegrationPavlok extends Integration
 		// TODO Auto-generated method stub
 	}
 
-	public OAuthResponse authResponse = null;
-
-	public void postAuthToken(String code) throws Exception
+	public static OAuthResponse postAuthToken(String code) throws Exception
 	{
-		this.authResponse = Communicator.basicJsonMessage("get oauthtoken", "http://pavlok-mvp.herokuapp.com/oauth/token", new OAuthToken(code), OAuthResponse.class, false, null);
+		return Communicator.basicJsonMessage("get oauthtoken", "http://pavlok-mvp.herokuapp.com/oauth/token", new OAuthToken(code), OAuthResponse.class, false, null);
 	}
 
 	public void beep(long amount, String reason) throws Exception

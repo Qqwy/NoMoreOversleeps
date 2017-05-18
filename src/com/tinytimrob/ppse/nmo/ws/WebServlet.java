@@ -149,7 +149,7 @@ public class WebServlet extends HttpServlet
 				if (button != null)
 				{
 					button.onAction();
-					MainDialog.addEvent("<" + button.getName() + "> from WEB UI");
+					MainDialog.triggerEvent("<" + button.getName() + "> from WEB UI", null);
 					response.sendRedirect("/");
 					return;
 				}

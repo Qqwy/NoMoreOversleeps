@@ -43,7 +43,7 @@ public class Main
 	static
 	{
 		integrations.add(new IntegrationKeyboard());
-		integrations.add(IntegrationXboxController.INSTANCE);
+		integrations.add(new IntegrationXboxController());
 		integrations.add(IntegrationPavlok.INSTANCE);
 		integrations.add(IntegrationNoise.INSTANCE);
 		integrations.add(IntegrationPhilipsHue.INSTANCE);

@@ -2,7 +2,6 @@ package com.tinytimrob.ppse.nmo;
 
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok.PavlokConfiguration;
@@ -18,8 +17,46 @@ public class NMOConfiguration
 	public int jettyPort = 19992;
 
 	@Expose
-	@SerializedName("schedule")
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
+
+	@Expose
+	public int sleepBlockApproachingTimeMins = 5;
+
+	@Expose
+	public int activityWarningTimeInitialMs = 300000;
+
+	@Expose
+	public int activityWarningTimeIncrementMs = 10000;
+
+	public static class EventConfiguration
+	{
+		@Expose
+		public String[] sleepBlockApproaching = new String[0];
+
+		@Expose
+		public String[] sleepBlockStarted = new String[0];
+
+		@Expose
+		public String[] sleepBlockEnded = new String[0];
+
+		@Expose
+		public String[] activityWarning1 = new String[0];
+
+		@Expose
+		public String[] activityWarning2 = new String[0];
+
+		@Expose
+		public String[] pauseInitiated = new String[0];
+
+		@Expose
+		public String[] pauseCancelled = new String[0];
+
+		@Expose
+		public String[] pauseExpired = new String[0];
+	}
+
+	@Expose
+	public EventConfiguration events = new EventConfiguration();
 
 	public static class IntegrationConfiguration
 	{

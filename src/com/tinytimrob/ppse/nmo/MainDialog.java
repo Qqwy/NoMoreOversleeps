@@ -4,9 +4,11 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +17,6 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -58,12 +59,9 @@ public class MainDialog extends Application
 	private static final Logger log = LogWrapper.getLogger();
 	public static Scene scene;
 
-	// zap every 10 seconds after 5 minutes has passed without the mouse moving
 	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
-	public static volatile long initialActivityWarningTimeDiff = 300000;
-	public static volatile long nextActivityWarningTimeDiff = initialActivityWarningTimeDiff;
-	public static volatile long incrementZapTimeDiff = 10000;
+	public static volatile long nextActivityWarningTimeDiff;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
@@ -72,36 +70,25 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
-	public static volatile SleepEntry lastSleepBlockSoundWarning = null;
+	public static volatile SleepEntry lastSleepBlockWarning = null;
 	public static volatile SleepEntry nextSleepBlock = null;
 	public static volatile String scheduleStatus = "";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static volatile int tick = 0;
 
-	public static void addEvent(final String event)
-	{
-		log.info("APPEVENT: " + event);
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + event);
-			}
-		});
-	}
-
 	@Override
 	public void start(Stage stage) throws Exception
 	{
 		log.info("JavaFX application start");
-		addEvent("Application started");
+		triggerEvent("Application started", null);
+
+		nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
 
 		Collections.sort(NMOConfiguration.instance.schedule);
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
-			addEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"));
+			triggerEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"), null);
 		}
 
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
@@ -109,7 +96,7 @@ public class MainDialog extends Application
 			try
 			{
 				IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
-				addEvent("<VIBRATION> Connection test");
+				triggerEvent("<VIBRATION> Connection test", null);
 			}
 			catch (Throwable t)
 			{
@@ -227,7 +214,7 @@ public class MainDialog extends Application
 		rightPaneI.setTop(webcamPane);
 
 		final GridPane innerRightPane = new GridPane();
-		{ // Manual Pavlok controls
+		{ // Manual controls
 			int row = 0;
 			innerRightPane.setMinWidth(260);
 			innerRightPane.setMaxWidth(260);
@@ -258,7 +245,7 @@ public class MainDialog extends Application
 							try
 							{
 								clickableButton.onAction();
-								addEvent("<" + clickableButton.getName() + "> from frontend");
+								triggerEvent("<" + clickableButton.getName() + "> from frontend", null);
 							}
 							catch (Exception e)
 							{
@@ -311,7 +298,7 @@ public class MainDialog extends Application
 							long now = System.currentTimeMillis();
 							pausedUntil = now + (pp * 60000);
 							pauseReason = result.get();
-							addEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"");
+							triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
 						}
 					}
 				});
@@ -333,7 +320,7 @@ public class MainDialog extends Application
 				{
 					pausedUntil = 0;
 					isCurrentlyPaused.set(false);
-					addEvent("Unpaused manually");
+					triggerEvent("Unpaused manually", NMOConfiguration.instance.events.pauseCancelled);
 				}
 			});
 			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
@@ -379,11 +366,10 @@ public class MainDialog extends Application
 									String value = param.split("=")[1];
 									map.put(name, value);
 								}
-								IntegrationPavlok.INSTANCE.postAuthToken(map.get("code"));
-								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.INSTANCE.authResponse;
+								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.postAuthToken(map.get("code"));
 								Configuration.save();
 								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
-								addEvent("<VIBRATION> Connection test");
+								triggerEvent("<VIBRATION> Connection test", null);
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);
 								at.start();
@@ -460,12 +446,12 @@ public class MainDialog extends Application
 				}
 				if (!scheduleStatus.startsWith("SLEEPING"))
 				{
-					addEvent("Entering sleep block: " + nextSleepBlockDetected.name);
+					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
 				if (!paused)
 				{
-					addEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started");
+					triggerEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started", null);
 					paused = true;
 					pausedUntil = tims;
 					pauseReason = "Sleep block: " + nextSleepBlockDetected.name;
@@ -484,15 +470,11 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
-				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
+				scheduleStatus = "AWAKE [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
+				if (minutesRemaining == 5 && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
-					if (!IntegrationNoise.INSTANCE.isPlaying())
-					{
-						addEvent("5 minutes until next sleep block - playing audio warning");
-						IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[2]);
-					}
-					lastSleepBlockSoundWarning = nextSleepBlockDetected;
+					triggerEvent("5 minutes until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
+					lastSleepBlockWarning = nextSleepBlockDetected;
 				}
 			}
 		}
@@ -511,13 +493,13 @@ public class MainDialog extends Application
 				tims += 86400000L; // nap loops over to next day. add 1 day.
 			}
 			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-			addEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minutes");
+			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), NMOConfiguration.instance.events.sleepBlockEnded);
 		}
 		boolean wasPaused = isCurrentlyPaused.get();
 		isCurrentlyPaused.set(paused);
 		if (!paused && wasPaused)
 		{
-			addEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired");
+			triggerEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired", NMOConfiguration.instance.events.pauseExpired);
 		}
 
 		for (Integration integration : Main.integrations)
@@ -528,7 +510,6 @@ public class MainDialog extends Application
 			}
 			catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -539,7 +520,7 @@ public class MainDialog extends Application
 		{
 			lastActivityTime = now;
 			lastCursorPoint = epoint;
-			nextActivityWarningTimeDiff = initialActivityWarningTimeDiff;
+			nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
 		}
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
@@ -560,34 +541,23 @@ public class MainDialog extends Application
 			{
 				try
 				{
-					boolean playNoise = !IntegrationNoise.INSTANCE.isPlaying();
-					// the first time, you get a vibration instead of a zap, just in case you forgot to pause
-					if (nextActivityWarningTimeDiff == initialActivityWarningTimeDiff)
+					// the first time, you get an alternative lighter warning, just in case you forgot to pause
+					if (nextActivityWarningTimeDiff == NMOConfiguration.instance.activityWarningTimeInitialMs)
 					{
-						addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
-						IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
-						if (playNoise)
-						{
-							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
-						}
+						triggerEvent("No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds", NMOConfiguration.instance.events.activityWarning1);
 					}
 					else
 					{
-						addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
-						IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
-						if (playNoise)
-						{
-							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
-						}
+						triggerEvent("No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds", NMOConfiguration.instance.events.activityWarning2);
 					}
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-				nextActivityWarningTimeDiff += incrementZapTimeDiff;
+				nextActivityWarningTimeDiff += NMOConfiguration.instance.activityWarningTimeIncrementMs;
 			}
-			timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextActivityWarningTimeDiff + ")");
+			timeDiffString.set("Time difference: " + timeDiff + " (next activity warning: " + nextActivityWarningTimeDiff + ")");
 		}
 
 		try
@@ -604,5 +574,49 @@ public class MainDialog extends Application
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static void triggerEvent(String eventDescription, String[] actionArray)
+	{
+		ArrayList<Action> actionsByLookup = new ArrayList<Action>();
+		String actionString = "";
+		if (actionArray != null)
+		{
+			actionLoop: for (String action : actionArray)
+			{
+				for (Integration integration : Main.integrations)
+				{
+					LinkedHashMap<String, Action> iactions = integration.getActions();
+					Action aaction = iactions.get(action);
+					if (aaction != null)
+					{
+						actionsByLookup.add(aaction);
+						actionString += (actionString.isEmpty() ? "" : ", ") + aaction.getName();
+						continue actionLoop;
+					}
+				}
+			}
+			for (Action aaction : actionsByLookup)
+			{
+				try
+				{
+					aaction.onAction();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		final String eventString = (actionString.isEmpty() ? "" : "<" + actionString + "> ") + eventDescription;
+		log.info("APPEVENT: " + eventString);
+		Platform.runLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + eventString);
+			}
+		});
 	}
 }
