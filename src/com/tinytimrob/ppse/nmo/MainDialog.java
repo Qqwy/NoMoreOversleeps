@@ -104,15 +104,18 @@ public class MainDialog extends Application
 			addEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"));
 		}
 
-		try
+		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
-			IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
-			addEvent("<VIBRATION> Connection test");
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-			NMOConfiguration.instance.integrations.pavlok.auth = null;
+			try
+			{
+				IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
+				addEvent("<VIBRATION> Connection test");
+			}
+			catch (Throwable t)
+			{
+				t.printStackTrace();
+				NMOConfiguration.instance.integrations.pavlok.auth = null;
+			}
 		}
 
 		//==================================================================
@@ -343,7 +346,7 @@ public class MainDialog extends Application
 		// PAVLOK CRAP
 		//==================================================================
 
-		if (NMOConfiguration.instance.integrations.pavlok.auth == null)
+		if (NMOConfiguration.instance.integrations.pavlok.enabled && NMOConfiguration.instance.integrations.pavlok.auth == null)
 		{
 			final String url = "https://pavlok-mvp.herokuapp.com/oauth/authorize?client_id=" + Main.CLIENT_ID + "&redirect_uri=" + Main.CLIENT_CALLBACK + "&response_type=code";
 			BorderPane authPane = new BorderPane();
