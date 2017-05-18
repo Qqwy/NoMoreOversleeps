@@ -55,7 +55,7 @@ watch your feed.
 
 Some ideas I've had include:
 
-* Better GUI to allow for configuration of the software without having to 
+* Better GUI to allow for configuration of the software without having to edit the config file by hand
 * Load the sleep schedule from a Napchart link rather than having to configure it by hand
 * GPS tracking of phone so you can see where someone is if they aren't at their computer
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
