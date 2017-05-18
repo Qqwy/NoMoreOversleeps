@@ -13,8 +13,16 @@ import com.twilio.type.PhoneNumber;
 
 public class IntegrationTwilio extends Integration
 {
-	public static IntegrationTwilio INSTANCE = new IntegrationTwilio();
 	private static final Logger log = LogWrapper.getLogger();
+
+	public static class StoredPhoneNumber
+	{
+		@Expose
+		public String name;
+
+		@Expose
+		public String number;
+	}
 
 	public static class TwilioConfiguration
 	{
@@ -34,10 +42,7 @@ public class IntegrationTwilio extends Integration
 		public String callingURI = "http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient";
 
 		@Expose
-		public String phoneSwitchboard = "";
-
-		@Expose
-		public String phoneMobile = "";
+		public StoredPhoneNumber[] phoneNumbers = new StoredPhoneNumber[0];
 	}
 
 	public void call(String fromS, String toS)
@@ -50,14 +55,9 @@ public class IntegrationTwilio extends Integration
 		log.info("Call from " + fromS + " to " + toS + " executed with SID " + call.getSid());
 	}
 
-	public void callSwitchboard()
+	public void call(StoredPhoneNumber number)
 	{
-		this.call(NMOConfiguration.instance.integrations.twilio.numberFrom, NMOConfiguration.instance.integrations.twilio.phoneSwitchboard);
-	}
-
-	public void callMobile()
-	{
-		this.call(NMOConfiguration.instance.integrations.twilio.numberFrom, NMOConfiguration.instance.integrations.twilio.phoneMobile);
+		this.call(NMOConfiguration.instance.integrations.twilio.numberFrom, number.number);
 	}
 
 	@Override
@@ -69,7 +69,24 @@ public class IntegrationTwilio extends Integration
 	@Override
 	public void init()
 	{
-		// TODO Auto-generated method stub
+		for (int i = 0; i < NMOConfiguration.instance.integrations.twilio.phoneNumbers.length; i++)
+		{
+			final StoredPhoneNumber number = NMOConfiguration.instance.integrations.twilio.phoneNumbers[i];
+			this.buttons.put("/twilio/" + i, new ClickableButton()
+			{
+				@Override
+				public String getName()
+				{
+					return "TWILIO " + number.name + ": " + number.number;
+				}
+
+				@Override
+				public void onButtonPress() throws Exception
+				{
+					IntegrationTwilio.this.call(number);
+				}
+			});
+		}
 	}
 
 	@Override

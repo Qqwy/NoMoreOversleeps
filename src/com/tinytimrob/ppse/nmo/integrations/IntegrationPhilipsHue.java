@@ -50,6 +50,35 @@ public class IntegrationPhilipsHue extends Integration
 	@Override
 	public void init()
 	{
+		this.buttons.put("/philipshue/on", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationPhilipsHue.this.toggle(true);
+			}
+
+			@Override
+			public String getName()
+			{
+				return "LIGHT ON";
+			}
+		});
+		this.buttons.put("/philipshue/off", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationPhilipsHue.this.toggle(false);
+			}
+
+			@Override
+			public String getName()
+			{
+				return "LIGHT OFF";
+			}
+		});
+
 		this.sdk = PHHueSDK.getInstance();
 		this.sdk.setAppName("NoMoreOversleeps");
 		this.sdk.setDeviceName(PlatformData.computerName);

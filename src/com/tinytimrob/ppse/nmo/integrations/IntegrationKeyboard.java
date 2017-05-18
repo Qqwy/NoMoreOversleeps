@@ -11,7 +11,6 @@ import lc.kra.system.keyboard.event.GlobalKeyEvent;
 
 public class IntegrationKeyboard extends Integration
 {
-	public static IntegrationKeyboard INSTANCE = new IntegrationKeyboard();
 	GlobalKeyboardHook keyboardHook;
 
 	public static class KeyboardConfiguration

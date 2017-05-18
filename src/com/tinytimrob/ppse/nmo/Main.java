@@ -3,14 +3,20 @@ package com.tinytimrob.ppse.nmo;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
+import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
@@ -30,6 +36,19 @@ public class Main
 	public static String CLIENT_ID = "daf97645073a9cb9e0deefdc9fc9d6a4ac7ebeabd67e65268e1cbdfd6165eb85";
 	public static String CLIENT_SECRET = "48cd03c31a0f1df56403bf5368ea2245df11887c8289079ce02b1025e43c82c0";
 	public static String CLIENT_CALLBACK = "https://www.tinytimrob.com/nmo-oauth-intercept";
+
+	//-------------------------------------------
+
+	public static final ArrayList<Integration> integrations = new ArrayList<Integration>();
+	static
+	{
+		integrations.add(new IntegrationKeyboard());
+		integrations.add(IntegrationXboxController.INSTANCE);
+		integrations.add(IntegrationPavlok.INSTANCE);
+		integrations.add(IntegrationNoise.INSTANCE);
+		integrations.add(IntegrationPhilipsHue.INSTANCE);
+		integrations.add(new IntegrationTwilio());
+	}
 
 	//-------------------------------------------
 
@@ -64,17 +83,26 @@ public class Main
 				{
 					AppleHelper.integrate();
 				}
-				IntegrationKeyboard.INSTANCE.init();
-				IntegrationXboxController.INSTANCE.init();
 				WebcamCapture.init();
-				IntegrationPhilipsHue.INSTANCE.init();
+				for (Integration integration : integrations)
+				{
+					if (integration.isEnabled())
+					{
+						integration.init();
+					}
+				}
 				WebServer.initialize();
 				MainDialog.launch(MainDialog.class, args);
 				WebServer.shutdown();
-				IntegrationPhilipsHue.INSTANCE.shutdown();
+				Collections.reverse(integrations);
+				for (Integration integration : integrations)
+				{
+					if (integration.isEnabled())
+					{
+						integration.shutdown();
+					}
+				}
 				WebcamCapture.shutdown();
-				IntegrationXboxController.INSTANCE.shutdown();
-				IntegrationKeyboard.INSTANCE.shutdown();
 				Logging.shutdown();
 				MasterLock.release();
 			}
@@ -90,6 +118,7 @@ public class Main
 			String message = e2.getClass().getName() + ": " + e2.getMessage();
 			e2.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Unrecoverable error: " + message + "\nNoMoreOversleeps will now close.", "NoMoreOversleeps", JOptionPane.ERROR_MESSAGE);
+			System.exit(-1);
 		}
 	}
 

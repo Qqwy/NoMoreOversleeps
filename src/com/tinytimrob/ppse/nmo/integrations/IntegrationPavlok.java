@@ -114,7 +114,48 @@ public class IntegrationPavlok extends Integration
 	@Override
 	public void init()
 	{
-		// TODO Auto-generated method stub
+		this.buttons.put("/pavlok/beep", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationPavlok.this.beep(255, "Manually triggered beep");
+			}
+
+			@Override
+			public String getName()
+			{
+				return "BEEP PAVLOK";
+			}
+		});
+		this.buttons.put("/pavlok/vibration", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationPavlok.this.vibration(255, "Manually triggered vibration");
+			}
+
+			@Override
+			public String getName()
+			{
+				return "VIBRATE PAVLOK";
+			}
+		});
+		this.buttons.put("/pavlok/shock", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationPavlok.this.shock(255, "Manually triggered shock");
+			}
+
+			@Override
+			public String getName()
+			{
+				return "SHOCK PAVLOK";
+			}
+		});
 	}
 
 	@Override

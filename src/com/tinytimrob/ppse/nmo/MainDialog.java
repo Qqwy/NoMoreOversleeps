@@ -15,10 +15,9 @@ import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -418,233 +417,39 @@ public class MainDialog extends Application
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
-			final Button beepButton = JavaFxHelper.createButton("BEEP PAVLOK", JavaFxHelper.createIcon(FontAwesomeIcon.VOLUME_UP, "12", Color.BLACK));
-			beepButton.setMinWidth(240);
-			beepButton.setMaxWidth(240);
-			beepButton.setAlignment(Pos.BASELINE_LEFT);
-			beepButton.setContentDisplay(ContentDisplay.RIGHT);
-			beepButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationPavlok.INSTANCE.beep(255, "Manually triggered beep");
-						addEvent("<BEEP> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, beepButton);
-			final Button vibrateButton = new Button("VIBRATE PAVLOK");
-			vibrateButton.setMinWidth(240);
-			vibrateButton.setMaxWidth(240);
-			vibrateButton.setAlignment(Pos.BASELINE_LEFT);
-			vibrateButton.setContentDisplay(ContentDisplay.RIGHT);
-			vibrateButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationPavlok.INSTANCE.vibration(255, "Manually triggered vibration");
-						addEvent("<VIBRATION> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, vibrateButton);
-			final Button shockButton = new Button("SHOCK PAVLOK");
-			shockButton.setMinWidth(240);
-			shockButton.setMaxWidth(240);
-			shockButton.setAlignment(Pos.BASELINE_LEFT);
-			shockButton.setContentDisplay(ContentDisplay.RIGHT);
-			shockButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationPavlok.INSTANCE.shock(255, "Manually triggered shock");
-						addEvent("<SHOCK> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, shockButton);
 
-			final Button switchboardButton = new Button("CALL SWITCHBOARD: " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard);
-			switchboardButton.setMinWidth(240);
-			switchboardButton.setMaxWidth(240);
-			switchboardButton.setAlignment(Pos.BASELINE_LEFT);
-			switchboardButton.setContentDisplay(ContentDisplay.RIGHT);
-			switchboardButton.setOnAction(new EventHandler<ActionEvent>()
+			// Integration buttons
+			for (Integration integration : Main.integrations)
 			{
-				@Override
-				public void handle(ActionEvent arg0)
+				System.out.println(integration);
+				for (String buttonKey : integration.getButtons().keySet())
 				{
-					try
+					System.out.println("*" + buttonKey);
+					final ClickableButton clickableButton = integration.getButtons().get(buttonKey);
+					final Button jfxButton = new Button(clickableButton.getName());
+					jfxButton.setMinWidth(240);
+					jfxButton.setMaxWidth(240);
+					jfxButton.setAlignment(Pos.BASELINE_LEFT);
+					jfxButton.setContentDisplay(ContentDisplay.RIGHT);
+					jfxButton.setOnAction(new EventHandler<ActionEvent>()
 					{
-						IntegrationTwilio.INSTANCE.callSwitchboard();
-						addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard + "> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+						@Override
+						public void handle(ActionEvent arg0)
+						{
+							try
+							{
+								clickableButton.onButtonPress();
+								addEvent("<" + clickableButton.getName() + "> from frontend");
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					});
+					innerRightPane.addRow(row++, jfxButton);
 				}
-			});
-			innerRightPane.addRow(row++, switchboardButton);
-
-			final Button mobileButton = new Button("CALL MOBILE: " + NMOConfiguration.instance.integrations.twilio.phoneMobile);
-			mobileButton.setMinWidth(240);
-			mobileButton.setMaxWidth(240);
-			mobileButton.setAlignment(Pos.BASELINE_LEFT);
-			mobileButton.setContentDisplay(ContentDisplay.RIGHT);
-			mobileButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationTwilio.INSTANCE.callMobile();
-						addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneMobile + "> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, mobileButton);
-
-			final Button noiseButtonLong = new Button("PLAY LONG NOISE");
-			noiseButtonLong.setMinWidth(240);
-			noiseButtonLong.setMaxWidth(240);
-			noiseButtonLong.setAlignment(Pos.BASELINE_LEFT);
-			noiseButtonLong.setContentDisplay(ContentDisplay.RIGHT);
-			noiseButtonLong.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
-						addEvent("<PLAYING LONG NOISE> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, noiseButtonLong);
-
-			final Button noiseButtonShort = new Button("PLAY SHORT NOISE");
-			noiseButtonShort.setMinWidth(240);
-			noiseButtonShort.setMaxWidth(240);
-			noiseButtonShort.setAlignment(Pos.BASELINE_LEFT);
-			noiseButtonShort.setContentDisplay(ContentDisplay.RIGHT);
-			noiseButtonShort.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
-						addEvent("<PLAYING SHORT NOISE> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, noiseButtonShort);
-
-			final Button noiseStopButton = new Button("STOP NOISE");
-			noiseStopButton.setMinWidth(240);
-			noiseStopButton.setMaxWidth(240);
-			noiseStopButton.setAlignment(Pos.BASELINE_LEFT);
-			noiseStopButton.setContentDisplay(ContentDisplay.RIGHT);
-			noiseStopButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationNoise.INSTANCE.stop();
-						addEvent("<STOPPING NOISE> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, noiseStopButton);
-
-			final Button lightOnButton = new Button("LIGHT ON");
-			lightOnButton.setMinWidth(240);
-			lightOnButton.setMaxWidth(240);
-			lightOnButton.setAlignment(Pos.BASELINE_LEFT);
-			lightOnButton.setContentDisplay(ContentDisplay.RIGHT);
-			lightOnButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationPhilipsHue.INSTANCE.toggle(true);
-						addEvent("<LIGHT ON> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, lightOnButton);
-
-			final Button lightOffButton = new Button("LIGHT OFF");
-			lightOffButton.setMinWidth(240);
-			lightOffButton.setMaxWidth(240);
-			lightOffButton.setAlignment(Pos.BASELINE_LEFT);
-			lightOffButton.setContentDisplay(ContentDisplay.RIGHT);
-			lightOffButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					try
-					{
-						IntegrationPhilipsHue.INSTANCE.toggle(false);
-						addEvent("<LIGHT OFF> from frontend");
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			});
-			innerRightPane.addRow(row++, lightOffButton);
+			}
 
 			// Pause controls
 			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);

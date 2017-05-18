@@ -66,39 +66,39 @@ form {
   </table>
   <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
-  <form method="POST" action="/beep">
+  <form method="POST" action="/pavlok/beep">
       <button type="submit" class="btn btn-danger" style="width:93px;">BEEP</button>
   </form>
-  <form method="POST" action="/vibration">
+  <form method="POST" action="/pavlok/vibration">
       <button type="submit" class="btn btn-danger" style="width:93px;">VIBRATE</button>
   </form>
-  <form method="POST" action="/shock">
+  <form method="POST" action="/pavlok/shock">
       <button type="submit" class="btn btn-danger" style="width:93px;">SHOCK</button>
   </form>
   <div></div>
-  <form method="POST" action="/noise">
+  <form method="POST" action="/noise/long">
       <button type="submit" class="btn btn-info" style="width:141px;">LONG NOISE</button>
   </form>
-  <form method="POST" action="/noise2">
+  <form method="POST" action="/noise/short">
       <button type="submit" class="btn btn-info" style="width:141px;">SHORT NOISE</button>
   </form>
   <div></div>
-  <form method="POST" action="/noise_off">
+  <form method="POST" action="/noise/stop">
       <button type="submit" class="btn btn-info" style="width:286px;">TURN OFF NOISE</button>
   </form> 
   <div></div>
-  <form method="POST" action="/light_on">
+  <form method="POST" action="/philipshue/on">
       <button type="submit" class="btn btn-success" style="width:141px;">LIGHT ON</button>
   </form>
-  <form method="POST" action="/light_off">
+  <form method="POST" action="/philipshue/off">
       <button type="submit" class="btn btn-success" style="width:141px;">LIGHT OFF</button>
   </form> 
   <div></div>
-  <form method="POST" action="/call_switchboard">
+  <form method="POST" action="/twilio/0">
       <button type="submit" class="btn btn-primary" style="width:286px;">CALL SWITCHBOARD: ${phoneSwitchboard}</button>
   </form>
   <div></div>
-  <form method="POST" action="/call_mobile">
+  <form method="POST" action="/twilio/1">
       <button type="submit" class="btn btn-primary" style="width:286px;">CALL MOBILE: ${phoneMobile}</button>
   </form>
   <div></div>
@@ -163,7 +163,7 @@ $(document).ready(function() {
 	};
 	ws.onerror = function(err) {
 		if (typeof console !== 'undefined') {
-			console.info('WS error');
+			console.info('WS error ' + err.data + ' ' + err.code + ' ' + err.message + ' ' + err + ' ' + err.detail + ' ' + err.originalEvent);
 		}
 	};
 });

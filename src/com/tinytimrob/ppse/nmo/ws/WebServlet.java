@@ -1,6 +1,5 @@
 package com.tinytimrob.ppse.nmo.ws;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -11,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -96,8 +95,8 @@ public class WebServlet extends HttpServlet
 			// send main web page
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("version", Main.VERSION);
-			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneSwitchboard);
-			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneMobile);
+			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneNumbers[0].number);
+			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneNumbers[1].number);
 			try
 			{
 				WebTemplate.renderTemplate("nmo.ftl", response, model);
@@ -120,70 +119,18 @@ public class WebServlet extends HttpServlet
 		try
 		{
 			String PATH = request.getPathInfo();
-			if (PATH.equals("/beep"))
+			for (Integration integrations : Main.integrations)
 			{
-				IntegrationPavlok.INSTANCE.beep(255, "WEB UI remotely triggered beep");
-				MainDialog.addEvent("<BEEP> from WEB UI");
-				response.sendRedirect("/");
+				ClickableButton button = integrations.getButtons().get(PATH);
+				if (button != null)
+				{
+					button.onButtonPress();
+					MainDialog.addEvent("<" + button.getName() + "> from WEB UI");
+					response.sendRedirect("/");
+					return;
+				}
 			}
-			else if (PATH.equals("/vibration"))
-			{
-				IntegrationPavlok.INSTANCE.vibration(255, "WEB UI remotely triggered vibration");
-				MainDialog.addEvent("<VIBRATION> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/shock"))
-			{
-				IntegrationPavlok.INSTANCE.shock(255, "WEB UI remotely triggered shock");
-				MainDialog.addEvent("<SHOCK> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/call_switchboard"))
-			{
-				IntegrationTwilio.INSTANCE.callSwitchboard();
-				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneSwitchboard + "> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/call_mobile"))
-			{
-				IntegrationTwilio.INSTANCE.callMobile();
-				MainDialog.addEvent("<CALL " + NMOConfiguration.instance.integrations.twilio.phoneMobile + "> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/noise"))
-			{
-				IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), "LONG NOISE");
-				MainDialog.addEvent("<PLAYING LONG NOISE> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/noise2"))
-			{
-				IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
-				MainDialog.addEvent("<PLAYING SHORT NOISE> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/noise_off"))
-			{
-				IntegrationNoise.INSTANCE.stop();
-				MainDialog.addEvent("<STOPPING NOISE> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/light_on"))
-			{
-				IntegrationPhilipsHue.INSTANCE.toggle(true);
-				MainDialog.addEvent("<LIGHT ON> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else if (PATH.equals("/light_off"))
-			{
-				IntegrationPhilipsHue.INSTANCE.toggle(false);
-				MainDialog.addEvent("<LIGHT OFF> from WEB UI");
-				response.sendRedirect("/");
-			}
-			else
-			{
-				response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-			}
+			response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 		}
 		catch (Throwable t)
 		{

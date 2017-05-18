@@ -39,7 +39,48 @@ public class IntegrationNoise extends Integration
 	@Override
 	public void init()
 	{
-		// TODO Auto-generated method stub
+		this.buttons.put("/noise/long", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationNoise.this.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), this.getName());
+			}
+
+			@Override
+			public String getName()
+			{
+				return "LONG NOISE";
+			}
+		});
+		this.buttons.put("/noise/short", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationNoise.this.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), this.getName());
+			}
+
+			@Override
+			public String getName()
+			{
+				return "SHORT NOISE";
+			}
+		});
+		this.buttons.put("/noise/stop", new ClickableButton()
+		{
+			@Override
+			public void onButtonPress() throws Exception
+			{
+				IntegrationNoise.this.stop();
+			}
+
+			@Override
+			public String getName()
+			{
+				return "TURN OFF NOISE";
+			}
+		});
 	}
 
 	@Override
