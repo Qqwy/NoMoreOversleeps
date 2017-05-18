@@ -5,14 +5,20 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import org.apache.logging.log4j.Logger;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamImageTransformer;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.common.Configuration;
+import com.tinytimrob.common.LogWrapper;
 
 public class WebcamCapture
 {
+	private static final Logger log = LogWrapper.getLogger();
+
 	public static class WebcamTransformer implements WebcamImageTransformer
 	{
 		private static final JHGrayFilter GRAY = new JHGrayFilter();
@@ -34,14 +40,50 @@ public class WebcamCapture
 		}
 	}
 
-	static Webcam webcam;
+	static Webcam webcam = null;
 
 	public static void init()
 	{
-		webcam = Webcam.getDefault();
+		List<Webcam> cams = Webcam.getWebcams();
+		for (Webcam cam : cams)
+		{
+			log.info("Found webcam: " + cam.getName());
+			if (cam.getName().equals(NMOConfiguration.instance.webcamName))
+			{
+				webcam = cam;
+			}
+		}
+		if (webcam == null)
+		{
+			webcam = Webcam.getDefault();
+			NMOConfiguration.instance.webcamName = webcam.getName();
+			try
+			{
+				Configuration.save();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		log.info("Webcam selected: " + webcam.getName());
 		webcam.setImageTransformer(new WebcamTransformer());
 		Dimension[] sizes = webcam.getViewSizes();
-		webcam.setViewSize(sizes[sizes.length - 2]);
+		Dimension dimension = null;
+		for (Dimension d : sizes)
+		{
+			log.info("Found image dimension: " + d.getWidth() + "x" + d.getHeight());
+			if (d.getWidth() == 320)
+			{
+				dimension = d;
+			}
+		}
+		if (dimension == null)
+		{
+			dimension = sizes[0];
+		}
+		log.info("Selected image dimension: " + dimension.getWidth() + "x" + dimension.getHeight());
+		webcam.setViewSize(dimension);
 		webcam.open(true);
 		System.out.println(webcam.getViewSize());
 	}

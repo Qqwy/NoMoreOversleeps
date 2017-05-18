@@ -17,6 +17,9 @@ public class NMOConfiguration
 	public int jettyPort = 19992;
 
 	@Expose
+	public String webcamName = "";
+
+	@Expose
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
 
 	@Expose
