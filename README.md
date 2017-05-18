@@ -1,43 +1,50 @@
 # NoMoreOversleeps #
 
-NoMoreOversleeps is a very simple JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule.
-
-This application was created only for my own use and is largely a work in progress, so the implementation is currently very crude and makes lots of assumptions (e.g. if you 
-don't own a Pavlok you can't even use the application right now). In the future it would be nice to turn this into a general-purpose tool to help people adapt to and track
-their sleeping schedules.
+NoMoreOversleeps is a very simple JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule. It was originally created only for my own use, so some parts
+of the software are a little crude, but I'm slowly working on improving it to make it more suitable for use by others. Hopefully you can find it helpful for your own polyphasic adaptations.
 
 ### Features ###
 
-#### Activity tracking ####
+NoMoreOversleeps consists of two parts - an automated background monitor and a manual remote control. The automated part will try to wake you back up if it thinks you are asleep when
+you shouldn't be. The manual portion offers the ability for a third party to monitor you remotely, so that they can do the same. In this way, you have the advantage of both a computer
+and a human (or more than one) being able to monitor you, which will hopefully allow you to avoid any unwanted oversleeps.
 
-After setting up your sleep schedule in the configuration file, NoMoreOversleeps monitors activity of input devices on your computer (currently supporting keyboard, mouse and
-Xbox360-compatible controllers) and will try to get your attention every 10 seconds if it fails to detect activity in any of those devices within a 5 minute interval. This
-is useful in case you fall asleep at the wrong time or fail to wake up on time.
+Most parts of the program are configurable, with the number of customization options being slowly expanded. The software goes with a modular approach, allowing both the automated tracking
+system and the selection of wake-up actions to be tailored to your needs as desired.
 
-Supported attention methods are as follows:
+#### Automated monitoring ####
 
-* Send vibrate (on first warning) and then shock (on subsequent warnings) to a Pavlok
-* Play a noise of your choice out of computer speakers/headphones
+To determine if you are asleep when you shouldn't be, NoMoreOversleeps takes a look at your sleeping schedule and compares it with the system clock. If it is currently a time when you
+should be awake, NoMoreOversleeps monitors the activity of input devices on your computer (currently supporting keyboard, mouse and Xbox360-compatible controllers) and will try to get
+your attention every X seconds if it fails to detect activity in any of those devices within a Y minute interval. The number of seconds, the detection interval and the method used to get
+your attention can be customized as desired.
 
 In the event you are deliberately going to be away from your computer for a certain amount of time, e.g. you're going shopping or going to work, you can pause the activity detection
-feature of NoMoreOversleeps for a choosable length of time. This will prevent NoMoreOversleeps from trying to get your attention. The pause function is also automatically activated
-at the start of each sleep block, lasting for the duration of that block, in order to avoid a scenario where you go to sleep on time but get woken up mid-nap because you forgot to
-pause the activity tracking.
+feature of NoMoreOversleeps for a choosable length of time between 5 minutes and 12 hours. This will prevent NoMoreOversleeps from trying to get your attention. When pausing the
+automated monitoring system, you are required to input the reason for the pause.
 
-#### Audio warning of upcoming sleep block ####
+The pause function is also automatically activated during each of your sleep blocks in order to avoid a scenario where you go to sleep on time but get woken up mid-nap because you
+forgot to pause the activity tracking.
 
-An audio warning of your choice will be played out of computer speakers/headphones 5 minutes before each sleep block so that you remember to go to sleep on time.
+An action of your choice can also be automatically performed X minutes before each sleep block starts so that you remember to go to sleep on time.
 
-#### Web frontend ####
+#### Manual monitoring ####
 
-NoMoreOversleeps features a port-forwardable password-protected web UI with a live webcam feed, along with buttons to get your attention in various ways:
+NoMoreOversleeps features a port-forwardable password-protected web UI which displays what part of your sleep schedule you are currently in, along with a live webcam feed. This allows
+people to remotely monitoring you, and to see whether or not you are at your computer, along with how awake you are, if you're nodding off in front of your screen, etc.
 
-* Send beep/vibrate/shock to a Pavlok
-* Call your phone numbers using Twilio
-* Play a noise out of computer speakers/headphones
-* Turn Philips Hue smart light bulbs on and off
+In the event that the people who are monitoring you think that you're asleep at the wrong time, they can perform any of the actions you have configured to try and wake you up.
 
-This gives people the ability attempt to wake you up via whatever means they feel is necessary if you appear to be oversleeping.
+#### Configurable actions ####
+
+The following actions can currently be configured for use with both automated and manual monitoring:
+
+* **Noise/Sound playback**: configure any number of sounds of your choice
+* **Pavlok**: Beep, vibrate or shock
+* **Twilio**: Call a phone number (e.g. your mobile)
+* **Philips Hue smart light bulbs**: Turn the light bulbs on or off
+
+In the future the list of supported actions will hopefully be expanded.
 
 ### Best usage ###
 
@@ -48,12 +55,10 @@ watch your feed.
 
 Some ideas I've had include:
 
-* Better GUI to allow for more flexible configuration of the software
+* Better GUI to allow for configuration of the software without having to 
 * Load the sleep schedule from a Napchart link rather than having to configure it by hand
-* Plugin/extensibility system so that people can add their own integrations into the software
 * GPS tracking of phone so you can see where someone is if they aren't at their computer
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
-* Automate the phone call and lighting control if you fail to wake up
 * Send a message to the polysleeping Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
 * Food tracker so you can monitor what you're eating in case this affects your sleep schedule
 * Productivity tracker so you can input what you're doing in each sleep block to avoid wasting time
@@ -65,8 +70,6 @@ I probably won't implement most of these, but we will see.
 
 * The RAM usage is too high. There may be a possible memory leak somewhere I haven't found. It appears to be related to the webcam code, as it worked fine prior to that :/
 * Some features only work on Windows. For other platforms YMMV. It is possible that right now the application even would just crash out on other platforms or be largely unusable (because I haven't tested it).
-* I designed this only for my own usage, so the application is currently not very configurable.
-* If you don't have a Pavlok you can't access the application frontend at all because you get stuck on the Pavlok login screen.
 * When your login key to Pavlok API expires it isn't renewed. This doesn't seem to make any difference because it doesn't appear to matter that it's expired and is accepted by the API anyway :/
 * The Pavlok integration is not very useful due to the glitchy and unreliable nature of the Pavlok's bluetooth connection and push notifications.
 * The webcam feed isn't visible on iOS devices for some reason.
