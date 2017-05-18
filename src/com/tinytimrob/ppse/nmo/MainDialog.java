@@ -61,8 +61,8 @@ public class MainDialog extends Application
 	// zap every 10 seconds after 5 minutes has passed without the mouse moving
 	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
-	public static volatile long initialZapTimeDiff = 300000;
-	public static volatile long nextZapTimeDiff = initialZapTimeDiff;
+	public static volatile long initialActivityWarningTimeDiff = 300000;
+	public static volatile long nextActivityWarningTimeDiff = initialActivityWarningTimeDiff;
 	public static volatile long incrementZapTimeDiff = 10000;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
@@ -539,9 +539,12 @@ public class MainDialog extends Application
 		{
 			lastActivityTime = now;
 			lastCursorPoint = epoint;
-			nextZapTimeDiff = initialZapTimeDiff;
+			nextActivityWarningTimeDiff = initialActivityWarningTimeDiff;
 		}
-		loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
+		if (NMOConfiguration.instance.integrations.pavlok.enabled)
+		{
+			loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
+		}
 		if (paused)
 		{
 			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
@@ -553,16 +556,16 @@ public class MainDialog extends Application
 			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
 			lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
 			long timeDiff = paused ? 0 : (now - lastActivityTime);
-			if (timeDiff > nextZapTimeDiff)
+			if (timeDiff > nextActivityWarningTimeDiff)
 			{
 				try
 				{
 					boolean playNoise = !IntegrationNoise.INSTANCE.isPlaying();
 					// the first time, you get a vibration instead of a zap, just in case you forgot to pause
-					if (nextZapTimeDiff == initialZapTimeDiff)
+					if (nextActivityWarningTimeDiff == initialActivityWarningTimeDiff)
 					{
-						addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-						IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
+						IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
 						if (playNoise)
 						{
 							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
@@ -570,8 +573,8 @@ public class MainDialog extends Application
 					}
 					else
 					{
-						addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-						IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
+						IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds");
 						if (playNoise)
 						{
 							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
@@ -582,9 +585,9 @@ public class MainDialog extends Application
 				{
 					e.printStackTrace();
 				}
-				nextZapTimeDiff += incrementZapTimeDiff;
+				nextActivityWarningTimeDiff += incrementZapTimeDiff;
 			}
-			timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
+			timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextActivityWarningTimeDiff + ")");
 		}
 
 		try
