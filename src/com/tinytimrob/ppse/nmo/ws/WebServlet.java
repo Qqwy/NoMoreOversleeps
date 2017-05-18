@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo.ws;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.ListIterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
-import com.tinytimrob.ppse.nmo.ClickableButton;
+import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
@@ -85,7 +86,7 @@ public class WebServlet extends HttpServlet
 				data.pause_state = "RUNNING";
 			}
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
-			data.noise_state = IntegrationNoise.INSTANCE.isPlaying() ? "PLAYING " + IntegrationNoise.INSTANCE.noiseID : "STOPPED";
+			data.noise_state = IntegrationNoise.INSTANCE.isPlaying() ? "PLAYING " + IntegrationNoise.INSTANCE.noiseName : "STOPPED";
 			data.light_state = IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF";
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
@@ -95,6 +96,29 @@ public class WebServlet extends HttpServlet
 			// send main web page
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("version", Main.VERSION);
+			// determine buttons
+			String actionButtons = "";
+			String[] colours = { "danger", "info", "success", "primary" };
+			int colour = -1;
+			for (Integration integration : Main.integrations)
+			{
+				LinkedHashMap<String, Action> actions = integration.getActions();
+				if (!actions.isEmpty())
+				{
+					colour++;
+					if (colour >= colours.length)
+						colour = 0;
+				}
+				for (String key : actions.keySet())
+				{
+					Action action = actions.get(key);
+					if (!action.isSecret())
+					{
+						actionButtons += "<form method='POST' action='" + key + "'><button type='submit' class='btn btn-" + colours[colour] + "' style='width:286px;'>" + action.getName() + "</button></form>";
+					}
+				}
+			}
+			model.put("actionButtons", actionButtons);
 			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneNumbers[0].number);
 			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneNumbers[1].number);
 			try
@@ -121,10 +145,10 @@ public class WebServlet extends HttpServlet
 			String PATH = request.getPathInfo();
 			for (Integration integrations : Main.integrations)
 			{
-				ClickableButton button = integrations.getButtons().get(PATH);
+				Action button = integrations.getActions().get(PATH);
 				if (button != null)
 				{
-					button.onButtonPress();
+					button.onAction();
 					MainDialog.addEvent("<" + button.getName() + "> from WEB UI");
 					response.sendRedirect("/");
 					return;

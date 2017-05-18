@@ -1,6 +1,5 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
@@ -17,7 +16,7 @@ import com.philips.lighting.model.PHLightState;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
-import com.tinytimrob.ppse.nmo.ClickableButton;
+import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationPhilipsHue extends Integration
@@ -50,10 +49,10 @@ public class IntegrationPhilipsHue extends Integration
 	@Override
 	public void init()
 	{
-		this.buttons.put("/philipshue/on", new ClickableButton()
+		this.actions.put("/philipshue/on", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationPhilipsHue.this.toggle(true);
 			}
@@ -63,11 +62,17 @@ public class IntegrationPhilipsHue extends Integration
 			{
 				return "LIGHT ON";
 			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
 		});
-		this.buttons.put("/philipshue/off", new ClickableButton()
+		this.actions.put("/philipshue/off", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationPhilipsHue.this.toggle(false);
 			}
@@ -76,6 +81,12 @@ public class IntegrationPhilipsHue extends Integration
 			public String getName()
 			{
 				return "LIGHT OFF";
+			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
 			}
 		});
 
@@ -180,6 +191,12 @@ public class IntegrationPhilipsHue extends Integration
 		this.sdk.connect(accessPoint);
 	}
 
+	@Override
+	public void update() throws Exception
+	{
+		// TODO Auto-generated method stub
+	}
+
 	public void toggle(boolean state)
 	{
 		PHLightState lightState = new PHLightState();
@@ -205,13 +222,5 @@ public class IntegrationPhilipsHue extends Integration
 			this.sdk.destroySDK();
 			this.sdk = null;
 		}
-	}
-
-	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
-
-	@Override
-	public LinkedHashMap<String, ClickableButton> getButtons()
-	{
-		return this.buttons;
 	}
 }

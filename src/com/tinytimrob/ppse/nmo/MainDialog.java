@@ -4,7 +4,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
@@ -79,99 +77,7 @@ public class MainDialog extends Application
 	public static volatile String scheduleStatus = "";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
-	public static volatile int wiloop = 0;
-
-	public static void updateNapLoop()
-	{
-		Calendar calendar = Calendar.getInstance();
-		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-		int minute = calendar.get(Calendar.MINUTE);
-		int currentMinuteOfDay = ((hour * 60) + minute);
-
-		SleepEntry nextSleepBlockDetected = null;
-		for (SleepEntry entry : NMOConfiguration.instance.schedule)
-		{
-			if (entry.containsTime(currentMinuteOfDay) || entry.start >= currentMinuteOfDay)
-			{
-				nextSleepBlockDetected = entry;
-				break;
-			}
-		}
-		if (nextSleepBlockDetected == null && !NMOConfiguration.instance.schedule.isEmpty())
-		{
-			nextSleepBlockDetected = NMOConfiguration.instance.schedule.get(0);
-		}
-		if (nextSleepBlockDetected != null)
-		{
-			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
-			{
-				Calendar calendar2 = Calendar.getInstance();
-				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.end / 60);
-				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.end % 60);
-				calendar2.set(Calendar.SECOND, 0);
-				calendar2.set(Calendar.MILLISECOND, 0);
-				long tims = calendar2.getTimeInMillis();
-				if (nextSleepBlockDetected.end < currentMinuteOfDay)
-				{
-					tims += 86400000L; // nap loops over to next day. add 1 day.
-				}
-				if (!scheduleStatus.startsWith("SLEEPING"))
-				{
-					addEvent("Entering sleep block: " + nextSleepBlockDetected.name);
-				}
-				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
-				long now = System.currentTimeMillis();
-				boolean paused = pausedUntil > now;
-				if (!paused)
-				{
-					addEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started");
-					pausedUntil = tims;
-					pauseReason = "Sleep block: " + nextSleepBlockDetected.name;
-				}
-			}
-			else
-			{
-				Calendar calendar2 = Calendar.getInstance();
-				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
-				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
-				calendar2.set(Calendar.SECOND, 0);
-				calendar2.set(Calendar.MILLISECOND, 0);
-				long tims = calendar2.getTimeInMillis();
-				if (nextSleepBlockDetected.start < currentMinuteOfDay)
-				{
-					tims += 86400000L; // nap loops over to next day. add 1 day.
-				}
-				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
-				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
-				{
-					if (!IntegrationNoise.INSTANCE.isPlaying())
-					{
-						addEvent("5 minutes until next sleep block - playing audio warning");
-						IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathUpcomingNap), "UPCOMING NAP NOISE");
-					}
-					lastSleepBlockSoundWarning = nextSleepBlockDetected;
-				}
-			}
-		}
-		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
-		{
-			nextSleepBlock = nextSleepBlockDetected;
-
-			Calendar calendar3 = Calendar.getInstance();
-			calendar3.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
-			calendar3.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
-			calendar3.set(Calendar.SECOND, 0);
-			calendar3.set(Calendar.MILLISECOND, 0);
-			long tims = calendar3.getTimeInMillis();
-			if (nextSleepBlockDetected.start < currentMinuteOfDay)
-			{
-				tims += 86400000L; // nap loops over to next day. add 1 day.
-			}
-			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-			addEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minutes");
-		}
-	}
+	public static volatile int tick = 0;
 
 	public static void addEvent(final String event)
 	{
@@ -229,97 +135,7 @@ public class MainDialog extends Application
 			@Override
 			public void handle(long now)
 			{
-				wiloop++;
-				if (wiloop > 180)
-				{
-					wiloop = 0;
-					System.gc();
-				}
-				else if (wiloop % 2 == 1)
-					return;
-
-				updateNapLoop();
-
-				IntegrationXboxController.INSTANCE.poll();
-
-				now = System.currentTimeMillis();
-				boolean paused = pausedUntil > now;
-				boolean wasPaused = isCurrentlyPaused.get();
-				isCurrentlyPaused.set(paused);
-
-				if (!paused && wasPaused)
-				{
-					addEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired");
-				}
-
-				PointerInfo pi = MouseInfo.getPointerInfo();
-				Point epoint = pi == null ? lastCursorPoint : pi.getLocation();
-				if (!epoint.equals(lastCursorPoint) || paused)
-				{
-					lastActivityTime = now;
-					lastCursorPoint = epoint;
-					nextZapTimeDiff = initialZapTimeDiff;
-				}
-				loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
-				if (paused)
-				{
-					lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
-					lastCursorPositionString.set("");
-					timeDiffString.set("");
-				}
-				else
-				{
-					lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
-					lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
-					long timeDiff = paused ? 0 : (now - lastActivityTime);
-					if (timeDiff > nextZapTimeDiff)
-					{
-						try
-						{
-							boolean playNoise = !IntegrationNoise.INSTANCE.isPlaying();
-							// the first time, you get a vibration instead of a zap, just in case you forgot to pause
-							if (nextZapTimeDiff == initialZapTimeDiff)
-							{
-								addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								if (playNoise)
-								{
-									IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
-								}
-							}
-							else
-							{
-								addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
-								if (playNoise)
-								{
-									IntegrationNoise.INSTANCE.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), "SHORT NOISE");
-								}
-							}
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-						nextZapTimeDiff += incrementZapTimeDiff;
-					}
-					timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
-				}
-
-				try
-				{
-					BufferedImage img = WebcamCapture.getImage();
-					if (img != null && wiloop % 4 < 2)
-					{
-						writableImage = SwingFXUtils.toFXImage(img, writableImage);
-						img.flush();
-						lastWebcamImage.set(writableImage);
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				MainDialog.this.tick();
 			}
 		};
 
@@ -422,10 +238,10 @@ public class MainDialog extends Application
 			for (Integration integration : Main.integrations)
 			{
 				System.out.println(integration);
-				for (String buttonKey : integration.getButtons().keySet())
+				for (String buttonKey : integration.getActions().keySet())
 				{
 					System.out.println("*" + buttonKey);
-					final ClickableButton clickableButton = integration.getButtons().get(buttonKey);
+					final Action clickableButton = integration.getActions().get(buttonKey);
 					final Button jfxButton = new Button(clickableButton.getName());
 					jfxButton.setMinWidth(240);
 					jfxButton.setMaxWidth(240);
@@ -438,7 +254,7 @@ public class MainDialog extends Application
 						{
 							try
 							{
-								clickableButton.onButtonPress();
+								clickableButton.onAction();
 								addEvent("<" + clickableButton.getName() + "> from frontend");
 							}
 							catch (Exception e)
@@ -590,5 +406,197 @@ public class MainDialog extends Application
 		//==================================================================
 		stage.setScene(scene);
 		stage.show();
+	}
+
+	protected void tick()
+	{
+		tick++;
+		if (tick >= 180)
+		{
+			tick -= 180;
+			System.gc();
+		}
+		if (tick % 2 == 1)
+		{
+			return;
+		}
+
+		long now = System.currentTimeMillis();
+		boolean paused = pausedUntil > now;
+		Calendar calendar = Calendar.getInstance();
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int currentMinuteOfDay = ((hour * 60) + minute);
+
+		SleepEntry nextSleepBlockDetected = null;
+		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		{
+			if (entry.containsTime(currentMinuteOfDay) || entry.start >= currentMinuteOfDay)
+			{
+				nextSleepBlockDetected = entry;
+				break;
+			}
+		}
+		if (nextSleepBlockDetected == null && !NMOConfiguration.instance.schedule.isEmpty())
+		{
+			nextSleepBlockDetected = NMOConfiguration.instance.schedule.get(0);
+		}
+		if (nextSleepBlockDetected != null)
+		{
+			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
+			{
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.end / 60);
+				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.end % 60);
+				calendar2.set(Calendar.SECOND, 0);
+				calendar2.set(Calendar.MILLISECOND, 0);
+				long tims = calendar2.getTimeInMillis();
+				if (nextSleepBlockDetected.end < currentMinuteOfDay)
+				{
+					tims += 86400000L; // nap loops over to next day. add 1 day.
+				}
+				if (!scheduleStatus.startsWith("SLEEPING"))
+				{
+					addEvent("Entering sleep block: " + nextSleepBlockDetected.name);
+				}
+				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
+				if (!paused)
+				{
+					addEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started");
+					paused = true;
+					pausedUntil = tims;
+					pauseReason = "Sleep block: " + nextSleepBlockDetected.name;
+				}
+			}
+			else
+			{
+				Calendar calendar2 = Calendar.getInstance();
+				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
+				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
+				calendar2.set(Calendar.SECOND, 0);
+				calendar2.set(Calendar.MILLISECOND, 0);
+				long tims = calendar2.getTimeInMillis();
+				if (nextSleepBlockDetected.start < currentMinuteOfDay)
+				{
+					tims += 86400000L; // nap loops over to next day. add 1 day.
+				}
+				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+				scheduleStatus = minutesRemaining + " MINUTES UNTIL NEXT SLEEP BLOCK [" + nextSleepBlockDetected.name + "]";
+				if (minutesRemaining == 5 && lastSleepBlockSoundWarning != nextSleepBlockDetected)
+				{
+					if (!IntegrationNoise.INSTANCE.isPlaying())
+					{
+						addEvent("5 minutes until next sleep block - playing audio warning");
+						IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[2]);
+					}
+					lastSleepBlockSoundWarning = nextSleepBlockDetected;
+				}
+			}
+		}
+		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
+		{
+			nextSleepBlock = nextSleepBlockDetected;
+
+			Calendar calendar3 = Calendar.getInstance();
+			calendar3.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
+			calendar3.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
+			calendar3.set(Calendar.SECOND, 0);
+			calendar3.set(Calendar.MILLISECOND, 0);
+			long tims = calendar3.getTimeInMillis();
+			if (nextSleepBlockDetected.start < currentMinuteOfDay)
+			{
+				tims += 86400000L; // nap loops over to next day. add 1 day.
+			}
+			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+			addEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minutes");
+		}
+		boolean wasPaused = isCurrentlyPaused.get();
+		isCurrentlyPaused.set(paused);
+		if (!paused && wasPaused)
+		{
+			addEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired");
+		}
+
+		for (Integration integration : Main.integrations)
+		{
+			try
+			{
+				integration.update();
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		PointerInfo pi = MouseInfo.getPointerInfo();
+		Point epoint = pi == null ? lastCursorPoint : pi.getLocation();
+		if (!epoint.equals(lastCursorPoint) || paused)
+		{
+			lastActivityTime = now;
+			lastCursorPoint = epoint;
+			nextZapTimeDiff = initialZapTimeDiff;
+		}
+		loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
+		if (paused)
+		{
+			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
+			lastCursorPositionString.set("");
+			timeDiffString.set("");
+		}
+		else
+		{
+			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
+			lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
+			long timeDiff = paused ? 0 : (now - lastActivityTime);
+			if (timeDiff > nextZapTimeDiff)
+			{
+				try
+				{
+					boolean playNoise = !IntegrationNoise.INSTANCE.isPlaying();
+					// the first time, you get a vibration instead of a zap, just in case you forgot to pause
+					if (nextZapTimeDiff == initialZapTimeDiff)
+					{
+						addEvent("<VIBRATION" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						IntegrationPavlok.INSTANCE.vibration(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						if (playNoise)
+						{
+							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
+						}
+					}
+					else
+					{
+						addEvent("<SHOCK" + (playNoise ? ", SHORT NOISE" : "") + "> No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						IntegrationPavlok.INSTANCE.shock(255, "No activity detected for " + (nextZapTimeDiff / 1000) + " seconds");
+						if (playNoise)
+						{
+							IntegrationNoise.INSTANCE.play(NMOConfiguration.instance.integrations.noise.noises[1]);
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				nextZapTimeDiff += incrementZapTimeDiff;
+			}
+			timeDiffString.set("Time difference: " + timeDiff + " (next zap: " + nextZapTimeDiff + ")");
+		}
+
+		try
+		{
+			BufferedImage img = WebcamCapture.getImage();
+			if (img != null && tick % 4 < 2)
+			{
+				writableImage = SwingFXUtils.toFXImage(img, writableImage);
+				img.flush();
+				lastWebcamImage.set(writableImage);
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

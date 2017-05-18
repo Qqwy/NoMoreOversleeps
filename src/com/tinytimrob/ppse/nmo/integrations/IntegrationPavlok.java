@@ -1,11 +1,10 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
-import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.common.LogWrapper;
-import com.tinytimrob.ppse.nmo.ClickableButton;
+import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
@@ -114,10 +113,10 @@ public class IntegrationPavlok extends Integration
 	@Override
 	public void init()
 	{
-		this.buttons.put("/pavlok/beep", new ClickableButton()
+		this.actions.put("/pavlok/beep", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationPavlok.this.beep(255, "Manually triggered beep");
 			}
@@ -127,11 +126,17 @@ public class IntegrationPavlok extends Integration
 			{
 				return "BEEP PAVLOK";
 			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
 		});
-		this.buttons.put("/pavlok/vibration", new ClickableButton()
+		this.actions.put("/pavlok/vibration", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationPavlok.this.vibration(255, "Manually triggered vibration");
 			}
@@ -141,11 +146,17 @@ public class IntegrationPavlok extends Integration
 			{
 				return "VIBRATE PAVLOK";
 			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
 		});
-		this.buttons.put("/pavlok/shock", new ClickableButton()
+		this.actions.put("/pavlok/shock", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationPavlok.this.shock(255, "Manually triggered shock");
 			}
@@ -155,7 +166,19 @@ public class IntegrationPavlok extends Integration
 			{
 				return "SHOCK PAVLOK";
 			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
 		});
+	}
+
+	@Override
+	public void update() throws Exception
+	{
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -187,13 +210,5 @@ public class IntegrationPavlok extends Integration
 	{
 		log.info("Sending: shock " + amount + " (" + reason + ")");
 		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
-	}
-
-	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
-
-	@Override
-	public LinkedHashMap<String, ClickableButton> getButtons()
-	{
-		return this.buttons;
 	}
 }

@@ -1,11 +1,10 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.LogWrapper;
-import com.tinytimrob.ppse.nmo.ClickableButton;
+import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.twilio.http.TwilioRestClient;
 import com.twilio.rest.api.v2010.account.Call;
@@ -72,34 +71,38 @@ public class IntegrationTwilio extends Integration
 		for (int i = 0; i < NMOConfiguration.instance.integrations.twilio.phoneNumbers.length; i++)
 		{
 			final StoredPhoneNumber number = NMOConfiguration.instance.integrations.twilio.phoneNumbers[i];
-			this.buttons.put("/twilio/" + i, new ClickableButton()
+			this.actions.put("/twilio/" + i, new Action()
 			{
 				@Override
 				public String getName()
 				{
-					return "TWILIO " + number.name + ": " + number.number;
+					return "CALL " + number.name + ": " + number.number;
 				}
 
 				@Override
-				public void onButtonPress() throws Exception
+				public void onAction() throws Exception
 				{
 					IntegrationTwilio.this.call(number);
+				}
+
+				@Override
+				public boolean isSecret()
+				{
+					return false;
 				}
 			});
 		}
 	}
 
 	@Override
-	public void shutdown()
+	public void update() throws Exception
 	{
 		// TODO Auto-generated method stub
 	}
 
-	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
-
 	@Override
-	public LinkedHashMap<String, ClickableButton> getButtons()
+	public void shutdown()
 	{
-		return this.buttons;
+		// TODO Auto-generated method stub
 	}
 }

@@ -1,9 +1,8 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import com.google.gson.annotations.Expose;
-import com.tinytimrob.ppse.nmo.ClickableButton;
+import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -13,7 +12,19 @@ public class IntegrationNoise extends Integration
 {
 	public static IntegrationNoise INSTANCE = new IntegrationNoise();
 	public MediaPlayer player = null;
-	public String noiseID = null;
+	public String noiseName = null;
+
+	public static class StoredNoise
+	{
+		@Expose
+		public String name;
+
+		@Expose
+		public String path;
+
+		@Expose
+		public boolean secret;
+	}
 
 	public static class NoiseConfiguration
 	{
@@ -21,13 +32,7 @@ public class IntegrationNoise extends Integration
 		public boolean enabled;
 
 		@Expose
-		public String noisePathLong = "";
-
-		@Expose
-		public String noisePathShort = "";
-
-		@Expose
-		public String noisePathUpcomingNap = "";
+		public StoredNoise[] noises = new StoredNoise[0];
 	}
 
 	@Override
@@ -39,38 +44,34 @@ public class IntegrationNoise extends Integration
 	@Override
 	public void init()
 	{
-		this.buttons.put("/noise/long", new ClickableButton()
+		for (int i = 0; i < NMOConfiguration.instance.integrations.noise.noises.length; i++)
 		{
-			@Override
-			public void onButtonPress() throws Exception
+			final StoredNoise noise = NMOConfiguration.instance.integrations.noise.noises[i];
+			this.actions.put("/noise/" + i, new Action()
 			{
-				IntegrationNoise.this.play(new File(NMOConfiguration.instance.integrations.noise.noisePathLong), this.getName());
-			}
+				@Override
+				public void onAction() throws Exception
+				{
+					IntegrationNoise.this.play(noise);
+				}
 
-			@Override
-			public String getName()
-			{
-				return "LONG NOISE";
-			}
-		});
-		this.buttons.put("/noise/short", new ClickableButton()
-		{
-			@Override
-			public void onButtonPress() throws Exception
-			{
-				IntegrationNoise.this.play(new File(NMOConfiguration.instance.integrations.noise.noisePathShort), this.getName());
-			}
+				@Override
+				public String getName()
+				{
+					return noise.name;
+				}
 
-			@Override
-			public String getName()
-			{
-				return "SHORT NOISE";
-			}
-		});
-		this.buttons.put("/noise/stop", new ClickableButton()
+				@Override
+				public boolean isSecret()
+				{
+					return noise.secret;
+				}
+			});
+		}
+		this.actions.put("/noise/stop", new Action()
 		{
 			@Override
-			public void onButtonPress() throws Exception
+			public void onAction() throws Exception
 			{
 				IntegrationNoise.this.stop();
 			}
@@ -80,7 +81,19 @@ public class IntegrationNoise extends Integration
 			{
 				return "TURN OFF NOISE";
 			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
 		});
+	}
+
+	@Override
+	public void update() throws Exception
+	{
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -89,11 +102,11 @@ public class IntegrationNoise extends Integration
 		// TODO Auto-generated method stub
 	}
 
-	public void play(File file, String noiseID)
+	public void play(StoredNoise noise)
 	{
-		Media media = new Media(file.toURI().toString());
+		Media media = new Media(new File(noise.path).toURI().toString());
 		this.stop();
-		this.noiseID = noiseID;
+		this.noiseName = noise.name;
 		this.player = new MediaPlayer(media);
 		this.player.setOnEndOfMedia(new Runnable()
 		{
@@ -119,13 +132,5 @@ public class IntegrationNoise extends Integration
 			this.player.dispose();
 			this.player = null;
 		}
-	}
-
-	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
-
-	@Override
-	public LinkedHashMap<String, ClickableButton> getButtons()
-	{
-		return this.buttons;
 	}
 }

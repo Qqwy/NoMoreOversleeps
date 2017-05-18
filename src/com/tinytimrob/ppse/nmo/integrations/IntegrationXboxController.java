@@ -1,12 +1,10 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
-import java.util.LinkedHashMap;
 import com.google.gson.annotations.Expose;
 import com.ivan.xinput.XInputDevice;
 import com.ivan.xinput.enums.XInputButton;
 import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.ivan.xinput.listener.XInputDeviceListener;
-import com.tinytimrob.ppse.nmo.ClickableButton;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -54,7 +52,8 @@ public class IntegrationXboxController extends Integration
 		});
 	}
 
-	public void poll()
+	@Override
+	public void update()
 	{
 		this.device.poll();
 	}
@@ -66,13 +65,5 @@ public class IntegrationXboxController extends Integration
 		{
 			this.device.removeListener(this.listener);
 		}
-	}
-
-	public LinkedHashMap<String, ClickableButton> buttons = new LinkedHashMap<String, ClickableButton>();
-
-	@Override
-	public LinkedHashMap<String, ClickableButton> getButtons()
-	{
-		return this.buttons;
 	}
 }
