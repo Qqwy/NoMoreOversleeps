@@ -471,9 +471,9 @@ public class MainDialog extends Application
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 				scheduleStatus = "AWAKE [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
-				if (minutesRemaining == 5 && lastSleepBlockWarning != nextSleepBlockDetected)
+				if (minutesRemaining == NMOConfiguration.instance.sleepBlockApproachingTimeMins && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
-					triggerEvent("5 minutes until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
+					triggerEvent(minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s") + " until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
 					lastSleepBlockWarning = nextSleepBlockDetected;
 				}
 			}
