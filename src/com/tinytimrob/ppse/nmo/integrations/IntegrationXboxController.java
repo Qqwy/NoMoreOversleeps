@@ -46,7 +46,7 @@ public class IntegrationXboxController extends Integration
 			@Override
 			public void buttonChanged(XInputButton arg0, boolean arg1)
 			{
-				MainDialog.lastActivityTime = System.currentTimeMillis();
+				MainDialog.resetActivityTimer();
 			}
 		});
 	}

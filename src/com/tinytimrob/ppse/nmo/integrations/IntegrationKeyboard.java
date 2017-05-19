@@ -32,13 +32,13 @@ public class IntegrationKeyboard extends Integration
 			@Override
 			public void keyPressed(GlobalKeyEvent event)
 			{
-				MainDialog.lastActivityTime = System.currentTimeMillis();
+				MainDialog.resetActivityTimer();
 			}
 
 			@Override
 			public void keyReleased(GlobalKeyEvent event)
 			{
-				MainDialog.lastActivityTime = System.currentTimeMillis();
+				MainDialog.resetActivityTimer();
 			}
 		});
 	}

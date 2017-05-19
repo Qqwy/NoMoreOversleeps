@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo;
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse.MouseConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok.PavlokConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue.PhilipsHueConfiguration;
@@ -65,6 +66,9 @@ public class NMOConfiguration
 	{
 		@Expose
 		public KeyboardConfiguration keyboard = new KeyboardConfiguration();
+
+		@Expose
+		public MouseConfiguration mouse = new MouseConfiguration();
 
 		@Expose
 		public XboxControllerConfiguration xboxController = new XboxControllerConfiguration();

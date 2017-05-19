@@ -1,8 +1,5 @@
 package com.tinytimrob.ppse.nmo;
 
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +14,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -63,7 +61,6 @@ public class MainDialog extends Application
 	public static volatile long pausedUntil = 0;
 	public static volatile long nextActivityWarningTimeDiff;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
-	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastActivityTimeString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
@@ -219,7 +216,7 @@ public class MainDialog extends Application
 			innerRightPane.setMinWidth(260);
 			innerRightPane.setMaxWidth(260);
 			innerRightPane.setStyle("-fx-background-color: #444;");
-			innerRightPane.setVgap(10);
+			innerRightPane.setVgap(6);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
@@ -518,28 +515,26 @@ public class MainDialog extends Application
 			}
 		}
 
-		PointerInfo pi = MouseInfo.getPointerInfo();
-		Point epoint = pi == null ? lastCursorPoint : pi.getLocation();
-		if (!epoint.equals(lastCursorPoint) || paused)
+		if (paused)
 		{
-			lastActivityTime = now;
-			lastCursorPoint = epoint;
-			nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
+			resetActivityTimer();
 		}
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
 			loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
 		}
+		if (NMOConfiguration.instance.integrations.mouse.enabled)
+		{
+			lastCursorPositionString.set(paused ? "" : "Last cursor position: " + IntegrationMouse.lastCursorPoint.getX() + ", " + IntegrationMouse.lastCursorPoint.getY());
+		}
 		if (paused)
 		{
 			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
-			lastCursorPositionString.set("");
 			timeDiffString.set("");
 		}
 		else
 		{
 			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
-			lastCursorPositionString.set("Last cursor position: " + lastCursorPoint.getX() + ", " + lastCursorPoint.getY());
 			long timeDiff = paused ? 0 : (now - lastActivityTime);
 			if (timeDiff > nextActivityWarningTimeDiff)
 			{
@@ -578,6 +573,12 @@ public class MainDialog extends Application
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static void resetActivityTimer()
+	{
+		lastActivityTime = System.currentTimeMillis();
+		nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
 	}
 
 	public static void triggerEvent(String eventDescription, String[] actionArray)
