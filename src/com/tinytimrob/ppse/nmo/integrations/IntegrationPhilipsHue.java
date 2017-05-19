@@ -26,7 +26,7 @@ public class IntegrationPhilipsHue extends Integration
 	public PHHueSDK sdk;
 	public PHBridge activeBridge;
 	public PHSDKListener listener;
-	public volatile int lightState;
+	public volatile int lightState = -1;
 
 	public static class PhilipsHueConfiguration
 	{
