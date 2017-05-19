@@ -1,6 +1,9 @@
 package com.tinytimrob.ppse.nmo.ws;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,8 +12,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
@@ -52,7 +57,25 @@ public class WebServlet extends HttpServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		String PATH = request.getPathInfo();
-		if (PATH.equals("/log"))
+		if (PATH.equals("/favicon.ico"))
+		{
+			InputStream fis = null;
+			OutputStream out = null;
+			try
+			{
+				response.setContentType("image/x-icon");
+				fis = WebServlet.class.getResourceAsStream("/resources/icon.ico");
+				out = response.getOutputStream();
+				IOUtils.copy(fis, out);
+			}
+			finally
+			{
+				IOUtils.closeQuietly(out);
+				IOUtils.closeQuietly(fis);
+			}
+			return;
+		}
+		else if (PATH.equals("/log"))
 		{
 			// send log
 			int x = 0;
@@ -118,6 +141,7 @@ public class WebServlet extends HttpServlet
 					}
 				}
 			}
+			model.put("system", PlatformData.computerName);
 			model.put("actionButtons", actionButtons);
 			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneNumbers[0].number);
 			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneNumbers[1].number);
