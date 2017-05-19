@@ -478,6 +478,16 @@ public class MainDialog extends Application
 				}
 			}
 		}
+		if (nextSleepBlock != null && nextSleepBlock != nextSleepBlockDetected)
+		{
+			triggerEvent("Exiting sleep block: " + nextSleepBlock.name, NMOConfiguration.instance.events.sleepBlockEnded);
+		}
+		boolean wasPaused = isCurrentlyPaused.get();
+		isCurrentlyPaused.set(paused);
+		if (!paused && wasPaused)
+		{
+			triggerEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired", NMOConfiguration.instance.events.pauseExpired);
+		}
 		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
 		{
 			nextSleepBlock = nextSleepBlockDetected;
@@ -493,13 +503,7 @@ public class MainDialog extends Application
 				tims += 86400000L; // nap loops over to next day. add 1 day.
 			}
 			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), NMOConfiguration.instance.events.sleepBlockEnded);
-		}
-		boolean wasPaused = isCurrentlyPaused.get();
-		isCurrentlyPaused.set(paused);
-		if (!paused && wasPaused)
-		{
-			triggerEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired", NMOConfiguration.instance.events.pauseExpired);
+			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), null);
 		}
 
 		for (Integration integration : Main.integrations)
