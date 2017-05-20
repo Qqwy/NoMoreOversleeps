@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo;
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter.MidiConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse.MouseConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok.PavlokConfiguration;
@@ -72,6 +73,9 @@ public class NMOConfiguration
 
 		@Expose
 		public XboxControllerConfiguration xboxController = new XboxControllerConfiguration();
+
+		@Expose
+		public MidiConfiguration midiTransmitter = new MidiConfiguration();
 
 		@Expose
 		public PavlokConfiguration pavlok = new PavlokConfiguration();

@@ -15,9 +15,9 @@ system and the selection of wake-up actions to be tailored to your needs as desi
 #### Automated monitoring ####
 
 To determine if you are asleep when you shouldn't be, NoMoreOversleeps takes a look at your sleeping schedule and compares it with the system clock. If it is currently a time when you
-should be awake, NoMoreOversleeps monitors the activity of input devices on your computer (currently supporting keyboard, mouse and Xbox360-compatible controllers) and will try to get
-your attention every X seconds if it fails to detect activity in any of those devices within a Y minute interval. The number of seconds, the detection interval and the method used to get
-your attention can be customized as desired.
+should be awake, NoMoreOversleeps monitors the activity of input devices on your computer (currently supporting keyboard, mouse, Xbox360-compatible controllers and MIDI devices) and will
+try to get your attention every X seconds if it fails to detect activity in any of those devices within a Y minute interval. The number of seconds, the detection interval and the method
+used to get your attention can be customized as desired.
 
 In the event you are deliberately going to be away from your computer for a certain amount of time, e.g. you're going shopping or going to work, you can pause the activity detection
 feature of NoMoreOversleeps for a choosable length of time between 5 minutes and 12 hours. This will prevent NoMoreOversleeps from trying to get your attention. When pausing the

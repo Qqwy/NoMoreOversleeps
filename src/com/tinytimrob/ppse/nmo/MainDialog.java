@@ -446,6 +446,7 @@ public class MainDialog extends Application
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
+				nextSleepBlock = nextSleepBlockDetected;
 				if (!paused)
 				{
 					triggerEvent("Automatically pausing until " + CommonUtils.convertTimestamp(tims) + " due to sleep block '" + nextSleepBlockDetected.name + "' having started", null);
@@ -505,13 +506,16 @@ public class MainDialog extends Application
 
 		for (Integration integration : Main.integrations)
 		{
-			try
+			if (integration.isEnabled())
 			{
-				integration.update();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				try
+				{
+					integration.update();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 

@@ -13,6 +13,7 @@ import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
@@ -46,6 +47,7 @@ public class Main
 		integrations.add(new IntegrationKeyboard());
 		integrations.add(new IntegrationMouse());
 		integrations.add(new IntegrationXboxController());
+		integrations.add(new IntegrationMidiTransmitter());
 		integrations.add(IntegrationPavlok.INSTANCE);
 		integrations.add(IntegrationNoise.INSTANCE);
 		integrations.add(IntegrationPhilipsHue.INSTANCE);
@@ -107,6 +109,7 @@ public class Main
 				WebcamCapture.shutdown();
 				Logging.shutdown();
 				MasterLock.release();
+				System.exit(0);
 			}
 			catch (NoClassDefFoundError e1)
 			{
