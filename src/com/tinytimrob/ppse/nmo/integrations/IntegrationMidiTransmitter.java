@@ -14,7 +14,7 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 public class IntegrationMidiTransmitter extends Integration
 {
 	private static final Logger log = LogWrapper.getLogger();
-	int transmitterLoop = 0;
+	int transmitterLoop = -1;
 
 	public static class MidiConfiguration
 	{
@@ -41,7 +41,7 @@ public class IntegrationMidiTransmitter extends Integration
 	public void update() throws Exception
 	{
 		this.transmitterLoop++;
-		if (this.transmitterLoop % 60 == 0)
+		if (this.transmitterLoop % 600 == 0)
 		{
 			MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
 			for (int i = 0; i < infos.length; i++)
