@@ -72,7 +72,7 @@ I probably won't implement most of these, but we will see.
 * Some features only work on Windows. For other platforms YMMV. It is possible that right now the application even would just crash out on other platforms or be largely unusable (because I haven't tested it).
 * When your login key to Pavlok API expires it isn't renewed. This doesn't seem to make any difference because it doesn't appear to matter that it's expired and is accepted by the API anyway :/
 * The Pavlok integration is not very useful due to the glitchy and unreliable nature of the Pavlok's bluetooth connection and push notifications.
-* The webcam feed isn't visible on iOS devices for some reason.
+* The webcam feed isn't visible on iOS devices because the authentication is not passed along to the web socket. Need to come up with a strategy to fix this.
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 
