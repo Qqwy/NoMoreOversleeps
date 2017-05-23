@@ -40,6 +40,7 @@ In the event that the people who are monitoring you think that you're asleep at 
 The following actions can currently be configured for use with both automated and manual monitoring:
 
 * **Noise/Sound playback**: configure any number of sounds of your choice
+* **Command line execution**: run any application on your machine
 * **Pavlok**: Beep, vibrate or shock
 * **Twilio**: Call a phone number (e.g. your mobile)
 * **Philips Hue smart light bulbs**: Turn the light bulbs on or off
