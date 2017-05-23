@@ -12,6 +12,7 @@ import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse;
@@ -52,6 +53,7 @@ public class Main
 		integrations.add(IntegrationNoise.INSTANCE);
 		integrations.add(IntegrationPhilipsHue.INSTANCE);
 		integrations.add(new IntegrationTwilio());
+		integrations.add(new IntegrationCommandLine());
 	}
 
 	//-------------------------------------------

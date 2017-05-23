@@ -2,6 +2,7 @@ package com.tinytimrob.ppse.nmo;
 
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine.CommandLineConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter.MidiConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse.MouseConfiguration;
@@ -88,6 +89,9 @@ public class NMOConfiguration
 
 		@Expose
 		public NoiseConfiguration noise = new NoiseConfiguration();
+
+		@Expose
+		public CommandLineConfiguration cmd = new CommandLineConfiguration();
 	}
 
 	@Expose
