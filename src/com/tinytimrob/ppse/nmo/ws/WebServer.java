@@ -75,7 +75,7 @@ public class WebServer
 	private static final SecurityHandler basicAuth(String realm)
 	{
 		HashLoginService l = new HashLoginService();
-		l.setConfig("webusers.properties");
+		l.setConfig(new File(PlatformData.installationDirectory, "webusers.properties").getAbsolutePath());
 		l.setName(realm);
 		Constraint constraint = new Constraint();
 		constraint.setName(Constraint.__BASIC_AUTH);
