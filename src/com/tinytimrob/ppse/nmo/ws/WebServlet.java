@@ -18,7 +18,6 @@ import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
@@ -142,8 +141,6 @@ public class WebServlet extends HttpServlet
 			}
 			model.put("system", PlatformData.computerName);
 			model.put("actionButtons", actionButtons);
-			model.put("phoneSwitchboard", NMOConfiguration.instance.integrations.twilio.phoneNumbers[0].number);
-			model.put("phoneMobile", NMOConfiguration.instance.integrations.twilio.phoneNumbers[1].number);
 			try
 			{
 				WebTemplate.renderTemplate("nmo.ftl", response, model);
