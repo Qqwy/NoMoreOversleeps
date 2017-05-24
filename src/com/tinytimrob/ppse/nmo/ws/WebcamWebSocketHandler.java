@@ -20,6 +20,7 @@ import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.WebcamCapture;
 
 @WebSocket
@@ -121,14 +122,18 @@ public class WebcamWebSocketHandler implements WebcamListener
 		// TODO Auto-generated method stub
 	}
 
+	int frame = -1;
 	boolean send = true;
 
 	@Override
 	public void webcamImageObtained(WebcamEvent we)
 	{
-		this.send = !this.send;
-		if (!this.send)
+		frame++;
+		if (this.frame % NMOConfiguration.instance.webcamFrameSkip != 0)
+		{
 			return;
+		}
+		this.frame = 0;
 		BufferedImage image = WebcamCapture.getImage();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try

@@ -23,6 +23,9 @@ public class NMOConfiguration
 	public String webcamName = "";
 
 	@Expose
+	public int webcamFrameSkip = 2;
+
+	@Expose
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
 
 	@Expose
