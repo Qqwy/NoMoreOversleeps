@@ -93,7 +93,7 @@ public class MainDialog extends Application
 			try
 			{
 				IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
-				triggerEvent("<VIBRATION> Connection test", null);
+				triggerEvent("<VIBRATE PAVLOK> Connection test", null);
 			}
 			catch (Throwable t)
 			{
@@ -369,7 +369,7 @@ public class MainDialog extends Application
 								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.postAuthToken(map.get("code"));
 								Configuration.save();
 								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
-								triggerEvent("<VIBRATION> Connection test", null);
+								triggerEvent("<VIBRATE PAVLOK> Connection test", null);
 								outerPane.getChildren().clear();
 								outerPane.getChildren().add(innerPane);
 								at.start();
