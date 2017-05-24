@@ -1,15 +1,18 @@
 package com.tinytimrob.ppse.nmo.integrations;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
-import lc.kra.system.keyboard.GlobalKeyboardHook;
-import lc.kra.system.keyboard.event.GlobalKeyAdapter;
-import lc.kra.system.keyboard.event.GlobalKeyEvent;
 
 public class IntegrationKeyboard extends Integration
 {
-	GlobalKeyboardHook keyboardHook;
+	NativeKeyListener keyboardHook;
 
 	public static class KeyboardConfiguration
 	{
@@ -26,21 +29,37 @@ public class IntegrationKeyboard extends Integration
 	@Override
 	public void init()
 	{
-		this.keyboardHook = new GlobalKeyboardHook();
-		this.keyboardHook.addKeyListener(new GlobalKeyAdapter()
+		Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		logger.setLevel(Level.OFF);
+		try
+		{
+			GlobalScreen.registerNativeHook();
+		}
+		catch (NativeHookException e)
+		{
+			throw new RuntimeException(e);
+		}
+		this.keyboardHook = new NativeKeyListener()
 		{
 			@Override
-			public void keyPressed(GlobalKeyEvent event)
+			public void nativeKeyTyped(NativeKeyEvent nativeEvent)
 			{
 				MainDialog.resetActivityTimer();
 			}
 
 			@Override
-			public void keyReleased(GlobalKeyEvent event)
+			public void nativeKeyPressed(NativeKeyEvent nativeEvent)
 			{
 				MainDialog.resetActivityTimer();
 			}
-		});
+
+			@Override
+			public void nativeKeyReleased(NativeKeyEvent nativeEvent)
+			{
+				MainDialog.resetActivityTimer();
+			}
+		};
+		GlobalScreen.addNativeKeyListener(this.keyboardHook);
 	}
 
 	@Override
@@ -54,7 +73,15 @@ public class IntegrationKeyboard extends Integration
 	{
 		if (this.keyboardHook != null)
 		{
-			this.keyboardHook.shutdownHook();
+			GlobalScreen.removeNativeKeyListener(this.keyboardHook);
+		}
+		try
+		{
+			GlobalScreen.unregisterNativeHook();
+		}
+		catch (NativeHookException e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 }
