@@ -107,7 +107,7 @@ public class WebServlet extends HttpServlet
 				data.pause_state = "RUNNING";
 			}
 			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
-			data.noise_state = IntegrationNoise.INSTANCE.isPlaying() ? "PLAYING " + IntegrationNoise.INSTANCE.noiseName : "STOPPED";
+			data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
 			data.light_state = IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF";
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
