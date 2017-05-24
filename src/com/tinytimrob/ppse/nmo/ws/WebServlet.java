@@ -119,7 +119,7 @@ public class WebServlet extends HttpServlet
 			model.put("version", Main.VERSION);
 			// determine buttons
 			String actionButtons = "";
-			String[] colours = { "danger", "info", "success", "primary" };
+			String[] colours = { "danger", "info", "success", "primary", "purple", "warning" };
 			int colour = -1;
 			for (Integration integration : Main.integrations)
 			{

@@ -27,6 +27,51 @@ form {
 .btn {
 	padding: 2px !important;
 }
+.btn-purple { 
+  color: #ffffff; 
+  background-color: #764CAD; 
+  border-color: #534E6B; 
+} 
+ 
+.btn-purple:hover, 
+.btn-purple:focus, 
+.btn-purple:active, 
+.btn-purple.active, 
+.open .dropdown-toggle.btn-purple { 
+  color: #ffffff; 
+  background-color: #49247A; 
+  border-color: #534E6B; 
+} 
+ 
+.btn-purple:active, 
+.btn-purple.active, 
+.open .dropdown-toggle.btn-purple { 
+  background-image: none; 
+} 
+ 
+.btn-purple.disabled, 
+.btn-purple[disabled], 
+fieldset[disabled] .btn-purple, 
+.btn-purple.disabled:hover, 
+.btn-purple[disabled]:hover, 
+fieldset[disabled] .btn-purple:hover, 
+.btn-purple.disabled:focus, 
+.btn-purple[disabled]:focus, 
+fieldset[disabled] .btn-purple:focus, 
+.btn-purple.disabled:active, 
+.btn-purple[disabled]:active, 
+fieldset[disabled] .btn-purple:active, 
+.btn-purple.disabled.active, 
+.btn-purple[disabled].active, 
+fieldset[disabled] .btn-purple.active { 
+  background-color: #764CAD; 
+  border-color: #534E6B; 
+} 
+ 
+.btn-purple .badge { 
+  color: #764CAD; 
+  background-color: #ffffff; 
+}
 </style>
 </head>
 <body>
