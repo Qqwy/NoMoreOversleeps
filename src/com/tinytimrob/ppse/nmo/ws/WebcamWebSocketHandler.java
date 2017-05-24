@@ -128,7 +128,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 	@Override
 	public void webcamImageObtained(WebcamEvent we)
 	{
-		frame++;
+		this.frame++;
 		if (this.frame % NMOConfiguration.instance.webcamFrameSkip != 0)
 		{
 			return;

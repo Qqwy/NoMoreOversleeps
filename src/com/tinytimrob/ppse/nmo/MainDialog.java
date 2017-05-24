@@ -109,7 +109,7 @@ public class MainDialog extends Application
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(false);
 		stage.setMinWidth(1000);
-		stage.setMinHeight(940);
+		stage.setMinHeight(980);
 
 		ImageView webcamImageView = new ImageView();
 
@@ -216,7 +216,7 @@ public class MainDialog extends Application
 			innerRightPane.setMinWidth(260);
 			innerRightPane.setMaxWidth(260);
 			innerRightPane.setStyle("-fx-background-color: #444;");
-			innerRightPane.setVgap(6);
+			innerRightPane.setVgap(4);
 			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
 			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
 			innerRightPane.addRow(row++, label);
@@ -230,6 +230,7 @@ public class MainDialog extends Application
 					System.out.println("*" + buttonKey);
 					final Action clickableButton = integration.getActions().get(buttonKey);
 					final Button jfxButton = new Button(clickableButton.getName());
+					jfxButton.setPadding(new Insets(1, 4, 1, 4));
 					jfxButton.setMinWidth(240);
 					jfxButton.setMaxWidth(240);
 					jfxButton.setAlignment(Pos.BASELINE_LEFT);
@@ -279,6 +280,7 @@ public class MainDialog extends Application
 				pauseButton.setMinWidth(74);
 				pauseButton.setMaxWidth(74);
 				pauseButton.setAlignment(Pos.BASELINE_LEFT);
+				pauseButton.setPadding(new Insets(1, 4, 1, 4));
 				pauseButton.setOnAction(new EventHandler<ActionEvent>()
 				{
 					@Override
@@ -309,6 +311,7 @@ public class MainDialog extends Application
 			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
 			unpauseButton.setMinWidth(240);
 			unpauseButton.setMaxWidth(240);
+			unpauseButton.setPadding(new Insets(1, 4, 1, 4));
 			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
 			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
 			{

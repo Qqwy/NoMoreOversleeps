@@ -58,7 +58,7 @@ public class IntegrationNoise extends Integration
 				@Override
 				public String getName()
 				{
-					return noise.name;
+					return "PLAY " + noise.name;
 				}
 
 				@Override
