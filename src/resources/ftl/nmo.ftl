@@ -24,6 +24,9 @@
 form {
 	margin-bottom: 4px;
 }
+.btn {
+	padding: 2px !important;
+}
 </style>
 </head>
 <body>
@@ -63,8 +66,8 @@ form {
       </tr>
     </tbody>
   </table>
-  <div style="float:right;"><img id="webcamImage" height=320/></div>
   <h4>Manual controls</h4>
+  <div style="float:right;"><img id="webcamImage" height=320/></div>
   ${actionButtons}
   <div></div>
   <div style="clear:both;"></div>
