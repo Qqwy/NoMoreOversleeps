@@ -51,11 +51,13 @@ public class Logging
 		configuration.addAppender(clientInfoLogFile);
 		rootLogger.addAppender(clientInfoLogFile, Level.INFO, null);
 
+		/*
 		// FINER DETAIL LOG FILE (REPLACED ON EACH RUN)
 		RandomAccessFileAppender detailLogFile = RandomAccessFileAppender.createAppender(logFilePrefix + "-latest-fine.log", "false", "DetailFile", null, null, null, logfilePattern, null, null, null, configuration);
 		detailLogFile.start();
 		configuration.addAppender(detailLogFile);
 		rootLogger.addAppender(detailLogFile, Level.ALL, null);
+		*/
 
 		// CONSOLE APPENDER
 		ConsoleAppender console = ConsoleAppender.createAppender(consolePattern, null, "SYSTEM_OUT", "Console", null, null); // must be named "Console" to work correctly
