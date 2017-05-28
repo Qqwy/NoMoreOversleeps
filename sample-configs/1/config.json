@@ -1,0 +1,152 @@
+{
+  "jettyPort": 19992,
+  "webcamName": "SplitCam Video Driver 2",
+  "webcamFrameSkip": 2,
+  "schedule": [
+    {
+      "start": 60,
+      "end": 155,
+      "name": "GRAVEYARD CORE"
+    },
+    {
+      "start": 300,
+      "end": 395,
+      "name": "DAWN CORE"
+    },
+    {
+      "start": 540,
+      "end": 565,
+      "name": "BEFORE-WORK NAP"
+    },
+    {
+      "start": 780,
+      "end": 805,
+      "name": "LUNCH NAP"
+    },
+    {
+      "start": 1020,
+      "end": 1045,
+      "name": "AFTER-WORK NAP"
+    },
+    {
+      "start": 1260,
+      "end": 1285,
+      "name": "EVENING NAP"
+    }
+  ],
+  "sleepBlockApproachingTimeMins": 5,
+  "activityWarningTimeInitialMs": 300000,
+  "activityWarningTimeIncrementMs": 10000,
+  "events": {
+    "sleepBlockApproaching": [
+      "/noise/2"
+    ],
+    "sleepBlockStarted": [],
+    "sleepBlockEnded": [
+      "/noise/0"
+    ],
+    "activityWarning1": [
+      "/pavlok/vibration",
+      "/noise/1"
+    ],
+    "activityWarning2": [
+      "/pavlok/shock",
+      "/noise/1"
+    ],
+    "pauseInitiated": [],
+    "pauseCancelled": [],
+    "pauseExpired": []
+  },
+  "integrations": {
+    "keyboard": {
+      "enabled": true
+    },
+    "mouse": {
+      "enabled": true
+    },
+    "xboxController": {
+      "enabled": true
+    },
+    "midiTransmitter": {
+      "enabled": true,
+      "transmitters": [
+        "Alesis Recital "
+      ]
+    },
+    "pavlok": {
+      "enabled": true,
+      "auth": {
+        "access_token": "Yeah I deleted this",
+        "token_type": "bearer",
+        "expires_in": 2592000,
+        "refresh_token": "Yeah I deleted this",
+        "scope": "user",
+        "created_at": 1494973303,
+        "device": "pavlok"
+      }
+    },
+    "twilio": {
+      "enabled": true,
+      "accountSID": "Yeah I deleted this",
+      "authToken": "Yeah I deleted this",
+      "numberFrom": "+1 234 567 8901",
+      "callingURI": "http://twimlets.com/holdmusic?Bucket\u003dcom.twilio.music.ambient",
+      "phoneNumbers": [
+        {
+          "name": "FIRST PHONE",
+          "number": "+1 234 567 8901"
+        },
+        {
+          "name": "SECOND PHONE",
+          "number": "+1 234 567 8901"
+        }
+      ]
+    },
+    "philipsHue": {
+      "enabled": true,
+      "bridgeIP": "Yeah I deleted this",
+      "bridgeUsername": "Yeah I deleted this"
+    },
+    "noise": {
+      "enabled": true,
+      "noises": [
+        {
+          "name": "LONG NOISE",
+          "path": "E:\\#bung\\NMO_NOISE.mp3",
+          "secret": false
+        },
+        {
+          "name": "SHORT NOISE",
+          "path": "E:\\#bung\\ds9_red_alert2_x4.mp3",
+          "secret": false
+        },
+        {
+          "name": "REMINDER NOISE",
+          "path": "E:\\#bung\\dingdingding.mp3",
+          "secret": true
+        }
+      ]
+    },
+    "cmd": {
+      "enabled": true,
+      "commands": [
+        {
+          "name": "CHANGE SOUND-OUT TO SPEAKERS",
+          "command": [
+            "D:\\Tools\\nircmd64\\nircmd", "setdefaultsounddevice", "\"HP Speakers\""
+          ],
+          "workingDir": "D:\\Tools\\nircmd64",
+          "secret": false
+        },
+        {
+          "name": "CHANGE SOUND-OUT TO HEADPHONES",
+          "command": [
+            "D:\\Tools\\nircmd64\\nircmd", "setdefaultsounddevice", "\"Sennheiser HD461\""
+          ],
+          "workingDir": "D:\\Tools\\nircmd64",
+          "secret": false
+        }
+      ]
+    }
+  }
+}

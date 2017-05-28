@@ -1,0 +1,234 @@
+{
+  "jettyPort": 19992,
+  "webcamName": "Integrated Webcam 0",
+  "webcamFrameSkip": 2,
+  "schedule": [
+    {
+      "start": 120,
+      "end": 140,
+      "name": "NAP0"
+    },
+    {
+      "start": 360,
+      "end": 380,
+      "name": "NAP1"
+    },
+    {
+      "start": 600,
+      "end": 620,
+      "name": "NAP2"
+    },
+    {
+      "start": 840,
+      "end": 860,
+      "name": "NAP3"
+    },
+    {
+      "start": 1080,
+      "end": 1100,
+      "name": "NAP4"
+    },
+    {
+      "start": 1320,
+      "end": 1340,
+      "name": "NAP5"
+    }
+  ],
+  "sleepBlockApproachingTimeMins": 5,
+  "activityWarningTimeInitialMs": 120000,
+  "activityWarningTimeIncrementMs": 10000,
+  "events": {
+    "sleepBlockApproaching": [
+      "/cmd/0",
+      "/noise/12"
+    ],
+    "sleepBlockStarted": [],
+    "sleepBlockEnded": [],
+    "activityWarning1": [
+      "/cmd/0",
+      "/noise/7"
+    ],
+    "activityWarning2": [
+      "/cmd/0",
+      "/noise/2",
+      "/noise/3",
+      "/noise/4",
+      "/noise/5",
+      "/noise/6"
+    ],
+    "pauseInitiated": [],
+    "pauseCancelled": [],
+    "pauseExpired": []
+  },
+  "integrations": {
+    "keyboard": {
+      "enabled": true
+    },
+    "mouse": {
+      "enabled": true
+    },
+    "xboxController": {
+      "enabled": true
+    },
+    "midiTransmitter": {
+      "enabled": false,
+      "transmitters": []
+    },
+    "pavlok": {
+      "enabled": false
+    },
+    "twilio": {
+      "enabled": false,
+      "accountSID": "",
+      "authToken": "",
+      "numberFrom": "",
+      "callingURI": "http://twimlets.com/holdmusic?Bucket\u003dcom.twilio.music.ambient",
+      "phoneNumbers": []
+    },
+    "philipsHue": {
+      "enabled": false,
+      "bridgeIP": "",
+      "bridgeUsername": ""
+    },
+    "noise": {
+      "enabled": true,
+      "noises": [
+        {
+          "name": "UBERALARM",
+          "path": "C:\\alarm\\alarm.mp3",
+          "secret": false
+        },
+        {
+          "name": "ALARMS",
+          "path": "C:\\alarm\\Alarms.mp3",
+          "secret": false
+        },
+        {
+          "name": "SIREN",
+          "path": "C:\\alarm\\Siren.mp3",
+          "secret": false
+        },
+        {
+          "name": "SONAR",
+          "path": "C:\\alarm\\Sonar.mp3",
+          "secret": false
+        },
+        {
+          "name": "MILITARY ALARM",
+          "path": "C:\\alarm\\Military alarm.mp3",
+          "secret": false
+        },
+        {
+          "name": "ALARM",
+          "path": "C:\\alarm\\Alarm clock.mp3",
+          "secret": false
+        },
+        {
+          "name": "BEEP",
+          "path": "C:\\alarm\\Beep.mp3",
+          "secret": false
+        },
+        {
+          "name": "SUSPENSE",
+          "path": "C:\\alarm\\Dun dun dun.mp3",
+          "secret": false
+        },
+        {
+          "name": "XYLOPHONE",
+          "path": "C:\\alarm\\Xylophone.mp3",
+          "secret": false
+        },
+        {
+          "name": "HORNS",
+          "path": "C:\\alarm\\Horns.mp3",
+          "secret": false
+        },
+        {
+          "name": "GUITAR",
+          "path": "C:\\alarm\\Guitar.mp3",
+          "secret": false
+        },
+        {
+          "name": "BELL",
+          "path": "C:\\alarm\\Ringing bell.mp3",
+          "secret": false
+        },
+        {
+          "name": "CHIME",
+          "path": "C:\\alarm\\Chime.mp3",
+          "secret": false
+        },
+        {
+          "name": "The Shattering - Scream Of The Butterfly",
+          "path": "C:\\alarm\\The Shattering - Scream Of The Butterfly.mp3",
+          "secret": false
+        },
+        {
+          "name": "The Shattering - The Shattering",
+          "path": "C:\\alarm\\The Shattering - The Shattering.mp3",
+          "secret": false
+        },
+        {
+          "name": "Vektor - Tetrastructural Minds",
+          "path": "C:\\alarm\\Vektor - Tetrastructural Minds.mp3",
+          "secret": false
+        }
+      ]
+    },
+    "cmd": {
+      "enabled": true,
+      "commands": [
+        {
+          "name": "UNMUTE",
+          "command": [
+            "C:\\exe\\NirCmd\\nircmd.exe",
+            "mutesysvolume",
+            "0"
+          ],
+          "workingDir": "C:\\exe\\NirCmd",
+          "secret": false
+        },
+        {
+          "name": "SET_VOL_32",
+          "command": [
+            "C:\\exe\\NirCmd\\nircmd.exe",
+            "setsysvolume",
+            "20971"
+          ],
+          "workingDir": "C:\\exe\\NirCmd",
+          "secret": false
+        },
+        {
+          "name": "SET_VOL_60",
+          "command": [
+            "C:\\exe\\NirCmd\\nircmd.exe",
+            "setsysvolume",
+            "39321"
+          ],
+          "workingDir": "C:\\exe\\NirCmd",
+          "secret": false
+        },
+        {
+          "name": "SET_VOL_80",
+          "command": [
+            "C:\\exe\\NirCmd\\nircmd.exe",
+            "setsysvolume",
+            "52428"
+          ],
+          "workingDir": "C:\\exe\\NirCmd",
+          "secret": false
+        },
+        {
+          "name": "SET_VOL_MAX",
+          "command": [
+            "C:\\exe\\NirCmd\\nircmd.exe",
+            "setsysvolume",
+            "65535"
+          ],
+          "workingDir": "C:\\exe\\NirCmd",
+          "secret": false
+        }
+      ]
+    }
+  }
+}

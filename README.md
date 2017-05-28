@@ -1,7 +1,11 @@
 # NoMoreOversleeps #
 
-NoMoreOversleeps is a very simple JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule. It was originally created only for my own use, so some parts
-of the software are a little crude, but I'm slowly working on improving it to make it more suitable for use by others. Hopefully you can find it helpful for your own polyphasic adaptations.
+NoMoreOversleeps (NMO) is a very simple JavaFX application which is designed to help you adapt to a new polyphasic sleeping schedule. NMO is essentially an alarm clock on steroids -
+it tries to make sure you are awake during waking blocks, and sleeping during naps.
+
+It was originally created only for my own use, so some parts of the software are a little crude and there are a lot of rough edges. The procedure to set up NMO is also a bit convoluted.
+I'm slowly working on improving it to make it more suitable for use by others, but in the meantime you can consider it an alpha version. Despite this, there have been a couple of people
+now besides me who have made use of the program and its popularity is slowly rising. Hopefully you can find it helpful for your own polyphasic adaptations.
 
 ### Features ###
 
@@ -31,7 +35,7 @@ An action of your choice can also be automatically performed X minutes before ea
 #### Manual monitoring ####
 
 NoMoreOversleeps features a port-forwardable password-protected web UI which displays what part of your sleep schedule you are currently in, along with a live webcam feed. This allows
-people to remotely monitoring you, and to see whether or not you are at your computer, along with how awake you are, if you're nodding off in front of your screen, etc.
+people to remotely monitor you, letting them see whether or not you are at your computer, along with how awake you are, if you're nodding off in front of your screen, etc.
 
 In the event that the people who are monitoring you think that you're asleep at the wrong time, they can perform any of the actions you have configured to try and wake you up.
 
@@ -45,12 +49,12 @@ The following actions can currently be configured for use with both automated an
 * **Twilio**: Call a phone number (e.g. your mobile)
 * **Philips Hue smart light bulbs**: Turn the light bulbs on or off
 
-In the future the list of supported actions will hopefully be expanded.
+In particular, the command line execution can be particularly valuable, as it allows you to link NMO to other utility programs to perform more advanced functionality beyond that which
+is offered by NMO out of the box. For example, a popular utility for NMO is [NirCmd](http://www.nirsoft.net/utils/nircmd.html) which can be used to create actions that automatically
+unmute your sound card, change system volume to maximum and/or switch your sound output back to speakers if you left your headphones plugged in - then these actions can be remotely
+triggered from the Web UI or as part of your alarm routine.
 
-### Best usage ###
-
-NoMoreOversleeps is designed for continuous monitoring. It works best if you mostly sit at your computer, have access to most/all of the integration features, and have a reliable buddy to
-watch your feed.
+In the future, the list of supported actions will hopefully be expanded. If you're good at programming in Java, feel free to add your own (the implementation of new actions is quite simple).
 
 ### Features that might be added in the future ###
 
@@ -67,15 +71,39 @@ Some ideas I've had include:
 
 I probably won't implement most of these, but we will see.
 
+### General disclaimer ###
+
+NoMoreOversleeps was designed to be used by people who mostly sit at their computer, have access to most/all of the integration features, and have a reliable buddy to watch their feed. While it can be
+quite an effective alarm when used properly, it can be entirely useless if used wrongly. If you choose to use NMO, then you do so at your own risk - I will not take any responsibility for the success or
+failure of your polyphasic adaptation ;)
+
+### Setup instructions ###
+
+Right now it is best to ask me for help with the setup because it is a bit convoluted. But if you want to take a stab at it yourself here is the basic procedure:
+
+* Download the code (preferably using `hg clone` so that you can pull and update to future versions easily)
+* Open a command window or terminal in the folder where you placed the code
+* Use the gradle wrapper to generate project files for the IDE of your choice (either `gradlew eclipse` or `gradlew idea`)
+* Import the project into your IDE and run the application from the Main class to verify it launches
+* Close the application
+* Go into the `run` folder (it should be next to the `src` folder) and modify the config files to your liking (`config.json` turns features on/off and configure them, and `webusers.properties` contains a list of username/password combos which are valid to access the Web UI)
+* Restart the application
+
+If you want the Web UI to be accessible from the internet, you should set up a Dynamic DNS service (I would recommend [DuckDNS](https://www.duckdns.org/) myself) and then port-forward the application in your
+router control panel (the default port is 19992, but you can change it in the config file if you wish). This requires a little bit of technical knowledge but is pretty common for self-hosted programs.
+If you have no idea how to do this, you can consult me for help.
+
+Some example config files are located in the `sample-configs` folder so you can see how the configuration of each section works (because from the blank autogenerated config file it is not fully obvious).
+
 ### Known issues ###
 
-* The RAM usage is too high. There may be a possible memory leak somewhere I haven't found. It appears to be related to the webcam code, as it worked fine prior to that :/
-* Some features only work on Windows. For other platforms YMMV. It is possible that right now the application even would just crash out on other platforms or be largely unusable (because I haven't tested it).
 * When your login key to Pavlok API expires it isn't renewed. This doesn't seem to make any difference because it doesn't appear to matter that it's expired and is accepted by the API anyway :/
 * The Pavlok integration is not very useful due to the glitchy and unreliable nature of the Pavlok's bluetooth connection and push notifications.
 * The webcam feed isn't visible on iOS devices because the authentication is not passed along to the web socket. Need to come up with a strategy to fix this.
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
+* Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
+* If you make a typo in your config file for any reason, and it becomes invalid JSON as a result, the entire config will be nuked and reset back to default. (You might want to make a backup of your config after making changes before you launch NMO just in case!)
 
 ### Contribution guidelines ###
 
