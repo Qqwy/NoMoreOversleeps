@@ -21,7 +21,7 @@ system and the selection of wake-up actions to be tailored to your needs as desi
 To determine if you are asleep when you shouldn't be, NoMoreOversleeps takes a look at your sleeping schedule and compares it with the system clock. If it is currently a time when you
 should be awake, NoMoreOversleeps monitors the activity of input devices on your computer (currently supporting keyboard, mouse, Xbox360-compatible controllers and MIDI devices) and will
 try to get your attention every X seconds if it fails to detect activity in any of those devices within a Y minute interval. The number of seconds, the detection interval and the method
-used to get your attention can be customized as desired.
+used to get your attention can be customized as desired; you can also set multiple of these for different situations.
 
 In the event you are deliberately going to be away from your computer for a certain amount of time, e.g. you're going shopping or going to work, you can pause the activity detection
 feature of NoMoreOversleeps for a choosable length of time between 5 minutes and 12 hours. This will prevent NoMoreOversleeps from trying to get your attention. When pausing the
@@ -43,8 +43,9 @@ In the event that the people who are monitoring you think that you're asleep at 
 
 The following actions can currently be configured for use with both automated and manual monitoring:
 
-* **Noise/Sound playback**: configure any number of sounds of your choice
-* **Command line execution**: run any application on your machine
+* **Activity warning timer change**: Switch to a different activity warning timer
+* **Noise/Sound playback**: Configure any number of sounds of your choice
+* **Command line execution**: Run any application on your machine
 * **Pavlok**: Beep, vibrate or shock
 * **Twilio**: Call a phone number (e.g. your mobile)
 * **Philips Hue smart light bulbs**: Turn the light bulbs on or off
@@ -103,7 +104,6 @@ Some example config files are located in the `sample-configs` folder so you can 
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 * Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
-* If you make a typo in your config file for any reason, and it becomes invalid JSON as a result, the entire config will be nuked and reset back to default. (You might want to make a backup of your config after making changes before you launch NMO just in case!)
 
 ### Contribution guidelines ###
 

@@ -29,13 +29,15 @@ public class NMOConfiguration
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
 
 	@Expose
-	public int sleepBlockApproachingTimeMins = 5;
+	public ArrayList<ActivityTimer> timers = new ArrayList<ActivityTimer>();
 
+	/*
 	@Expose
 	public int activityWarningTimeInitialMs = 300000;
 
 	@Expose
 	public int activityWarningTimeIncrementMs = 10000;
+	*/
 
 	public static class EventConfiguration
 	{

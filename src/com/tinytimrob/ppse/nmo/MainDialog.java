@@ -57,9 +57,11 @@ public class MainDialog extends Application
 	private static final Logger log = LogWrapper.getLogger();
 	public static Scene scene;
 
+	public static volatile ActivityTimer pendingTimer = null;
+	public static volatile ActivityTimer timer = null;
 	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
-	public static volatile long nextActivityWarningTimeDiff;
+	public static volatile long nextActivityWarningID;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastActivityTimeString = new SimpleStringProperty("");
@@ -80,12 +82,16 @@ public class MainDialog extends Application
 		log.info("JavaFX application start");
 		triggerEvent("Application started", null);
 
-		nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
+		nextActivityWarningID = 0;
 
 		Collections.sort(NMOConfiguration.instance.schedule);
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
 			triggerEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"), null);
+		}
+		for (ActivityTimer entry : NMOConfiguration.instance.timers)
+		{
+			triggerEvent("Adding activity timer: " + entry.name + " " + entry.secondsForFirstWarning + "s/" + entry.secondsForSubsequentWarnings + "s", null);
 		}
 
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
@@ -472,9 +478,12 @@ public class MainDialog extends Application
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 				scheduleStatus = "AWAKE [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
-				if (minutesRemaining == NMOConfiguration.instance.sleepBlockApproachingTimeMins && lastSleepBlockWarning != nextSleepBlockDetected)
+				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
-					triggerEvent(minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s") + " until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
+					if (nextSleepBlockDetected.approachWarning != -1)
+					{
+						triggerEvent(minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s") + " until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
+					}
 					lastSleepBlockWarning = nextSleepBlockDetected;
 				}
 			}
@@ -543,27 +552,33 @@ public class MainDialog extends Application
 		{
 			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
 			long timeDiff = paused ? 0 : (now - lastActivityTime);
-			if (timeDiff > nextActivityWarningTimeDiff)
+			if (pendingTimer != null)
+			{
+				this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
+				pendingTimer = null;
+			}
+			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
+			if (timeDiff > (1000 * nawtd))
 			{
 				try
 				{
 					// the first time, you get an alternative lighter warning, just in case you forgot to pause
-					if (nextActivityWarningTimeDiff == NMOConfiguration.instance.activityWarningTimeInitialMs)
+					if (nextActivityWarningID == 0)
 					{
-						triggerEvent("No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds", NMOConfiguration.instance.events.activityWarning1);
+						triggerEvent("No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning1);
 					}
 					else
 					{
-						triggerEvent("No activity detected for " + (nextActivityWarningTimeDiff / 1000) + " seconds", NMOConfiguration.instance.events.activityWarning2);
+						triggerEvent("No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning2);
 					}
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-				nextActivityWarningTimeDiff += NMOConfiguration.instance.activityWarningTimeIncrementMs;
+				this.setNextActivityWarningForTimer(timer, timeDiff);
 			}
-			timeDiffString.set("Time difference: " + timeDiff + " (next activity warning: " + nextActivityWarningTimeDiff + ")");
+			timeDiffString.set("Time difference: " + timeDiff + " (next activity warning: " + nawtd + " seconds)");
 		}
 
 		try
@@ -582,10 +597,34 @@ public class MainDialog extends Application
 		}
 	}
 
+	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)
+	{
+		MainDialog.timer = activityWarningTimer;
+		if (timeDiff == 0)
+		{
+			nextActivityWarningID = 0;
+		}
+		else if (timeDiff == -1)
+		{
+			timeDiff = System.currentTimeMillis() - lastActivityTime;
+		}
+		long awid = 0;
+		while (timeDiff > (1000 * getNextActivityWarningTimeDiff(awid))) // fixes shortening the gap in the middle of inactivity causing massive warning spam
+		{
+			awid++;
+		}
+		nextActivityWarningID = awid;
+	}
+
+	public static long getNextActivityWarningTimeDiff(long awid)
+	{
+		return timer.secondsForFirstWarning + (awid * timer.secondsForSubsequentWarnings);
+	}
+
 	public static void resetActivityTimer()
 	{
 		lastActivityTime = System.currentTimeMillis();
-		nextActivityWarningTimeDiff = NMOConfiguration.instance.activityWarningTimeInitialMs;
+		nextActivityWarningID = 0;
 	}
 
 	public static void triggerEvent(String eventDescription, String[] actionArray)

@@ -32,7 +32,7 @@ import javafx.scene.text.Font;
 public class Main
 {
 	//-------------------------------------------
-	public static String VERSION = "0.7";
+	public static String VERSION = "0.8";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
@@ -54,6 +54,7 @@ public class Main
 		integrations.add(IntegrationPhilipsHue.INSTANCE);
 		integrations.add(new IntegrationTwilio());
 		integrations.add(new IntegrationCommandLine());
+		integrations.add(new ActivityTimerFakeIntegration());
 	}
 
 	//-------------------------------------------
@@ -77,7 +78,16 @@ public class Main
 					return;
 				}
 				Logging.initialize();
-				NMOConfiguration.instance = Configuration.load(NMOConfiguration.class);
+				try
+				{
+					NMOConfiguration.instance = Configuration.load(NMOConfiguration.class);
+				}
+				catch (Throwable t)
+				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					JOptionPane.showMessageDialog(null, "Parsing of config.json failed; please check for JSON syntax errors", "NoMoreOversleeps", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				//===========================================================================================
 				// include these fonts so that the software looks the same on every platform
 				//===========================================================================================

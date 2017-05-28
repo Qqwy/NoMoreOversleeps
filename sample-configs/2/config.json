@@ -6,37 +6,47 @@
     {
       "start": 120,
       "end": 140,
-      "name": "NAP0"
+      "name": "NAP0",
+      "approachWarning": 5
     },
     {
       "start": 360,
       "end": 380,
-      "name": "NAP1"
+      "name": "NAP1",
+      "approachWarning": 5
     },
     {
       "start": 600,
       "end": 620,
-      "name": "NAP2"
+      "name": "NAP2",
+      "approachWarning": 5
     },
     {
       "start": 840,
       "end": 860,
-      "name": "NAP3"
+      "name": "NAP3",
+      "approachWarning": 5
     },
     {
       "start": 1080,
       "end": 1100,
-      "name": "NAP4"
+      "name": "NAP4",
+      "approachWarning": 5
     },
     {
       "start": 1320,
       "end": 1340,
-      "name": "NAP5"
+      "name": "NAP5",
+      "approachWarning": 5
     }
   ],
-  "sleepBlockApproachingTimeMins": 5,
-  "activityWarningTimeInitialMs": 120000,
-  "activityWarningTimeIncrementMs": 10000,
+  "timers": [
+    {
+      "name": "DEFAULT TIMER",
+      "secondsForFirstWarning": 120,
+      "secondsForSubsequentWarnings": 10
+    }
+  ],
   "events": {
     "sleepBlockApproaching": [
       "/cmd/0",

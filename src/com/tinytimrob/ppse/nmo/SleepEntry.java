@@ -4,11 +4,17 @@ import com.google.gson.annotations.Expose;
 
 public class SleepEntry implements Comparable<SleepEntry>
 {
+	public SleepEntry()
+	{
+		this.approachWarning = 5;
+	}
+
 	public SleepEntry(int start, int end, String name)
 	{
 		this.start = start;
 		this.end = end;
 		this.name = name;
+		this.approachWarning = 5;
 	}
 
 	public SleepEntry(int startH, int startM, int endH, int endM, String name)
@@ -17,13 +23,16 @@ public class SleepEntry implements Comparable<SleepEntry>
 	}
 
 	@Expose
-	public final int start;
+	public int start;
 
 	@Expose
-	public final int end;
+	public int end;
 
 	@Expose
-	public final String name;
+	public String name;
+
+	@Expose
+	public int approachWarning;
 
 	@Override
 	public int compareTo(SleepEntry o)

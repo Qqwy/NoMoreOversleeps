@@ -30,20 +30,12 @@ public class Configuration
 		boolean loaded = false;
 		if (file.exists())
 		{
-			try
-			{
-				String configurationString = FileUtils.readFileToString(file, CommonUtils.charsetUTF8);
-				data = CommonUtils.GSON.fromJson(configurationString, clazz);
-				loaded = true;
-			}
-			catch (Throwable e)
-			{
-				log.error("Failed to load configuration");
-			}
+			String configurationString = FileUtils.readFileToString(file, CommonUtils.charsetUTF8);
+			data = CommonUtils.GSON.fromJson(configurationString, clazz);
 		}
-		if (!loaded)
+		else
 		{
-			log.warn("Unable to load configuration, reverting to defaults and saving");
+			log.warn("Configuration file does not exist, reverting to defaults and saving");
 			data = clazz.newInstance();
 		}
 		save();

@@ -6,37 +6,47 @@
     {
       "start": 60,
       "end": 155,
-      "name": "GRAVEYARD CORE"
+      "name": "GRAVEYARD CORE",
+      "approachWarning": 5
     },
     {
       "start": 300,
       "end": 395,
-      "name": "DAWN CORE"
+      "name": "DAWN CORE",
+      "approachWarning": 5
     },
     {
       "start": 540,
       "end": 565,
-      "name": "BEFORE-WORK NAP"
+      "name": "BEFORE-WORK NAP",
+      "approachWarning": 5
     },
     {
       "start": 780,
       "end": 805,
-      "name": "LUNCH NAP"
+      "name": "LUNCH NAP",
+      "approachWarning": 5
     },
     {
       "start": 1020,
       "end": 1045,
-      "name": "AFTER-WORK NAP"
+      "name": "AFTER-WORK NAP",
+      "approachWarning": 5
     },
     {
       "start": 1260,
       "end": 1285,
-      "name": "EVENING NAP"
+      "name": "EVENING NAP",
+      "approachWarning": 5
     }
   ],
-  "sleepBlockApproachingTimeMins": 5,
-  "activityWarningTimeInitialMs": 300000,
-  "activityWarningTimeIncrementMs": 10000,
+  "timers": [
+    {
+      "name": "DEFAULT TIMER",
+      "secondsForFirstWarning": 300,
+      "secondsForSubsequentWarnings": 10
+    }
+  ],
   "events": {
     "sleepBlockApproaching": [
       "/noise/2"
