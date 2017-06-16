@@ -1017,6 +1017,12 @@ public class MainDialog extends Application
 		{
 			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
 		}
+		long timeDiff = paused ? 0 : (now - lastActivityTime);
+		if (pendingTimer != null)
+		{
+			this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
+			pendingTimer = null;
+		}
 		if (paused)
 		{
 			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\"");
@@ -1025,12 +1031,6 @@ public class MainDialog extends Application
 		else
 		{
 			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
-			long timeDiff = paused ? 0 : (now - lastActivityTime);
-			if (pendingTimer != null)
-			{
-				this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
-				pendingTimer = null;
-			}
 			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
 			if (timeDiff > (1000 * nawtd))
 			{
