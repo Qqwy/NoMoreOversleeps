@@ -32,7 +32,7 @@ import javafx.scene.text.Font;
 public class Main
 {
 	//-------------------------------------------
-	public static String VERSION = "0.9-dev";
+	public static String VERSION = "0.9";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
