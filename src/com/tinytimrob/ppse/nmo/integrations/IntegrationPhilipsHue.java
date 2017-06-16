@@ -134,7 +134,7 @@ public class IntegrationPhilipsHue extends Integration
 					{
 						PHLightState phls = u.get(0).getLastKnownLightState();
 						IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
-						System.out.println(IntegrationPhilipsHue.this.lightState);
+						log.info("Updating light state: " + IntegrationPhilipsHue.this.lightState);
 					}
 				}
 			}
