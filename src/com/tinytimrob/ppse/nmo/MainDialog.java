@@ -8,15 +8,22 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
+import com.tinytimrob.ppse.nmo.ws.WebcamWebSocketHandler;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -31,6 +38,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -38,14 +46,19 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
@@ -64,9 +77,11 @@ public class MainDialog extends Application
 	public static volatile long nextActivityWarningID;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty webMonitoringString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastActivityTimeString = new SimpleStringProperty("");
-	public static volatile SimpleStringProperty lastCursorPositionString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty webcamName = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty lightingStateString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
 	public static volatile SleepEntry lastSleepBlockWarning = null;
@@ -87,7 +102,7 @@ public class MainDialog extends Application
 		Collections.sort(NMOConfiguration.instance.schedule);
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
-			triggerEvent("Adding sleep block: " + entry.name + " " + StringUtils.leftPad("" + (entry.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.start % 60), 2, "0") + "-" + StringUtils.leftPad("" + (entry.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (entry.end % 60), 2, "0"), null);
+			triggerEvent("Adding sleep block: " + entry.describe(), null);
 		}
 		for (ActivityTimer entry : NMOConfiguration.instance.timers)
 		{
@@ -113,11 +128,9 @@ public class MainDialog extends Application
 		//==================================================================
 		stage.setTitle("NoMoreOversleeps v" + Main.VERSION);
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
-		stage.setResizable(false);
-		stage.setMinWidth(1000);
-		stage.setMinHeight(980);
-
-		ImageView webcamImageView = new ImageView();
+		stage.setResizable(true);
+		stage.setMinWidth(1210);
+		stage.setMaxWidth(1210);
 
 		//==================================================================
 		// CONFIGURE ANIMATION TIMER
@@ -133,212 +146,25 @@ public class MainDialog extends Application
 		};
 
 		//==================================================================
-		// CONFIGURE WEBCAM CAPTURE
-		//==================================================================
-
-		webcamImageView.imageProperty().bind(lastWebcamImage);
-		webcamImageView.setFitWidth(256);
-		webcamImageView.setPreserveRatio(true);
-		final BorderPane webcamPane = new BorderPane();
-		webcamPane.setPadding(new Insets(2, 2, 2, 2));
-		webcamPane.setCenter(webcamImageView);
-
-		//==================================================================
 		// CONFIGURE THE SCENE
 		//==================================================================
-		final StackPane outerPane = new StackPane();
+		final ScrollPane outerPane = new ScrollPane();
 		outerPane.setId("root");
-		scene = new Scene(outerPane, 800, 600, Color.WHITE);
+		outerPane.setFitToHeight(true);
+		outerPane.setFitToWidth(true);
+		scene = new Scene(outerPane, 1210, 900, Color.WHITE);
 		scene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
 
 		//==================================================================
 		// BUILD THE PRIMARY PANE
 		//==================================================================
 		final BorderPane innerPane = new BorderPane();
-		{ // Main container pane
-			innerPane.setStyle("-fx-background-color: #222;");
-		}
-
-		final HBox innerTopPane = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 35, new Insets(8, 4, 8, 4));
-		{ // Top section
-			innerTopPane.setStyle("-fx-background-color: #414C7D;");
-			final Label label = JavaFxHelper.createLabel(" NoMoreOversleeps", Color.WHITE, "-fx-font-weight: bold; -fx-font-size:16;", new Insets(0, 0, 0, 3), 320, Control.USE_COMPUTED_SIZE);
-			label.setGraphic(JavaFxHelper.createIcon(FontAwesomeIcon.BED, "16", Color.WHITE));
-			innerTopPane.getChildren().add(label);
-			innerPane.setTop(innerTopPane);
-		}
-
-		final BorderPane centerPaneI = new BorderPane();
-		{ // Real center pane
-			innerPane.setCenter(centerPaneI);
-		}
-
-		final GridPane centerPane = new GridPane();
-		{ // Center pane
-			final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			loginTokenValidUntil.textProperty().bind(loginTokenValidUntilString);
-			loginTokenValidUntil.setPadding(new Insets(6, 0, 10, 8));
-			centerPane.addRow(0, loginTokenValidUntil);
-
-			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			lastCursorTime.textProperty().bind(lastActivityTimeString);
-			lastCursorTime.setPadding(new Insets(6, 0, 0, 8));
-			centerPane.addRow(1, lastCursorTime);
-
-			final Label lastCursorPosition = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			lastCursorPosition.textProperty().bind(lastCursorPositionString);
-			lastCursorPosition.setPadding(new Insets(3, 0, 0, 8));
-			centerPane.addRow(2, lastCursorPosition);
-
-			final Label timeDiff = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			timeDiff.textProperty().bind(timeDiffString);
-			timeDiff.setPadding(new Insets(3, 0, 0, 8));
-			centerPane.addRow(3, timeDiff);
-
-			centerPaneI.setCenter(centerPane);
-		}
-
-		final ListView<String> listView = new ListView<String>(events);
-		listView.getItems().addListener(new ListChangeListener<String>()
-		{
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends String> c)
-			{
-				listView.scrollTo(c.getList().size() - 1);
-			}
-		});
-		listView.setMinHeight(540);
-		centerPaneI.setBottom(listView);
-
-		final BorderPane rightPaneI = new BorderPane();
-		{ // Real center pane
-			innerPane.setRight(rightPaneI);
-		}
-		rightPaneI.setTop(webcamPane);
-
-		final GridPane innerRightPane = new GridPane();
-		{ // Manual controls
-			int row = 0;
-			innerRightPane.setMinWidth(260);
-			innerRightPane.setMaxWidth(260);
-			innerRightPane.setStyle("-fx-background-color: #444;");
-			innerRightPane.setVgap(4);
-			innerRightPane.setPadding(new Insets(10, 10, 10, 10));
-			final Label label = JavaFxHelper.createLabel("Manual controls", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
-			innerRightPane.addRow(row++, label);
-
-			// Integration buttons
-			for (Integration integration : Main.integrations)
-			{
-				System.out.println(integration);
-				for (String buttonKey : integration.getActions().keySet())
-				{
-					System.out.println("*" + buttonKey);
-					final Action clickableButton = integration.getActions().get(buttonKey);
-					final Button jfxButton = new Button(clickableButton.getName());
-					jfxButton.setPadding(new Insets(1, 4, 1, 4));
-					jfxButton.setMinWidth(240);
-					jfxButton.setMaxWidth(240);
-					jfxButton.setAlignment(Pos.BASELINE_LEFT);
-					jfxButton.setContentDisplay(ContentDisplay.RIGHT);
-					jfxButton.setOnAction(new EventHandler<ActionEvent>()
-					{
-						@Override
-						public void handle(ActionEvent arg0)
-						{
-							try
-							{
-								clickableButton.onAction();
-								triggerEvent("<" + clickableButton.getName() + "> from frontend", null);
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-					});
-					innerRightPane.addRow(row++, jfxButton);
-				}
-			}
-
-			// Pause controls
-			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE, "", new Insets(0, 0, 0, 3), 160, Control.USE_COMPUTED_SIZE);
-			innerRightPane.addRow(row++, label2);
-
-			int[] periods = new int[] { 5, 10, 15, 20, 25, 30, 45, 60, 90, 105, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720 };
-			GridPane btnGridPane = null;
-			for (int p = 0; p < periods.length; p++)
-			{
-				if (p % 3 == 0)
-				{
-					if (btnGridPane != null)
-					{
-						innerRightPane.addRow(row++, btnGridPane);
-					}
-					btnGridPane = new GridPane();
-					btnGridPane.setHgap(9);
-				}
-				final int pp = periods[p];
-				int hours = pp / 60;
-				int minutes = pp % 60;
-				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
-				final Button pauseButton = JavaFxHelper.createButton(hm);
-				pauseButton.setMinWidth(74);
-				pauseButton.setMaxWidth(74);
-				pauseButton.setAlignment(Pos.BASELINE_LEFT);
-				pauseButton.setPadding(new Insets(1, 4, 1, 4));
-				pauseButton.setOnAction(new EventHandler<ActionEvent>()
-				{
-					@Override
-					public void handle(ActionEvent arg0)
-					{
-						TextInputDialog dialog = new TextInputDialog("");
-						dialog.setTitle("Pause for " + hm);
-						dialog.setContentText("Please input why you are pausing:");
-
-						// Traditional way to get the response value.
-						Optional<String> result = dialog.showAndWait();
-						if (result.isPresent() && !result.get().isEmpty())
-						{
-							long now = System.currentTimeMillis();
-							pausedUntil = now + (pp * 60000);
-							pauseReason = result.get();
-							triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
-						}
-					}
-				});
-				pauseButton.disableProperty().bind(isCurrentlyPaused);
-				btnGridPane.addColumn(p % 3, pauseButton);
-			}
-			if (btnGridPane != null)
-			{
-				innerRightPane.addRow(row++, btnGridPane);
-			}
-			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
-			unpauseButton.setMinWidth(240);
-			unpauseButton.setMaxWidth(240);
-			unpauseButton.setPadding(new Insets(1, 4, 1, 4));
-			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
-			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
-			{
-				@Override
-				public void handle(ActionEvent arg0)
-				{
-					pausedUntil = 0;
-					isCurrentlyPaused.set(false);
-					triggerEvent("Unpaused manually", NMOConfiguration.instance.events.pauseCancelled);
-				}
-			});
-			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
-			innerRightPane.addRow(row++, unpauseButton);
-
-			rightPaneI.setCenter(innerRightPane);
-		}
+		innerPane.setStyle("-fx-background-color: #222;");
+		this.loadFrames(innerPane);
 
 		//==================================================================
 		// PAVLOK CRAP
 		//==================================================================
-
 		if (NMOConfiguration.instance.integrations.pavlok.enabled && NMOConfiguration.instance.integrations.pavlok.auth == null)
 		{
 			final String url = "https://pavlok-mvp.herokuapp.com/oauth/authorize?client_id=" + Main.CLIENT_ID + "&redirect_uri=" + Main.CLIENT_CALLBACK + "&response_type=code";
@@ -376,8 +202,10 @@ public class MainDialog extends Application
 								Configuration.save();
 								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
 								triggerEvent("<VIBRATE PAVLOK> Connection test", null);
-								outerPane.getChildren().clear();
-								outerPane.getChildren().add(innerPane);
+								outerPane.setContent(innerPane);
+								outerPane.requestFocus();
+								outerPane.requestLayout();
+								outerPane.setVvalue(0);
 								at.start();
 							}
 							catch (Exception e)
@@ -388,11 +216,11 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			outerPane.getChildren().add(authPane);
+			outerPane.setContent(authPane);
 		}
 		else
 		{
-			outerPane.getChildren().add(innerPane);
+			outerPane.setContent(innerPane);
 			at.start();
 		}
 
@@ -401,6 +229,594 @@ public class MainDialog extends Application
 		//==================================================================
 		stage.setScene(scene);
 		stage.show();
+
+		outerPane.requestFocus();
+		outerPane.requestLayout();
+		outerPane.setVvalue(0);
+	}
+
+	private void addIntegrationButtonsToVbox(Integration integration, VBox vbox)
+	{
+		for (String buttonKey : integration.getActions().keySet())
+		{
+			System.out.println("*" + buttonKey);
+			final Action clickableButton = integration.getActions().get(buttonKey);
+			final Button jfxButton = new Button(clickableButton.getName());
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setMinWidth(250);
+			jfxButton.setMaxWidth(250);
+			jfxButton.setAlignment(Pos.BASELINE_LEFT);
+			jfxButton.setContentDisplay(ContentDisplay.RIGHT);
+			jfxButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						clickableButton.onAction();
+						triggerEvent("<" + clickableButton.getName() + "> from frontend", null);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			vbox.getChildren().add(jfxButton);
+		}
+	}
+
+	private void loadFrames(BorderPane innerPane)
+	{
+		// use a grid pane layout
+		GridPane pane = new GridPane();
+		pane.setPadding(new Insets(10, 10, 10, 10));
+		pane.setHgap(10);
+		pane.setVgap(10);
+		ColumnConstraints none = new ColumnConstraints();
+		none.setHgrow(Priority.ALWAYS);
+		ColumnConstraints c300 = new ColumnConstraints();
+		c300.setMinWidth(340);
+		c300.setMaxWidth(340);
+		pane.getColumnConstraints().addAll(none, none, none, c300);
+		innerPane.setCenter(pane);
+
+		// schedule
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setSpacing(1);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			for (SleepEntry entry : NMOConfiguration.instance.schedule)
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel(entry.name, Color.WHITE, "-fx-font-weight: bold;"));
+				statusBox.getChildren().add(JavaFxHelper.createLabel(entry.describeTime() + "    (" + entry.approachWarning + "m approach warning)", Color.WHITE, "", new Insets(0, 0, 0, 8)));
+			}
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #26DE42;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Current Schedule", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #26DE42; -fx-background-color: #333;");
+			pane.add(frame, 0, 0, 1, 1);
+		}
+
+		// monitoring control
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setSpacing(3);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			final Label keyboard = JavaFxHelper.createLabel("Keyboard: ", Color.WHITE, "-fx-font-weight: bold;");
+			if (IntegrationKeyboard.INSTANCE.isEnabled())
+			{
+				keyboard.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+				keyboard.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			else
+			{
+				keyboard.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+				keyboard.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			statusBox.getChildren().add(keyboard);
+
+			final Label mouse = JavaFxHelper.createLabel("Mouse: ", Color.WHITE, "-fx-font-weight: bold;");
+			if (IntegrationMouse.INSTANCE.isEnabled())
+			{
+				mouse.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+				mouse.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			else
+			{
+				mouse.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+				mouse.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			statusBox.getChildren().add(mouse);
+
+			final Label xbox = JavaFxHelper.createLabel("Controller: ", Color.WHITE, "-fx-font-weight: bold;");
+			if (IntegrationXboxController.INSTANCE.isEnabled())
+			{
+				xbox.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+				xbox.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			else
+			{
+				xbox.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+				xbox.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			statusBox.getChildren().add(xbox);
+
+			final Label midi = JavaFxHelper.createLabel("MIDI: ", Color.WHITE, "-fx-font-weight: bold;");
+			if (IntegrationMidiTransmitter.INSTANCE.isEnabled())
+			{
+				midi.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+				midi.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			else
+			{
+				midi.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+				midi.setContentDisplay(ContentDisplay.RIGHT);
+			}
+			statusBox.getChildren().add(midi);
+			if (IntegrationMidiTransmitter.INSTANCE.isEnabled())
+			{
+				for (String transmitter : NMOConfiguration.instance.integrations.midiTransmitter.transmitters)
+				{
+					final Label transmitterlabel = JavaFxHelper.createLabel("> " + transmitter, Color.YELLOW, "", new Insets(0, 0, 0, 8));
+					statusBox.getChildren().add(transmitterlabel);
+				}
+			}
+
+			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+
+			final Label webMonitoringLabel = JavaFxHelper.createLabel("", Color.WHITE);
+			webMonitoringLabel.textProperty().bind(webMonitoringString);
+			statusBox.getChildren().add(webMonitoringLabel);
+
+			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+
+			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			lastCursorTime.textProperty().bind(lastActivityTimeString);
+			statusBox.getChildren().add(lastCursorTime);
+
+			final Label timeDiff = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			timeDiff.textProperty().bind(timeDiffString);
+			statusBox.getChildren().add(timeDiff);
+
+			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			this.addIntegrationButtonsToVbox(ActivityTimerFakeIntegration.INSTANCE, statusBox);
+
+			hbox.getChildren().add(new Separator(Orientation.VERTICAL));
+
+			VBox pauseControlBox = new VBox(6);
+			pauseControlBox.setAlignment(Pos.TOP_LEFT);
+			final Label label2 = JavaFxHelper.createLabel("Pause/Resume", Color.WHITE);
+			pauseControlBox.getChildren().add(label2);
+			int[] periods = new int[] { 5, 10, 15, 20, 25, 30, 45, 60, 90, 105, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720 };
+			GridPane btnGridPane = null;
+			for (int p = 0; p < periods.length; p++)
+			{
+				if (p % 3 == 0)
+				{
+					if (btnGridPane != null)
+					{
+						pauseControlBox.getChildren().add(btnGridPane);
+					}
+					btnGridPane = new GridPane();
+					btnGridPane.setHgap(6);
+				}
+				final int pp = periods[p];
+				int hours = pp / 60;
+				int minutes = pp % 60;
+				final String hm = (((hours > 0) ? hours + "h" : "") + ((minutes > 0) ? minutes + "m" : ""));
+				final Button pauseButton = JavaFxHelper.createButton(hm);
+				pauseButton.setMinWidth(64);
+				pauseButton.setMaxWidth(64);
+				pauseButton.setAlignment(Pos.BASELINE_LEFT);
+				pauseButton.setPadding(new Insets(5, 4, 5, 4));
+				pauseButton.setOnAction(new EventHandler<ActionEvent>()
+				{
+					@Override
+					public void handle(ActionEvent arg0)
+					{
+						TextInputDialog dialog = new TextInputDialog("");
+						dialog.setTitle("Pause for " + hm);
+						dialog.setContentText("Please input why you are pausing:");
+
+						// Traditional way to get the response value.
+						Optional<String> result = dialog.showAndWait();
+						if (result.isPresent() && !result.get().isEmpty())
+						{
+							long now = System.currentTimeMillis();
+							pausedUntil = now + (pp * 60000);
+							pauseReason = result.get();
+							triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
+						}
+					}
+				});
+				pauseButton.disableProperty().bind(isCurrentlyPaused);
+				btnGridPane.addColumn(p % 3, pauseButton);
+			}
+			if (btnGridPane != null)
+			{
+				pauseControlBox.getChildren().add(btnGridPane);
+			}
+			final Button unpauseButton = JavaFxHelper.createButton("Unpause");
+			unpauseButton.setMinWidth(204);
+			unpauseButton.setMaxWidth(204);
+			unpauseButton.setPadding(new Insets(5, 4, 5, 4));
+			unpauseButton.setAlignment(Pos.BASELINE_LEFT);
+			unpauseButton.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					pausedUntil = 0;
+					isCurrentlyPaused.set(false);
+					triggerEvent("Unpaused manually", NMOConfiguration.instance.events.pauseCancelled);
+				}
+			});
+			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
+			pauseControlBox.getChildren().add(unpauseButton);
+			hbox.getChildren().add(pauseControlBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #6D81A3;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Monitoring Control", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6D81A3; -fx-background-color: #333;");
+			pane.add(frame, 1, 0, 2, 1);
+		}
+
+		// build the webcam frame
+		{
+			VBox vbox = new VBox(6);
+			vbox.setPadding(new Insets(6));
+			Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			l.setPadding(new Insets(0, 0, 0, 2));
+			l.textProperty().bind(webcamName);
+			vbox.getChildren().add(l);
+
+			ImageView webcamImageView = new ImageView();
+			webcamImageView.imageProperty().bind(lastWebcamImage);
+			webcamImageView.setPreserveRatio(true);
+			vbox.getChildren().add(webcamImageView);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #A36D75;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Webcam", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(vbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #A36D75; -fx-background-color: #333;");
+			pane.add(frame, 3, 0, 1, 1);
+		}
+
+		// PAVLOK
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			loginTokenValidUntil.textProperty().bind(loginTokenValidUntilString);
+			statusBox.getChildren().add(loginTokenValidUntil);
+			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			this.addIntegrationButtonsToVbox(IntegrationPavlok.INSTANCE, statusBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #DEB026;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Pavlok", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #DEB026; -fx-background-color: #333;");
+			pane.add(frame, 0, 1, 1, 1);
+		}
+
+		// LIGHTING
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			final Label lightingStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			lightingStateLabel.textProperty().bind(lightingStateString);
+			statusBox.getChildren().add(lightingStateLabel);
+			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			this.addIntegrationButtonsToVbox(IntegrationPhilipsHue.INSTANCE, statusBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #839CA0;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Lighting", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #839CA0; -fx-background-color: #333;");
+			pane.add(frame, 1, 1, 1, 1);
+		}
+
+		// ALARM SOUNDS
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+			this.addIntegrationButtonsToVbox(IntegrationNoise.INSTANCE, statusBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #B649C6;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Noise", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #B649C6; -fx-background-color: #333;");
+			pane.add(frame, 2, 1, 1, 2);
+		}
+
+		// EVENT CONTROL
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setSpacing(1);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block is approaching", NMOConfiguration.instance.events.sleepBlockApproaching);
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block starts", NMOConfiguration.instance.events.sleepBlockStarted);
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block ends", NMOConfiguration.instance.events.sleepBlockEnded);
+			this.addEventSummaryToStatusBox(statusBox, "On first activity warning", NMOConfiguration.instance.events.activityWarning1);
+			this.addEventSummaryToStatusBox(statusBox, "On subsequent warnings", NMOConfiguration.instance.events.activityWarning2);
+			this.addEventSummaryToStatusBox(statusBox, "When manually pausing", NMOConfiguration.instance.events.pauseInitiated);
+			this.addEventSummaryToStatusBox(statusBox, "When manually unpausing", NMOConfiguration.instance.events.pauseCancelled);
+			this.addEventSummaryToStatusBox(statusBox, "When pause auto-expires", NMOConfiguration.instance.events.pauseExpired);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #6BA4A5;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Event Control", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6BA4A5; -fx-background-color: #333;");
+			pane.add(frame, 3, 1, 1, 2);
+		}
+
+		// TWILIO
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+			this.addIntegrationButtonsToVbox(IntegrationTwilio.INSTANCE, statusBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #A36E6D;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Twilio", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #A36E6D; -fx-background-color: #333;");
+			pane.add(frame, 0, 2, 1, 1);
+		}
+
+		// CUSTOM COMMANDS
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+			this.addIntegrationButtonsToVbox(IntegrationCommandLine.INSTANCE, statusBox);
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #7BAD58;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Custom Commands", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7BAD58; -fx-background-color: #333;");
+			pane.add(frame, 1, 2, 1, 1);
+		}
+
+		// build the log frame
+		{
+			final ListView<String> listView = new ListView<String>(events);
+			listView.getItems().addListener(new ListChangeListener<String>()
+			{
+				@Override
+				public void onChanged(javafx.collections.ListChangeListener.Change<? extends String> c)
+				{
+					listView.scrollTo(c.getList().size() - 1);
+				}
+			});
+			listView.setMinHeight(216);
+			listView.setMaxHeight(216);
+			innerPane.setBottom(listView);
+		}
+	}
+
+	private void addEventSummaryToStatusBox(VBox statusBox, String description, String[] eventTriggers)
+	{
+		statusBox.getChildren().add(JavaFxHelper.createLabel(description + ":", Color.WHITE, "-fx-font-weight: bold;"));
+		if (eventTriggers.length == 0)
+		{
+			statusBox.getChildren().add(JavaFxHelper.createLabel("do nothing", Color.GRAY, "", new Insets(0, 0, 0, 16)));
+		}
+		else
+		{
+			for (int i = 0; i < eventTriggers.length; i++)
+			{
+				// get the description
+				String desc = null;
+				for (Integration integration : Main.integrations)
+				{
+					Action action = integration.getActions().get(eventTriggers[i]);
+					if (action != null)
+					{
+						desc = action.getName();
+						break;
+					}
+				}
+				if (desc == null)
+				{
+					statusBox.getChildren().add(JavaFxHelper.createLabel(eventTriggers[i], Color.RED, "", new Insets(0, 0, 0, 16)));
+				}
+				else
+				{
+					statusBox.getChildren().add(JavaFxHelper.createLabel(desc, Color.LIME, "", new Insets(0, 0, 0, 16)));
+				}
+			}
+		}
 	}
 
 	protected void tick()
@@ -537,16 +953,12 @@ public class MainDialog extends Application
 		}
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
-			loginTokenValidUntilString.set("Login token to Pavlok API expires on " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
-		}
-		if (NMOConfiguration.instance.integrations.mouse.enabled)
-		{
-			lastCursorPositionString.set(paused ? "" : "Last cursor position: " + IntegrationMouse.lastCursorPoint.getX() + ", " + IntegrationMouse.lastCursorPoint.getY());
+			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
 		}
 		if (paused)
 		{
-			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\" until " + CommonUtils.dateFormatter.format(pausedUntil));
-			timeDiffString.set("");
+			lastActivityTimeString.set("PAUSED for \"" + pauseReason + "\"");
+			timeDiffString.set("   until " + CommonUtils.dateFormatter.format(pausedUntil));
 		}
 		else
 		{
@@ -578,8 +990,11 @@ public class MainDialog extends Application
 				}
 				this.setNextActivityWarningForTimer(timer, timeDiff);
 			}
-			timeDiffString.set("Time difference: " + timeDiff + " (next activity warning: " + nawtd + " seconds)");
+			timeDiffString.set("Time difference: " + timeDiff + " (next warning: " + nawtd + "s)");
 		}
+
+		webMonitoringString.set(WebcamWebSocketHandler.connectionCounter.get() + " active web sockets");
+		lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
 
 		try
 		{
@@ -590,6 +1005,7 @@ public class MainDialog extends Application
 				img.flush();
 				lastWebcamImage.set(writableImage);
 			}
+			webcamName.set(WebcamCapture.getCameraName());
 		}
 		catch (Exception e)
 		{

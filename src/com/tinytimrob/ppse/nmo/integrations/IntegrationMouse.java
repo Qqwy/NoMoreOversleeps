@@ -9,6 +9,7 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationMouse extends Integration
 {
+	public static final IntegrationMouse INSTANCE = new IntegrationMouse();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
 
 	public static class MouseConfiguration

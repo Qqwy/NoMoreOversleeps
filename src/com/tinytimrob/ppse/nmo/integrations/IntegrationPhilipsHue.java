@@ -21,7 +21,7 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationPhilipsHue extends Integration
 {
-	public static IntegrationPhilipsHue INSTANCE = new IntegrationPhilipsHue();
+	public static final IntegrationPhilipsHue INSTANCE = new IntegrationPhilipsHue();
 	private static final Logger log = LogWrapper.getLogger();
 	public PHHueSDK sdk;
 	public PHBridge activeBridge;
@@ -134,6 +134,7 @@ public class IntegrationPhilipsHue extends Integration
 					{
 						PHLightState phls = u.get(0).getLastKnownLightState();
 						IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
+						System.out.println(IntegrationPhilipsHue.this.lightState);
 					}
 				}
 			}

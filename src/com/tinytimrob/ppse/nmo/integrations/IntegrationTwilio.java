@@ -12,6 +12,7 @@ import com.twilio.type.PhoneNumber;
 
 public class IntegrationTwilio extends Integration
 {
+	public static final IntegrationTwilio INSTANCE = new IntegrationTwilio();
 	private static final Logger log = LogWrapper.getLogger();
 
 	public static class StoredPhoneNumber

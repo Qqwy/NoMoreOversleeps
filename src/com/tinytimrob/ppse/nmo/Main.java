@@ -32,7 +32,7 @@ import javafx.scene.text.Font;
 public class Main
 {
 	//-------------------------------------------
-	public static String VERSION = "0.8";
+	public static String VERSION = "0.9-dev";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
@@ -45,16 +45,16 @@ public class Main
 	public static final ArrayList<Integration> integrations = new ArrayList<Integration>();
 	static
 	{
-		integrations.add(new IntegrationKeyboard());
-		integrations.add(new IntegrationMouse());
-		integrations.add(new IntegrationXboxController());
-		integrations.add(new IntegrationMidiTransmitter());
+		integrations.add(IntegrationKeyboard.INSTANCE);
+		integrations.add(IntegrationMouse.INSTANCE);
+		integrations.add(IntegrationXboxController.INSTANCE);
+		integrations.add(IntegrationMidiTransmitter.INSTANCE);
 		integrations.add(IntegrationPavlok.INSTANCE);
 		integrations.add(IntegrationNoise.INSTANCE);
 		integrations.add(IntegrationPhilipsHue.INSTANCE);
-		integrations.add(new IntegrationTwilio());
-		integrations.add(new IntegrationCommandLine());
-		integrations.add(new ActivityTimerFakeIntegration());
+		integrations.add(IntegrationTwilio.INSTANCE);
+		integrations.add(IntegrationCommandLine.INSTANCE);
+		integrations.add(ActivityTimerFakeIntegration.INSTANCE);
 	}
 
 	//-------------------------------------------

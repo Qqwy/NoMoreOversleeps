@@ -93,6 +93,11 @@ public class WebcamCapture
 		return webcam.getImage();
 	}
 
+	public static String getCameraName()
+	{
+		return webcam.getName();
+	}
+
 	public static void shutdown()
 	{
 		webcam.close();

@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo;
 
+import org.apache.commons.lang3.StringUtils;
 import com.google.gson.annotations.Expose;
 
 public class SleepEntry implements Comparable<SleepEntry>
@@ -55,5 +56,15 @@ public class SleepEntry implements Comparable<SleepEntry>
 		{
 			return currentMinuteOfDay >= this.start && currentMinuteOfDay < this.end;
 		}
+	}
+
+	public String describe()
+	{
+		return this.name + " :: " + this.describeTime();
+	}
+
+	public String describeTime()
+	{
+		return StringUtils.leftPad("" + (this.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (this.start % 60), 2, "0") + " - " + StringUtils.leftPad("" + (this.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (this.end % 60), 2, "0");
 	}
 }

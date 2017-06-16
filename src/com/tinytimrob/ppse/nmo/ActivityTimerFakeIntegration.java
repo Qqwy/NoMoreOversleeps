@@ -5,6 +5,8 @@ import com.tinytimrob.ppse.nmo.integrations.Integration;
 
 public class ActivityTimerFakeIntegration extends Integration
 {
+	public static ActivityTimerFakeIntegration INSTANCE = new ActivityTimerFakeIntegration();
+
 	@Override
 	public boolean isEnabled()
 	{
