@@ -467,7 +467,7 @@ public class MainDialog extends Application
 						}
 					}
 				});
-				pauseButton.disableProperty().bind(isCurrentlyPaused);
+				//pauseButton.disableProperty().bind(isCurrentlyPaused);
 				btnGridPane.addColumn(p % 3, pauseButton);
 			}
 			if (btnGridPane != null)
