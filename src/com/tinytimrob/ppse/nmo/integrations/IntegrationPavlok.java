@@ -11,6 +11,11 @@ import com.tinytimrob.ppse.nmo.utils.Communicator;
 
 public class IntegrationPavlok extends Integration
 {
+	public IntegrationPavlok()
+	{
+		super("pavlok");
+	}
+
 	public static final IntegrationPavlok INSTANCE = new IntegrationPavlok();
 	private static final Logger log = LogWrapper.getLogger();
 

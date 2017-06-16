@@ -13,6 +13,11 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationMidiTransmitter extends Integration
 {
+	public IntegrationMidiTransmitter()
+	{
+		super("midiTransmitter");
+	}
+
 	public static final IntegrationMidiTransmitter INSTANCE = new IntegrationMidiTransmitter();
 	private static final Logger log = LogWrapper.getLogger();
 	int transmitterLoop = -1;

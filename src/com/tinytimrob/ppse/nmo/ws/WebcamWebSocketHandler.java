@@ -29,12 +29,17 @@ public class WebcamWebSocketHandler implements WebcamListener
 	public static final AtomicInteger connectionCounter = new AtomicInteger(0);
 	private static final Logger log = LogWrapper.getLogger();
 	private Session session;
+	private String connectionIP;
 
 	private void teardown()
 	{
 		if (this.session != null)
 		{
 			connectionCounter.decrementAndGet();
+			if (this.connectionIP != null)
+			{
+				log.info("WebSocket disconnect from " + this.connectionIP);
+			}
 			try
 			{
 				this.session.close();
@@ -52,15 +57,16 @@ public class WebcamWebSocketHandler implements WebcamListener
 	public void onConnect(Session session)
 	{
 		this.session = session;
+		this.connectionIP = session.getRemoteAddress().getAddress().toString();
 		connectionCounter.incrementAndGet();
-		log.info("WebSocket connect, from = {}", session.getRemoteAddress().getAddress());
+		log.info("WebSocket connect from " + this.connectionIP);
 		WebcamCapture.addListener(this);
 	}
 
 	@OnWebSocketMessage
 	public void onMessage(String message)
 	{
-		log.info("WebSocket message, text = {}", message);
+		log.info("WebSocket message: {}", message);
 	}
 
 	@OnWebSocketError
@@ -73,7 +79,6 @@ public class WebcamWebSocketHandler implements WebcamListener
 	@OnWebSocketClose
 	public void onClose(int status, String reason)
 	{
-		log.info("WebSocket closed, status = {}, reason = {}", status, reason);
 		this.teardown();
 	}
 

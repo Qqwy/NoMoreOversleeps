@@ -12,6 +12,11 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationKeyboard extends Integration
 {
+	public IntegrationKeyboard()
+	{
+		super("keyboard");
+	}
+
 	public static final IntegrationKeyboard INSTANCE = new IntegrationKeyboard();
 	NativeKeyListener keyboardHook;
 

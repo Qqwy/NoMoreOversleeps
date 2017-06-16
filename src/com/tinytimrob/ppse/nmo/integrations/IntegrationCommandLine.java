@@ -7,6 +7,11 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationCommandLine extends Integration
 {
+	public IntegrationCommandLine()
+	{
+		super("cmd");
+	}
+
 	public static final IntegrationCommandLine INSTANCE = new IntegrationCommandLine();
 
 	public static class StoredCommand

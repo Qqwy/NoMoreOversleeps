@@ -141,6 +141,10 @@ public class WebServlet extends HttpServlet
 			}
 			model.put("system", PlatformData.computerName);
 			model.put("actionButtons", actionButtons);
+			for (Integration integration : Main.integrations)
+			{
+				model.put("integration_" + integration.id, integration.isEnabled());
+			}
 			try
 			{
 				WebTemplate.renderTemplate("nmo.ftl", response, model);
@@ -169,7 +173,7 @@ public class WebServlet extends HttpServlet
 				if (button != null)
 				{
 					button.onAction();
-					MainDialog.triggerEvent("<" + button.getName() + "> from WEB UI", null);
+					MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);
 					response.sendRedirect("/");
 					return;
 				}

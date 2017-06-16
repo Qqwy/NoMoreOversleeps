@@ -12,6 +12,11 @@ import javafx.scene.media.MediaPlayer;
 
 public class IntegrationNoise extends Integration
 {
+	public IntegrationNoise()
+	{
+		super("noise");
+	}
+
 	public static final IntegrationNoise INSTANCE = new IntegrationNoise();
 	public static List<PlayingNoise> PLAYING_NOISES = Collections.synchronizedList(new ArrayList<PlayingNoise>());
 

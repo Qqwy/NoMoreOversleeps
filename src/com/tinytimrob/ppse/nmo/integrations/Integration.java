@@ -5,6 +5,13 @@ import com.tinytimrob.ppse.nmo.Action;
 
 public abstract class Integration
 {
+	public Integration(String id)
+	{
+		this.id = id;
+	}
+
+	public final String id;
+
 	public abstract boolean isEnabled();
 
 	public abstract void init() throws Exception;

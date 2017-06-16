@@ -101,14 +101,18 @@ fieldset[disabled] .btn-purple.active {
         <td style="width:230px;"><strong>Camera sockets open</strong></td>
         <td id="nmo_conn_count">?</td>
       </tr>
+      <#if integration_noise>
       <tr>
         <td><strong>Annoying noise</strong></td>
         <td id="nmo_noise_state">?</td>
       </tr>
+      </#if>
+      <#if integration_philipsHue>
       <tr>
         <td><strong>Light</strong></td>
         <td id="nmo_light_state">?</td>
       </tr>
+      </#if>
     </tbody>
   </table>
   <h4>Manual controls</h4>

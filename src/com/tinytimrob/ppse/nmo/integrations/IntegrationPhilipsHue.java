@@ -21,6 +21,11 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationPhilipsHue extends Integration
 {
+	public IntegrationPhilipsHue()
+	{
+		super("philipsHue");
+	}
+
 	public static final IntegrationPhilipsHue INSTANCE = new IntegrationPhilipsHue();
 	private static final Logger log = LogWrapper.getLogger();
 	public PHHueSDK sdk;

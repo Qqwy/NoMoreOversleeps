@@ -5,6 +5,11 @@ import com.tinytimrob.ppse.nmo.integrations.Integration;
 
 public class ActivityTimerFakeIntegration extends Integration
 {
+	public ActivityTimerFakeIntegration()
+	{
+		super("timer");
+	}
+
 	public static ActivityTimerFakeIntegration INSTANCE = new ActivityTimerFakeIntegration();
 
 	@Override

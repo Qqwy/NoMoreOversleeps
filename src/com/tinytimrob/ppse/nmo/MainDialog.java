@@ -22,6 +22,7 @@ import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
+import com.tinytimrob.ppse.nmo.utils.DesktopHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import com.tinytimrob.ppse.nmo.ws.WebcamWebSocketHandler;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -87,7 +88,7 @@ public class MainDialog extends Application
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
 	public static volatile SleepEntry lastSleepBlockWarning = null;
 	public static volatile SleepEntry nextSleepBlock = null;
-	public static volatile String scheduleStatus = "";
+	public static volatile String scheduleStatus = "No schedule configured";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static volatile int tick = 0;
@@ -502,10 +503,28 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButton1 = JavaFxHelper.createButton("Launch web UI", JavaFxHelper.createIcon(FontAwesomeIcon.LINK, "11", Color.BLACK));
+			jfxButton1.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton1.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						DesktopHelper.browse("http://" + NMOConfiguration.instance.hostname + ":" + NMOConfiguration.instance.jettyPort + "/");
+					}
+					catch (Throwable e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			heading.getChildren().add(jfxButton1);
+			final Button jfxButton2 = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButton2.setPadding(new Insets(2, 4, 2, 4));
+			jfxButton2.setDisable(true); // temporary
+			heading.getChildren().add(jfxButton2);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -561,11 +580,18 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			loginTokenValidUntil.textProperty().bind(loginTokenValidUntilString);
-			statusBox.getChildren().add(loginTokenValidUntil);
-			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
-			this.addIntegrationButtonsToVbox(IntegrationPavlok.INSTANCE, statusBox);
+			if (IntegrationPavlok.INSTANCE.isEnabled())
+			{
+				final Label loginTokenValidUntil = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+				loginTokenValidUntil.textProperty().bind(loginTokenValidUntilString);
+				statusBox.getChildren().add(loginTokenValidUntil);
+				statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+				this.addIntegrationButtonsToVbox(IntegrationPavlok.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #DEB026;");
@@ -600,11 +626,18 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			final Label lightingStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			lightingStateLabel.textProperty().bind(lightingStateString);
-			statusBox.getChildren().add(lightingStateLabel);
-			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
-			this.addIntegrationButtonsToVbox(IntegrationPhilipsHue.INSTANCE, statusBox);
+			if (IntegrationPhilipsHue.INSTANCE.isEnabled())
+			{
+				final Label lightingStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+				lightingStateLabel.textProperty().bind(lightingStateString);
+				statusBox.getChildren().add(lightingStateLabel);
+				statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+				this.addIntegrationButtonsToVbox(IntegrationPhilipsHue.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #839CA0;");
@@ -638,7 +671,15 @@ public class MainDialog extends Application
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
-			this.addIntegrationButtonsToVbox(IntegrationNoise.INSTANCE, statusBox);
+
+			if (IntegrationNoise.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationNoise.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #B649C6;");
@@ -715,7 +756,15 @@ public class MainDialog extends Application
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
-			this.addIntegrationButtonsToVbox(IntegrationTwilio.INSTANCE, statusBox);
+
+			if (IntegrationTwilio.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationTwilio.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #A36E6D;");
@@ -749,7 +798,15 @@ public class MainDialog extends Application
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
-			this.addIntegrationButtonsToVbox(IntegrationCommandLine.INSTANCE, statusBox);
+
+			if (IntegrationCommandLine.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationCommandLine.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #7BAD58;");

@@ -10,6 +10,11 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationXboxController extends Integration
 {
+	public IntegrationXboxController()
+	{
+		super("xboxController");
+	}
+
 	public static final IntegrationXboxController INSTANCE = new IntegrationXboxController();
 	XInputDevice device;
 	XInputDeviceListener listener;
