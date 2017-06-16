@@ -78,6 +78,7 @@ public class MainDialog extends Application
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty webMonitoringString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty activeTimerString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastActivityTimeString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty webcamName = new SimpleStringProperty("");
@@ -409,6 +410,10 @@ public class MainDialog extends Application
 			final Label timeDiff = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			timeDiff.textProperty().bind(timeDiffString);
 			statusBox.getChildren().add(timeDiff);
+
+			final Label activeTimerLabel = JavaFxHelper.createLabel("", Color.WHITE);
+			activeTimerLabel.textProperty().bind(activeTimerString);
+			statusBox.getChildren().add(activeTimerLabel);
 
 			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
 			this.addIntegrationButtonsToVbox(ActivityTimerFakeIntegration.INSTANCE, statusBox);
@@ -994,6 +999,7 @@ public class MainDialog extends Application
 		}
 
 		webMonitoringString.set(WebcamWebSocketHandler.connectionCounter.get() + " active web sockets");
+		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
 		lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
 
 		try
