@@ -17,7 +17,7 @@ public class NMOConfiguration
 	public static NMOConfiguration instance;
 
 	@Expose
-	public String hostname = "localhost";
+	public String hostname = "";
 
 	@Expose
 	public int jettyPort = 19992;

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
@@ -42,6 +43,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
@@ -58,6 +61,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -312,10 +316,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -503,16 +507,17 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton1 = JavaFxHelper.createButton("Launch web UI", JavaFxHelper.createIcon(FontAwesomeIcon.LINK, "11", Color.BLACK));
-			jfxButton1.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton1.setOnAction(new EventHandler<ActionEvent>()
+			final Button jfxButtonWebUI = JavaFxHelper.createButton("Launch web UI", JavaFxHelper.createIcon(FontAwesomeIcon.LINK, "11", Color.BLACK));
+			jfxButtonWebUI.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonWebUI.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
 				public void handle(ActionEvent arg0)
 				{
 					try
 					{
-						DesktopHelper.browse("http://" + NMOConfiguration.instance.hostname + ":" + NMOConfiguration.instance.jettyPort + "/");
+						String hostname = NMOConfiguration.instance.hostname.isEmpty() ? PortForwarding.getExternalIP() : NMOConfiguration.instance.hostname;
+						DesktopHelper.browse("http://" + hostname + ":" + NMOConfiguration.instance.jettyPort + "/");
 					}
 					catch (Throwable e)
 					{
@@ -520,11 +525,38 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			heading.getChildren().add(jfxButton1);
-			final Button jfxButton2 = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton2.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton2.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton2);
+			heading.getChildren().add(jfxButtonWebUI);
+			final Button jfxButtonPortForward = JavaFxHelper.createButton("Attempt port auto-forward", JavaFxHelper.createIcon(FontAwesomeIcon.PLUG, "11", Color.BLACK));
+			jfxButtonPortForward.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonPortForward.setOnAction(new EventHandler<ActionEvent>()
+			{
+				@SuppressWarnings("unchecked")
+				@Override
+				public void handle(ActionEvent arg0)
+				{
+					try
+					{
+						ArrayList<String> messages = new ArrayList<String>();
+						PortForwarding.attemptAutomaticPortForwarding(messages);
+						Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setTitle("Port forwarding");
+						alert.setHeaderText(null);
+						alert.setContentText(StringUtils.join(messages, "\n"));
+						alert.setResizable(true);
+						alert.getDialogPane().setPrefSize(600, Region.USE_COMPUTED_SIZE);
+						alert.showAndWait();
+					}
+					catch (Throwable e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
+			heading.getChildren().add(jfxButtonPortForward);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -557,10 +589,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -603,10 +635,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -649,10 +681,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -691,10 +723,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -734,10 +766,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -776,10 +808,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
@@ -818,10 +850,10 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButton = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setDisable(true); // temporary
-			heading.getChildren().add(jfxButton);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
 
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);

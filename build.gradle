@@ -53,6 +53,7 @@ dependencies {
 	compile 'com.github.strikerx3:jxinput:ca55984'
 	compile 'com.github.sarxos:webcam-capture:0.3.10'
 	compile 'com.twilio.sdk:twilio:7.9.1'
+	compile 'org.bitlet:weupnp:0.1.4'
 	compile name: 'huelocalsdk'
 	compile name: 'huesdkresources'
 }
