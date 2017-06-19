@@ -190,6 +190,7 @@ public class MainDialog extends Application
 					{
 						WebEngine we = (WebEngine) event.getSource();
 						String location = we.getLocation();
+						System.out.println(location);
 						if (location.startsWith(Main.CLIENT_CALLBACK) && location.contains("?code"))
 						{
 							this.handledCallbackYet = true;
