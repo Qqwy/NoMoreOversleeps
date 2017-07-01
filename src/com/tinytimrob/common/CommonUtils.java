@@ -19,6 +19,7 @@ import com.google.gson.GsonBuilder;
 public class CommonUtils
 {
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss.SSS", Locale.ENGLISH);
+	public static final SimpleDateFormat dateFormatter2 = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale.ENGLISH);
 	private static final Logger log = LogWrapper.getLogger();
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
 	public static final Charset charsetUTF8 = Charset.forName("UTF-8");

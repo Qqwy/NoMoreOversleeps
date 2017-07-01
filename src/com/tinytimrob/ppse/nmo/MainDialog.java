@@ -88,6 +88,10 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty webcamName = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lightingStateString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty startedString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty startedString2 = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty lastOversleepString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty lastOversleepString2 = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
 	public static volatile SleepEntry lastSleepBlockWarning = null;
@@ -158,7 +162,7 @@ public class MainDialog extends Application
 		outerPane.setId("root");
 		outerPane.setFitToHeight(true);
 		outerPane.setFitToWidth(true);
-		scene = new Scene(outerPane, 1210, 900, Color.WHITE);
+		scene = new Scene(outerPane, 1210, 910, Color.WHITE);
 		scene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
 
 		//==================================================================
@@ -300,6 +304,39 @@ public class MainDialog extends Application
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			statusBox.getChildren().add(JavaFxHelper.createLabel(NMOConfiguration.instance.scheduleName, Color.WHITE, "-fx-font-weight: bold;"));
+
+			if (NMOConfiguration.instance.scheduleStartedOn > 0)
+			{
+				final Label started = JavaFxHelper.createLabel("Started: ", Color.WHITE, "-fx-font-weight: bold;");
+				final Label startedG = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: normal;");
+				startedG.textProperty().bind(startedString);
+				started.setGraphic(startedG);
+				started.setContentDisplay(ContentDisplay.RIGHT);
+				statusBox.getChildren().add(started);
+
+				final Label started2 = JavaFxHelper.createLabel("", Color.WHITE, "");
+				started2.textProperty().bind(startedString2);
+				started2.setPadding(new Insets(0, 0, 0, 10));
+				statusBox.getChildren().add(started2);
+
+				final Label lastOversleep = JavaFxHelper.createLabel("Last oversleep: ", Color.WHITE, "-fx-font-weight: bold;");
+				final Label lastOversleepG = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: normal;");
+				lastOversleepG.textProperty().bind(lastOversleepString);
+				lastOversleep.setGraphic(lastOversleepG);
+				lastOversleep.setContentDisplay(ContentDisplay.RIGHT);
+				statusBox.getChildren().add(lastOversleep);
+
+				final Label lastOversleep2 = JavaFxHelper.createLabel("", Color.WHITE, "");
+				lastOversleep2.textProperty().bind(lastOversleepString2);
+				lastOversleep2.setPadding(new Insets(0, 0, 0, 10));
+				statusBox.getChildren().add(lastOversleep2);
+			}
+
+			Separator s = new Separator(Orientation.HORIZONTAL);
+			s.setPadding(new Insets(6, 0, 2, 0));
+			statusBox.getChildren().add(s);
 
 			for (SleepEntry entry : NMOConfiguration.instance.schedule)
 			{
@@ -934,6 +971,11 @@ public class MainDialog extends Application
 		int minute = calendar.get(Calendar.MINUTE);
 		int currentMinuteOfDay = ((hour * 60) + minute);
 
+		startedString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleStartedOn));
+		startedString2.set("(" + this.formatTimeElapsed(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
+		lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
+		lastOversleepString2.set("(" + this.formatTimeElapsed(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
+
 		SleepEntry nextSleepBlockDetected = null;
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
@@ -1107,6 +1149,21 @@ public class MainDialog extends Application
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private String formatTimeElapsed(long now, long time)
+	{
+		time = (time / 1000) * 1000;
+		long elapsed = now - time;
+		long days = elapsed / 86400000;
+		elapsed = elapsed - (days * 86400000);
+		long hours = elapsed / 3600000;
+		elapsed = elapsed - (hours * 3600000);
+		long minutes = elapsed / 60000;
+		elapsed = elapsed - (minutes * 60000);
+		long seconds = elapsed / 1000;
+
+		return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
 	}
 
 	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)

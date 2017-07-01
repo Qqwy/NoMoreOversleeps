@@ -29,7 +29,16 @@ public class NMOConfiguration
 	public int webcamFrameSkip = 2;
 
 	@Expose
+	public String scheduleName = "";
+
+	@Expose
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
+
+	@Expose
+	public long scheduleStartedOn = 0;
+
+	@Expose
+	public long scheduleLastOversleep = 0;
 
 	@Expose
 	public ArrayList<ActivityTimer> timers = new ArrayList<ActivityTimer>();
