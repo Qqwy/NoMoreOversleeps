@@ -957,7 +957,7 @@ public class MainDialog extends Application
 		if (tick >= 180)
 		{
 			tick -= 180;
-			System.gc();
+			//System.gc();
 		}
 		if (tick % 2 == 1)
 		{
