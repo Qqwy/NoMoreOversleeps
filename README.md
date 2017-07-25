@@ -57,6 +57,12 @@ triggered from the Web UI or as part of your alarm routine.
 
 In the future, the list of supported actions will hopefully be expanded. If you're good at programming in Java, feel free to add your own (the implementation of new actions is quite simple).
 
+#### Live text file data output ####
+
+NoMoreOversleeps can optionally output text files containing information such as current schedule, time since start of schedule, time since last oversleep, personal best time, and current
+schedule status (time remaining of/until sleep block). These text files can be used with software such as OBS to overlay the data onto a video stream, allowing you to live-stream your
+polyphasic sleeping attempt data to Twitch, or even just render the data onto a personal local recording of your polyphasic sleeping attempt for archival or investigation purposes.
+
 ### Features that might be added in the future ###
 
 Some ideas I've had include:
