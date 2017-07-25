@@ -170,7 +170,7 @@ public class WebServlet extends HttpServlet
 			for (Integration integrations : Main.integrations)
 			{
 				Action button = integrations.getActions().get(PATH);
-				if (button != null)
+				if (button != null && !button.isSecret())
 				{
 					button.onAction();
 					MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);
