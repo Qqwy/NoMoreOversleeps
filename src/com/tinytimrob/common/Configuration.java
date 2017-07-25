@@ -27,7 +27,6 @@ public class Configuration
 		log.info("Loading configuration from disk");
 
 		File file = new File(PlatformData.installationDirectory, "config.json");
-		boolean loaded = false;
 		if (file.exists())
 		{
 			String configurationString = FileUtils.readFileToString(file, CommonUtils.charsetUTF8);

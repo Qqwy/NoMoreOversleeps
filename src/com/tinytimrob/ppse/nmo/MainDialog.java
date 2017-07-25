@@ -971,10 +971,18 @@ public class MainDialog extends Application
 		int minute = calendar.get(Calendar.MINUTE);
 		int currentMinuteOfDay = ((hour * 60) + minute);
 
-		startedString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleStartedOn));
-		startedString2.set("(" + this.formatTimeElapsed(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
-		lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
-		lastOversleepString2.set("(" + this.formatTimeElapsed(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
+		if (NMOConfiguration.instance.scheduleStartedOn > 0)
+		{
+			startedString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleStartedOn));
+			startedString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
+			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
+			lastOversleepString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
+
+			if ((now - NMOConfiguration.instance.scheduleLastOversleep) > NMOConfiguration.instance.schedulePersonalBest)
+			{
+				NMOConfiguration.instance.schedulePersonalBest = now - NMOConfiguration.instance.scheduleLastOversleep;
+			}
+		}
 
 		SleepEntry nextSleepBlockDetected = null;
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
@@ -1151,8 +1159,9 @@ public class MainDialog extends Application
 		}
 	}
 
-	private String formatTimeElapsed(long now, long time)
+	public static String formatTimeElapsedWithDays(long now, long time)
 	{
+		now = (now / 1000) * 1000;
 		time = (time / 1000) * 1000;
 		long elapsed = now - time;
 		long days = elapsed / 86400000;
@@ -1163,7 +1172,23 @@ public class MainDialog extends Application
 		elapsed = elapsed - (minutes * 60000);
 		long seconds = elapsed / 1000;
 
-		return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+		return String.format("%01dd %01dh %01dm", days, hours, minutes);
+	}
+
+	public static String formatTimeElapsedWithoutDays(long now, long time)
+	{
+		now = (now / 1000) * 1000;
+		time = (time / 1000) * 1000;
+		long elapsed = now - time;
+		long days = elapsed / 86400000;
+		elapsed = elapsed - (days * 86400000);
+		long hours = elapsed / 3600000;
+		elapsed = elapsed - (hours * 3600000);
+		long minutes = elapsed / 60000;
+		elapsed = elapsed - (minutes * 60000);
+		long seconds = elapsed / 1000;
+
+		return String.format("%01dh %01dm", hours, minutes);
 	}
 
 	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)

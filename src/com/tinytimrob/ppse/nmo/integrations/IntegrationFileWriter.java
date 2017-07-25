@@ -1,0 +1,147 @@
+package com.tinytimrob.ppse.nmo.integrations;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
+import com.google.gson.annotations.Expose;
+import com.ivan.xinput.exceptions.XInputNotLoadedException;
+import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
+
+public class IntegrationFileWriter extends Integration
+{
+	public IntegrationFileWriter()
+	{
+		super("fileWriter");
+	}
+
+	public static final IntegrationFileWriter INSTANCE = new IntegrationFileWriter();
+	private static int lastSecond;
+	private static File scheduleNameFile;
+	private static File scheduleStartedOnFile;
+	private static File scheduleLastOversleepFile;
+	private static File schedulePersonalBestFile;
+	private static File timeToNextSleepBlockFile;
+
+	public static class FileWriterConfiguration
+	{
+		@Expose
+		public boolean scheduleName;
+
+		@Expose
+		public boolean scheduleStartedOn;
+
+		@Expose
+		public boolean scheduleLastOversleep;
+
+		@Expose
+		public boolean schedulePersonalBest;
+
+		@Expose
+		public boolean timeToNextSleepBlock;
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return NMOConfiguration.instance.integrations.fileWriter.scheduleName || NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn || NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep || NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest || NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock;
+	}
+
+	@Override
+	public void init() throws XInputNotLoadedException
+	{
+		File directory = new File(PlatformData.installationDirectory, "out");
+		directory.mkdirs();
+		scheduleNameFile = new File(directory, "scheduleName");
+		scheduleStartedOnFile = new File(directory, "scheduleStartedOn");
+		scheduleLastOversleepFile = new File(directory, "scheduleLastOversleep");
+		schedulePersonalBestFile = new File(directory, "schedulePersonalBest");
+		timeToNextSleepBlockFile = new File(directory, "timeToNextSleepBlock");
+	}
+
+	@Override
+	public void update()
+	{
+		Calendar calendar = Calendar.getInstance();
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+		long now = calendar.getTimeInMillis();
+		if (lastSecond != second)
+		{
+			lastSecond = second;
+			try
+			{
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleName)
+				{
+					FileUtils.writeStringToFile(scheduleNameFile, NMOConfiguration.instance.scheduleName, Charsets.UTF_8, false);
+				}
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
+				{
+					FileUtils.writeStringToFile(scheduleStartedOnFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn), Charsets.UTF_8, false);
+				}
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
+				{
+					FileUtils.writeStringToFile(scheduleLastOversleepFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep), Charsets.UTF_8, false);
+				}
+				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
+				{
+					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
+				}
+				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
+				{
+					if (MainDialog.nextSleepBlock == null)
+					{
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, "NO SLEEP BLOCKS CONFIGURED", Charsets.UTF_8, false);
+					}
+					else
+					{
+						int currentMinuteOfDay = ((hour * 60) + minute);
+						boolean currentlySleeping = MainDialog.nextSleepBlock.containsTime(currentMinuteOfDay);
+						if (currentlySleeping)
+						{
+							Calendar calendar2 = Calendar.getInstance();
+							calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.end / 60);
+							calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.end % 60);
+							calendar2.set(Calendar.SECOND, 0);
+							calendar2.set(Calendar.MILLISECOND, 0);
+							long tims = calendar2.getTimeInMillis();
+							if (MainDialog.nextSleepBlock.end < currentMinuteOfDay)
+							{
+								tims += 86400000L; // nap loops over to next day. add 1 day.
+							}
+							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "Sleeping [waking up in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+						}
+						else
+						{
+							Calendar calendar2 = Calendar.getInstance();
+							calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.start / 60);
+							calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.start % 60);
+							calendar2.set(Calendar.SECOND, 0);
+							calendar2.set(Calendar.MILLISECOND, 0);
+							long tims = calendar2.getTimeInMillis();
+							if (MainDialog.nextSleepBlock.start < currentMinuteOfDay)
+							{
+								tims += 86400000L; // nap loops over to next day. add 1 day.
+							}
+							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "Awake [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
+						}
+					}
+				}
+			}
+			catch (IOException t)
+			{
+				t.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void shutdown()
+	{
+		// nothing to do
+	}
+}

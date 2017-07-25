@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo;
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine.CommandLineConfiguration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationFileWriter.FileWriterConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter.MidiConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse.MouseConfiguration;
@@ -39,6 +40,9 @@ public class NMOConfiguration
 
 	@Expose
 	public long scheduleLastOversleep = 0;
+
+	@Expose
+	public long schedulePersonalBest = 0;
 
 	@Expose
 	public ArrayList<ActivityTimer> timers = new ArrayList<ActivityTimer>();
@@ -109,6 +113,9 @@ public class NMOConfiguration
 
 		@Expose
 		public CommandLineConfiguration cmd = new CommandLineConfiguration();
+
+		@Expose
+		public FileWriterConfiguration fileWriter = new FileWriterConfiguration();
 	}
 
 	@Expose
