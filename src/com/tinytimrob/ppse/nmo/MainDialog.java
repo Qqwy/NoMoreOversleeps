@@ -1163,7 +1163,7 @@ public class MainDialog extends Application
 	{
 		now = (now / 1000) * 1000;
 		time = (time / 1000) * 1000;
-		long elapsed = now - time;
+		long elapsed = Math.max(0, now - time);
 		long days = elapsed / 86400000;
 		elapsed = elapsed - (days * 86400000);
 		long hours = elapsed / 3600000;
@@ -1179,7 +1179,7 @@ public class MainDialog extends Application
 	{
 		now = (now / 1000) * 1000;
 		time = (time / 1000) * 1000;
-		long elapsed = now - time;
+		long elapsed = Math.max(0, now - time);
 		long days = elapsed / 86400000;
 		elapsed = elapsed - (days * 86400000);
 		long hours = elapsed / 3600000;
