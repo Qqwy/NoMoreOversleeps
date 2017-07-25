@@ -57,6 +57,7 @@ public class Main
 		integrations.add(IntegrationCommandLine.INSTANCE);
 		integrations.add(IntegrationFileWriter.INSTANCE);
 		integrations.add(ActivityTimerFakeIntegration.INSTANCE);
+		integrations.add(ScheduleFakeIntegration.INSTANCE);
 	}
 
 	//-------------------------------------------
@@ -122,6 +123,14 @@ public class Main
 				}
 				WebcamCapture.shutdown();
 				Logging.shutdown();
+				try
+				{
+					Configuration.save();
+				}
+				catch (Throwable t)
+				{
+					t.printStackTrace(); // damn
+				}
 				MasterLock.release();
 				System.exit(0);
 			}

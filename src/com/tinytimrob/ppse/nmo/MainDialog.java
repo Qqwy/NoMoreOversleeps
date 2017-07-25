@@ -92,6 +92,7 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty startedString2 = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastOversleepString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastOversleepString2 = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty personalBestString = new SimpleStringProperty("");
 	public static volatile SimpleBooleanProperty isCurrentlyPaused = new SimpleBooleanProperty(false);
 	public static volatile SimpleObjectProperty<Image> lastWebcamImage = new SimpleObjectProperty<Image>();
 	public static volatile SleepEntry lastSleepBlockWarning = null;
@@ -131,6 +132,12 @@ public class MainDialog extends Application
 				t.printStackTrace();
 				NMOConfiguration.instance.integrations.pavlok.auth = null;
 			}
+		}
+
+		// fix bad "last oversleep" value
+		if (NMOConfiguration.instance.scheduleLastOversleep < NMOConfiguration.instance.scheduleStartedOn)
+		{
+			NMOConfiguration.instance.scheduleLastOversleep = NMOConfiguration.instance.scheduleStartedOn;
 		}
 
 		//==================================================================
@@ -332,6 +339,16 @@ public class MainDialog extends Application
 				lastOversleep2.textProperty().bind(lastOversleepString2);
 				lastOversleep2.setPadding(new Insets(0, 0, 0, 10));
 				statusBox.getChildren().add(lastOversleep2);
+
+				final Label personalBest = JavaFxHelper.createLabel("Personal best: ", Color.WHITE, "-fx-font-weight: bold;");
+				final Label personalBestG = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: normal;");
+				personalBestG.textProperty().bind(personalBestString);
+				personalBest.setGraphic(personalBestG);
+				personalBest.setContentDisplay(ContentDisplay.RIGHT);
+				statusBox.getChildren().add(personalBest);
+				personalBest.setPadding(new Insets(0, 0, 4, 0));
+
+				this.addIntegrationButtonsToVbox(ScheduleFakeIntegration.INSTANCE, statusBox);
 			}
 
 			Separator s = new Separator(Orientation.HORIZONTAL);
@@ -977,11 +994,11 @@ public class MainDialog extends Application
 			startedString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
 			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
 			lastOversleepString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
-
 			if ((now - NMOConfiguration.instance.scheduleLastOversleep) > NMOConfiguration.instance.schedulePersonalBest)
 			{
 				NMOConfiguration.instance.schedulePersonalBest = now - NMOConfiguration.instance.scheduleLastOversleep;
 			}
+			personalBestString.set(MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0));
 		}
 
 		SleepEntry nextSleepBlockDetected = null;
