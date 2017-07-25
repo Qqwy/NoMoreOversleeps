@@ -33,10 +33,27 @@ public class IntegrationNoise extends Integration
 
 		public void stop()
 		{
-			if (this.player != null)
+			try
 			{
-				this.player.stop();
-				this.player.dispose();
+				if (this.player != null)
+				{
+					this.player.stop();
+				}
+			}
+			catch (Throwable t)
+			{
+				t.printStackTrace();
+			}
+			try
+			{
+				if (this.player != null)
+				{
+					this.player.dispose();
+				}
+			}
+			catch (Throwable t)
+			{
+				t.printStackTrace();
 			}
 			PLAYING_NOISES.remove(this);
 		}
