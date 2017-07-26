@@ -55,6 +55,9 @@ public class NMOConfiguration
 	public int activityWarningTimeIncrementMs = 10000;
 	*/
 
+	@Expose
+	public int oversleepWarningThreshold = 5;
+
 	public static class EventConfiguration
 	{
 		@Expose
@@ -68,6 +71,9 @@ public class NMOConfiguration
 
 		@Expose
 		public String[] activityWarning1 = new String[0];
+
+		@Expose
+		public String[] oversleepWarning = new String[0];
 
 		@Expose
 		public String[] activityWarning2 = new String[0];

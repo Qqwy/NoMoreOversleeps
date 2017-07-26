@@ -794,7 +794,8 @@ public class MainDialog extends Application
 			this.addEventSummaryToStatusBox(statusBox, "When sleep block starts", NMOConfiguration.instance.events.sleepBlockStarted);
 			this.addEventSummaryToStatusBox(statusBox, "When sleep block ends", NMOConfiguration.instance.events.sleepBlockEnded);
 			this.addEventSummaryToStatusBox(statusBox, "On first activity warning", NMOConfiguration.instance.events.activityWarning1);
-			this.addEventSummaryToStatusBox(statusBox, "On subsequent warnings", NMOConfiguration.instance.events.activityWarning2);
+			this.addEventSummaryToStatusBox(statusBox, "On oversleep warning (activity warning " + NMOConfiguration.instance.oversleepWarningThreshold + ")", NMOConfiguration.instance.events.oversleepWarning);
+			this.addEventSummaryToStatusBox(statusBox, "On all other warnings", NMOConfiguration.instance.events.activityWarning2);
 			this.addEventSummaryToStatusBox(statusBox, "When manually pausing", NMOConfiguration.instance.events.pauseInitiated);
 			this.addEventSummaryToStatusBox(statusBox, "When manually unpausing", NMOConfiguration.instance.events.pauseCancelled);
 			this.addEventSummaryToStatusBox(statusBox, "When pause auto-expires", NMOConfiguration.instance.events.pauseExpired);
@@ -1058,7 +1059,7 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				String pros = nextActivityWarningID > 5 ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = nextActivityWarningID > NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				scheduleStatus = pros + " [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
 				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
@@ -1138,23 +1139,28 @@ public class MainDialog extends Application
 			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
 			if (timeDiff > (1000 * nawtd))
 			{
+				this.setNextActivityWarningForTimer(timer, timeDiff);
 				try
 				{
+					String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID >= 0 ? "MISSING" : "AWAKE";
 					// the first time, you get an alternative lighter warning, just in case you forgot to pause
-					if (nextActivityWarningID == 0)
+					if (nextActivityWarningID == 1)
 					{
-						triggerEvent("No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning1);
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning1);
+					}
+					else if (nextActivityWarningID == NMOConfiguration.instance.oversleepWarningThreshold)
+					{
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.oversleepWarning);
 					}
 					else
 					{
-						triggerEvent("No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning2);
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning2);
 					}
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-				this.setNextActivityWarningForTimer(timer, timeDiff);
 			}
 			timeDiffString.set("Time difference: " + timeDiff + " (next warning: " + nawtd + "s)");
 		}
