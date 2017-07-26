@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
@@ -30,6 +29,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,16 +46,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -68,7 +72,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import nl.captcha.Captcha;
+import nl.captcha.backgrounds.GradiatedBackgroundProducer;
+import nl.captcha.gimpy.FishEyeGimpyRenderer;
 
 public class MainDialog extends Application
 {
@@ -923,19 +931,126 @@ public class MainDialog extends Application
 		}
 	}
 
-	protected void openPauseDialog(String hm, int pp)
+	protected void openPauseDialog(final String hm, final int pp)
 	{
-		TextInputDialog dialog = new TextInputDialog("");
+		final Stage dialog = new Stage();
 		dialog.setTitle("Pause for " + hm);
-		dialog.setContentText("Please input why you are pausing:");
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent() && !result.get().isEmpty())
+		dialog.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		dialog.initOwner(scene.getWindow());
+		dialog.setResizable(false);
+		BorderPane outerPane = new BorderPane();
+		outerPane.setId("root");
+		outerPane.setStyle("-fx-background-color: #222;");
+		StackPane stopBg = new StackPane();
+		stopBg.setPadding(new Insets(10));
+		StackPane stopBg2 = new StackPane();
+		stopBg2.setStyle("-fx-background-color: #990000; -fx-border-size: 2px; -fx-border-color: white;");
+		stopBg2.setMinHeight(200);
+		stopBg2.setMaxHeight(200);
+		stopBg.getChildren().add(stopBg2);
+		Label stopLabel = JavaFxHelper.createIconLabel(FontAwesomeIcon.EXCLAMATION_TRIANGLE, "72", " STOP AND THINK !!", ContentDisplay.LEFT, Color.WHITE, "-fx-font-size: 72px;");
+		stopLabel.setPadding(new Insets(0, 0, 70, 0));
+		Label stopLabel2 = JavaFxHelper.createLabel("DO YOU REALLY NEED TO PAUSE FOR " + hm + "?", Color.WHITE, "-fx-font-size: 24px;");
+		stopLabel2.setPadding(new Insets(52, 0, 0, 0));
+		Label stopLabel3 = JavaFxHelper.createLabel("*** FAILING YOUR SCHEDULE IS JUST ONE STUPID PAUSE AWAY ***", Color.WHITE, "-fx-font-size: 24px; -fx-font-weight: bold;");
+		stopLabel3.setPadding(new Insets(130, 0, 0, 0));
+		stopBg2.getChildren().add(stopLabel);
+		stopBg2.getChildren().add(stopLabel2);
+		stopBg2.getChildren().add(stopLabel3);
+		outerPane.setTop(stopBg);
+		final Captcha captcha = new Captcha.Builder(200, 50).addText().addBackground(new GradiatedBackgroundProducer()).addNoise().gimp(new FishEyeGimpyRenderer()).addBorder().build();
+		WritableImage wimg = new WritableImage(200, 50);
+		SwingFXUtils.toFXImage(captcha.getImage(), wimg);
+		ImageView captchaImageView = new ImageView();
+		captchaImageView.setImage(wimg);
+		captchaImageView.setPreserveRatio(true);
+		GridPane center = new GridPane();
+		center.setPadding(new Insets(6, 16, 6, 16));
+		center.setAlignment(Pos.TOP_LEFT);
+		center.setStyle("-fx-font-size: 16px");
+		center.setVgap(16);
+		center.getColumnConstraints().add(new ColumnConstraints(150));
+		center.getColumnConstraints().add(new ColumnConstraints(220));
+		center.getColumnConstraints().add(new ColumnConstraints(400));
+		Label a = JavaFxHelper.createLabel("If you are ABSOLUTELY SURE you need to pause...", Color.WHITE, "-fx-font-weight: bold;");
+		center.addRow(0, a);
+		GridPane.setColumnSpan(a, 2);
+		final TextField reason = new TextField();
+		Label b = JavaFxHelper.createLabel("Input pause reason:", Color.WHITE);
+		GridPane.setColumnSpan(reason, 2);
+		center.addRow(1, b, reason);
+		Label c = JavaFxHelper.createLabel("Solve this captcha:", Color.WHITE);
+		final TextField captchaField = new TextField();
+		center.addRow(2, c, captchaImageView, captchaField);
+		outerPane.setCenter(center);
+		Separator s = new Separator(Orientation.HORIZONTAL);
+		GridPane.setColumnSpan(s, 3);
+		center.addRow(3, s);
+		BooleanBinding bb = new BooleanBinding()
 		{
-			long now = System.currentTimeMillis();
-			pausedUntil = now + (pp * 60000);
-			pauseReason = result.get();
-			triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
-		}
+			{
+				super.bind(reason.textProperty(), captchaField.textProperty());
+			}
+
+			@Override
+			protected boolean computeValue()
+			{
+				return (reason.getText().isEmpty() || !captchaField.getText().equals(captcha.getAnswer()));
+			}
+		};
+		ButtonBar buttonBar = new ButtonBar();
+		final Button okButton = new Button("Confirm pause");
+		okButton.disableProperty().bind(bb);
+		ButtonBar.setButtonData(okButton, ButtonData.OK_DONE);
+		buttonBar.getButtons().addAll(okButton);
+		buttonBar.setPadding(new Insets(0, 16, 16, 0));
+		buttonBar.setStyle("-fx-font-size: 16px;");
+		okButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				long now = System.currentTimeMillis();
+				pausedUntil = now + (pp * 60000);
+				pauseReason = reason.getText();
+				triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
+				dialog.close();
+			}
+		});
+		reason.setOnKeyPressed(new EventHandler<KeyEvent>()
+		{
+			@Override
+			public void handle(KeyEvent ke)
+			{
+				if (ke.getCode().equals(KeyCode.ENTER))
+				{
+					if (!okButton.isDisabled())
+					{
+						okButton.fire();
+					}
+				}
+			}
+		});
+		captchaField.setOnKeyPressed(new EventHandler<KeyEvent>()
+		{
+			@Override
+			public void handle(KeyEvent ke)
+			{
+				if (ke.getCode().equals(KeyCode.ENTER))
+				{
+					if (!okButton.isDisabled())
+					{
+						okButton.fire();
+					}
+				}
+			}
+		});
+		outerPane.setBottom(buttonBar);
+		Scene dialogScene = new Scene(outerPane, 800, 440, Color.WHITE);
+		dialogScene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
+		dialog.setScene(dialogScene);
+		dialog.showAndWait();
 	}
 
 	private void addEventSummaryToStatusBox(VBox statusBox, String description, String[] eventTriggers)
