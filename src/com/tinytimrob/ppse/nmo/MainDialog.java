@@ -1133,7 +1133,7 @@ public class MainDialog extends Application
 			}
 		};
 		ButtonBar buttonBar = new ButtonBar();
-		final Button okButton = new Button("Confirm pause");
+		final Button okButton = new Button("Confirm close");
 		okButton.disableProperty().bind(bb);
 		ButtonBar.setButtonData(okButton, ButtonData.OK_DONE);
 		buttonBar.getButtons().addAll(okButton);
