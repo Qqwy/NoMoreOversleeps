@@ -511,19 +511,7 @@ public class MainDialog extends Application
 					@Override
 					public void handle(ActionEvent arg0)
 					{
-						TextInputDialog dialog = new TextInputDialog("");
-						dialog.setTitle("Pause for " + hm);
-						dialog.setContentText("Please input why you are pausing:");
-
-						// Traditional way to get the response value.
-						Optional<String> result = dialog.showAndWait();
-						if (result.isPresent() && !result.get().isEmpty())
-						{
-							long now = System.currentTimeMillis();
-							pausedUntil = now + (pp * 60000);
-							pauseReason = result.get();
-							triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
-						}
+						MainDialog.this.openPauseDialog(hm, pp);
 					}
 				});
 				//pauseButton.disableProperty().bind(isCurrentlyPaused);
@@ -934,6 +922,21 @@ public class MainDialog extends Application
 		}
 	}
 
+	protected void openPauseDialog(String hm, int pp)
+	{
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle("Pause for " + hm);
+		dialog.setContentText("Please input why you are pausing:");
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent() && !result.get().isEmpty())
+		{
+			long now = System.currentTimeMillis();
+			pausedUntil = now + (pp * 60000);
+			pauseReason = result.get();
+			triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
+		}
+	}
+
 	private void addEventSummaryToStatusBox(VBox statusBox, String description, String[] eventTriggers)
 	{
 		statusBox.getChildren().add(JavaFxHelper.createLabel(description + ":", Color.WHITE, "-fx-font-weight: bold;"));
@@ -1055,7 +1058,8 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				scheduleStatus = "AWAKE [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
+				String pros = nextActivityWarningID > 5 ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				scheduleStatus = pros + " [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
 				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
 					if (nextSleepBlockDetected.approachWarning != -1)
@@ -1187,7 +1191,7 @@ public class MainDialog extends Application
 		elapsed = elapsed - (hours * 3600000);
 		long minutes = elapsed / 60000;
 		elapsed = elapsed - (minutes * 60000);
-		long seconds = elapsed / 1000;
+		//long seconds = elapsed / 1000;
 
 		return String.format("%01dd %01dh %01dm", days, hours, minutes);
 	}
@@ -1197,13 +1201,13 @@ public class MainDialog extends Application
 		now = (now / 1000) * 1000;
 		time = (time / 1000) * 1000;
 		long elapsed = Math.max(0, now - time);
-		long days = elapsed / 86400000;
-		elapsed = elapsed - (days * 86400000);
+		//long days = elapsed / 86400000;
+		//elapsed = elapsed - (days * 86400000);
 		long hours = elapsed / 3600000;
 		elapsed = elapsed - (hours * 3600000);
 		long minutes = elapsed / 60000;
 		elapsed = elapsed - (minutes * 60000);
-		long seconds = elapsed / 1000;
+		//long seconds = elapsed / 1000;
 
 		return String.format("%01dh %01dm", hours, minutes);
 	}

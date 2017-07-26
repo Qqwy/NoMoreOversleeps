@@ -113,7 +113,11 @@ public class IntegrationFileWriter extends Integration
 							{
 								tims += 86400000L; // nap loops over to next day. add 1 day.
 							}
-							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "Sleeping [waking up in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+							FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+						}
+						else if (MainDialog.isCurrentlyPaused.get())
+						{
+							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "AFK [" + MainDialog.pauseReason + " - " + MainDialog.formatTimeElapsedWithoutDays(MainDialog.pausedUntil, now - 59999) + " left]", Charsets.UTF_8, false);
 						}
 						else
 						{
@@ -127,7 +131,8 @@ public class IntegrationFileWriter extends Integration
 							{
 								tims += 86400000L; // nap loops over to next day. add 1 day.
 							}
-							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "Awake [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
+							String pros = MainDialog.nextActivityWarningID > 5 ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+							FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
 						}
 					}
 				}
