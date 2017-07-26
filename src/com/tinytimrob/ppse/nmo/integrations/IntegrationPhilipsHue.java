@@ -94,6 +94,26 @@ public class IntegrationPhilipsHue extends Integration
 				return false;
 			}
 		});
+		this.actions.put("/philipshue/toggle", new Action()
+		{
+			@Override
+			public void onAction() throws Exception
+			{
+				IntegrationPhilipsHue.this.toggle(IntegrationPhilipsHue.this.lightState == -1);
+			}
+
+			@Override
+			public String getName()
+			{
+				return "LIGHT TOGGLE";
+			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return true;
+			}
+		});
 
 		this.sdk = PHHueSDK.getInstance();
 		this.sdk.setAppName("NoMoreOversleeps");
