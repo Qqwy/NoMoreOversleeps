@@ -74,6 +74,7 @@ import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import nl.captcha.Captcha;
 import nl.captcha.backgrounds.GradiatedBackgroundProducer;
 import nl.captcha.gimpy.FishEyeGimpyRenderer;
@@ -179,6 +180,20 @@ public class MainDialog extends Application
 		outerPane.setFitToWidth(true);
 		scene = new Scene(outerPane, 1210, 910, Color.WHITE);
 		scene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
+
+		//==================================================================
+		// INTERCEPT CLOSING OF WINDOW BEHAVIOUR
+		//==================================================================
+		Platform.setImplicitExit(false);
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+		{
+			@Override
+			public void handle(WindowEvent event)
+			{
+				event.consume();
+				MainDialog.this.openAppCloseDialog();
+			}
+		});
 
 		//==================================================================
 		// BUILD THE PRIMARY PANE
@@ -972,7 +987,7 @@ public class MainDialog extends Application
 		center.setVgap(16);
 		center.getColumnConstraints().add(new ColumnConstraints(150));
 		center.getColumnConstraints().add(new ColumnConstraints(220));
-		center.getColumnConstraints().add(new ColumnConstraints(400));
+		center.getColumnConstraints().add(new ColumnConstraints(410));
 		Label a = JavaFxHelper.createLabel("If you are ABSOLUTELY SURE you need to pause...", Color.WHITE, "-fx-font-weight: bold;");
 		center.addRow(0, a);
 		GridPane.setColumnSpan(a, 2);
@@ -1047,7 +1062,107 @@ public class MainDialog extends Application
 			}
 		});
 		outerPane.setBottom(buttonBar);
-		Scene dialogScene = new Scene(outerPane, 800, 440, Color.WHITE);
+		Scene dialogScene = new Scene(outerPane, 800, 430, Color.WHITE);
+		dialogScene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
+		dialog.setScene(dialogScene);
+		dialog.showAndWait();
+	}
+
+	protected void openAppCloseDialog()
+	{
+		final Stage dialog = new Stage();
+		dialog.setTitle("Close NMO");
+		dialog.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
+		dialog.initModality(Modality.APPLICATION_MODAL);
+		dialog.initOwner(scene.getWindow());
+		dialog.setResizable(false);
+		BorderPane outerPane = new BorderPane();
+		outerPane.setId("root");
+		outerPane.setStyle("-fx-background-color: #222;");
+		StackPane stopBg = new StackPane();
+		stopBg.setPadding(new Insets(10));
+		StackPane stopBg2 = new StackPane();
+		stopBg2.setStyle("-fx-background-color: #990000; -fx-border-size: 2px; -fx-border-color: white;");
+		stopBg2.setMinHeight(200);
+		stopBg2.setMaxHeight(200);
+		stopBg.getChildren().add(stopBg2);
+		Label stopLabel = JavaFxHelper.createIconLabel(FontAwesomeIcon.EXCLAMATION_TRIANGLE, "72", " STOP AND THINK !!", ContentDisplay.LEFT, Color.WHITE, "-fx-font-size: 72px;");
+		stopLabel.setPadding(new Insets(0, 0, 70, 0));
+		Label stopLabel2 = JavaFxHelper.createLabel("IS CLOSING NMO A GOOD IDEA?", Color.WHITE, "-fx-font-size: 24px;");
+		stopLabel2.setPadding(new Insets(52, 0, 0, 0));
+		Label stopLabel3 = JavaFxHelper.createLabel("*** FAILING YOUR SCHEDULE IS VERY LIKELY IF NMO IS CLOSED ***", Color.WHITE, "-fx-font-size: 24px; -fx-font-weight: bold;");
+		stopLabel3.setPadding(new Insets(130, 0, 0, 0));
+		stopBg2.getChildren().add(stopLabel);
+		stopBg2.getChildren().add(stopLabel2);
+		stopBg2.getChildren().add(stopLabel3);
+		outerPane.setTop(stopBg);
+		final Captcha captcha = new Captcha.Builder(200, 50).addText().addBackground(new GradiatedBackgroundProducer()).addNoise().gimp(new FishEyeGimpyRenderer()).addBorder().build();
+		WritableImage wimg = new WritableImage(200, 50);
+		SwingFXUtils.toFXImage(captcha.getImage(), wimg);
+		ImageView captchaImageView = new ImageView();
+		captchaImageView.setImage(wimg);
+		captchaImageView.setPreserveRatio(true);
+		GridPane center = new GridPane();
+		center.setPadding(new Insets(6, 16, 6, 16));
+		center.setAlignment(Pos.TOP_LEFT);
+		center.setStyle("-fx-font-size: 16px");
+		center.setVgap(16);
+		center.getColumnConstraints().add(new ColumnConstraints(150));
+		center.getColumnConstraints().add(new ColumnConstraints(220));
+		center.getColumnConstraints().add(new ColumnConstraints(410));
+		Label a = JavaFxHelper.createLabel("If you are ABSOLUTELY SURE you need to close NMO...", Color.WHITE, "-fx-font-weight: bold;");
+		center.addRow(0, a);
+		GridPane.setColumnSpan(a, 2);
+		Label c = JavaFxHelper.createLabel("Solve this captcha:", Color.WHITE);
+		final TextField captchaField = new TextField();
+		center.addRow(1, c, captchaImageView, captchaField);
+		outerPane.setCenter(center);
+		Separator s = new Separator(Orientation.HORIZONTAL);
+		GridPane.setColumnSpan(s, 3);
+		center.addRow(2, s);
+		BooleanBinding bb = new BooleanBinding()
+		{
+			{
+				super.bind(captchaField.textProperty());
+			}
+
+			@Override
+			protected boolean computeValue()
+			{
+				return !captchaField.getText().equals(captcha.getAnswer());
+			}
+		};
+		ButtonBar buttonBar = new ButtonBar();
+		final Button okButton = new Button("Confirm pause");
+		okButton.disableProperty().bind(bb);
+		ButtonBar.setButtonData(okButton, ButtonData.OK_DONE);
+		buttonBar.getButtons().addAll(okButton);
+		buttonBar.setPadding(new Insets(0, 16, 16, 0));
+		buttonBar.setStyle("-fx-font-size: 16px;");
+		okButton.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				Platform.exit();
+			}
+		});
+		captchaField.setOnKeyPressed(new EventHandler<KeyEvent>()
+		{
+			@Override
+			public void handle(KeyEvent ke)
+			{
+				if (ke.getCode().equals(KeyCode.ENTER))
+				{
+					if (!okButton.isDisabled())
+					{
+						okButton.fire();
+					}
+				}
+			}
+		});
+		outerPane.setBottom(buttonBar);
+		Scene dialogScene = new Scene(outerPane, 800, 380, Color.WHITE);
 		dialogScene.getStylesheets().add(JavaFxHelper.buildResourcePath("application.css"));
 		dialog.setScene(dialogScene);
 		dialog.showAndWait();
