@@ -131,7 +131,7 @@ public class IntegrationFileWriter extends Integration
 							{
 								tims += 86400000L; // nap loops over to next day. add 1 day.
 							}
-							String pros = MainDialog.nextActivityWarningID > 5 ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+							String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 							FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
 						}
 					}
