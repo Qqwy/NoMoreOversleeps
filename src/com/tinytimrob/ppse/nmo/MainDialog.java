@@ -1059,7 +1059,7 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				String pros = nextActivityWarningID > NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				scheduleStatus = pros + " [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
 				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
