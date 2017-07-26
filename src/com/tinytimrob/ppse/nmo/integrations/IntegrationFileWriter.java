@@ -93,47 +93,44 @@ public class IntegrationFileWriter extends Integration
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
 				{
-					if (MainDialog.nextSleepBlock == null)
+					int currentMinuteOfDay = ((hour * 60) + minute);
+					boolean currentlySleeping = MainDialog.nextSleepBlock == null ? false : MainDialog.nextSleepBlock.containsTime(currentMinuteOfDay);
+					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+					if (currentlySleeping)
 					{
-						FileUtils.writeStringToFile(timeToNextSleepBlockFile, "NO SLEEP BLOCKS CONFIGURED", Charsets.UTF_8, false);
+						Calendar calendar2 = Calendar.getInstance();
+						calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.end / 60);
+						calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.end % 60);
+						calendar2.set(Calendar.SECOND, 0);
+						calendar2.set(Calendar.MILLISECOND, 0);
+						long tims = calendar2.getTimeInMillis();
+						if (MainDialog.nextSleepBlock.end < currentMinuteOfDay)
+						{
+							tims += 86400000L; // nap loops over to next day. add 1 day.
+						}
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+					}
+					else if (MainDialog.isCurrentlyPaused.get())
+					{
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, "AFK [" + MainDialog.pauseReason + " - " + MainDialog.formatTimeElapsedWithoutDays(MainDialog.pausedUntil, now - 59999) + " left]", Charsets.UTF_8, false);
+					}
+					else if (MainDialog.nextSleepBlock == null)
+					{
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros, Charsets.UTF_8, false);
 					}
 					else
 					{
-						int currentMinuteOfDay = ((hour * 60) + minute);
-						boolean currentlySleeping = MainDialog.nextSleepBlock.containsTime(currentMinuteOfDay);
-						if (currentlySleeping)
+						Calendar calendar2 = Calendar.getInstance();
+						calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.start / 60);
+						calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.start % 60);
+						calendar2.set(Calendar.SECOND, 0);
+						calendar2.set(Calendar.MILLISECOND, 0);
+						long tims = calendar2.getTimeInMillis();
+						if (MainDialog.nextSleepBlock.start < currentMinuteOfDay)
 						{
-							Calendar calendar2 = Calendar.getInstance();
-							calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.end / 60);
-							calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.end % 60);
-							calendar2.set(Calendar.SECOND, 0);
-							calendar2.set(Calendar.MILLISECOND, 0);
-							long tims = calendar2.getTimeInMillis();
-							if (MainDialog.nextSleepBlock.end < currentMinuteOfDay)
-							{
-								tims += 86400000L; // nap loops over to next day. add 1 day.
-							}
-							FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+							tims += 86400000L; // nap loops over to next day. add 1 day.
 						}
-						else if (MainDialog.isCurrentlyPaused.get())
-						{
-							FileUtils.writeStringToFile(timeToNextSleepBlockFile, "AFK [" + MainDialog.pauseReason + " - " + MainDialog.formatTimeElapsedWithoutDays(MainDialog.pausedUntil, now - 59999) + " left]", Charsets.UTF_8, false);
-						}
-						else
-						{
-							Calendar calendar2 = Calendar.getInstance();
-							calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.start / 60);
-							calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.start % 60);
-							calendar2.set(Calendar.SECOND, 0);
-							calendar2.set(Calendar.MILLISECOND, 0);
-							long tims = calendar2.getTimeInMillis();
-							if (MainDialog.nextSleepBlock.start < currentMinuteOfDay)
-							{
-								tims += 86400000L; // nap loops over to next day. add 1 day.
-							}
-							String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
-							FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
-						}
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
 					}
 				}
 			}
