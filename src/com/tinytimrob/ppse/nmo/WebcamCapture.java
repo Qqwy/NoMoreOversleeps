@@ -33,7 +33,13 @@ public class WebcamCapture
 			graphics.setColor(Color.BLACK);
 			graphics.fillRect(0, 0, 320, 20);
 			graphics.setColor(Color.WHITE);
-			graphics.drawString(CommonUtils.convertTimestamp(System.currentTimeMillis()), 4, 14);
+			long now = System.currentTimeMillis();
+			graphics.drawString(CommonUtils.convertTimestamp(now), 4, 14);
+			if (NMOConfiguration.instance.scheduleStartedOn != 0)
+			{
+
+				graphics.drawString(MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn) + "    " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep), 160, 14);
+			}
 			image.flush();
 			graphics.dispose();
 			return image;

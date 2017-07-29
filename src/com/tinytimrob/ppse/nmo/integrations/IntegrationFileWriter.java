@@ -89,7 +89,7 @@ public class IntegrationFileWriter extends Integration
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
 				{
-					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
 				{
