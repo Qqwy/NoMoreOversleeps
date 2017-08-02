@@ -37,7 +37,7 @@ public class WebcamCapture
 			String str = CommonUtils.convertTimestamp(now);
 			if (NMOConfiguration.instance.scheduleStartedOn != 0)
 			{
-				str = str + "      " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn) + "      " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep);
+				str = str + "   " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn) + "   " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep);
 			}
 			graphics.drawString(str, 4, 14);
 			image.flush();
