@@ -140,6 +140,8 @@ public class WebcamWebSocketHandler implements WebcamListener
 		}
 		this.frame = 0;
 		BufferedImage image = WebcamCapture.getImage();
+		if (image == null)
+			return;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try
 		{

@@ -1401,6 +1401,7 @@ public class MainDialog extends Application
 
 		try
 		{
+			WebcamCapture.update();
 			BufferedImage img = WebcamCapture.getImage();
 			if (img != null && tick % 4 < 2)
 			{

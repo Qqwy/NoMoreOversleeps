@@ -5,11 +5,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamImageTransformer;
 import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
@@ -92,11 +94,39 @@ public class WebcamCapture
 		webcam.setViewSize(dimension);
 		webcam.open(true);
 		System.out.println(webcam.getViewSize());
+		WebcamDefaultDevice.FAULTY = false;
+	}
+
+	private static BufferedImage image;
+	private static ArrayList<WebcamListener> listeners = new ArrayList<WebcamListener>();
+
+	public static synchronized void update()
+	{
+		BufferedImage img = webcam.getImage();
+		if (img == null || WebcamDefaultDevice.FAULTY)
+		{
+			webcam.close();
+			ArrayList<WebcamListener> listenersclose = (ArrayList<WebcamListener>) listeners.clone();
+			for (WebcamListener l : listenersclose)
+			{
+				removeListener(l);
+			}
+			webcam = null;
+			init();
+			for (WebcamListener l : listenersclose)
+			{
+				addListener(l);
+			}
+		}
+		else
+		{
+			image = img;
+		}
 	}
 
 	public static BufferedImage getImage()
 	{
-		return webcam.getImage();
+		return image;
 	}
 
 	public static String getCameraName()
@@ -107,15 +137,22 @@ public class WebcamCapture
 	public static void shutdown()
 	{
 		webcam.close();
+		ArrayList<WebcamListener> listenersclose = (ArrayList<WebcamListener>) listeners.clone();
+		for (WebcamListener l : listenersclose)
+		{
+			removeListener(l);
+		}
 	}
 
-	public static void addListener(WebcamListener listener)
+	public static synchronized void addListener(WebcamListener listener)
 	{
+		listeners.add(listener);
 		webcam.addWebcamListener(listener);
 	}
 
-	public static void removeListener(WebcamListener listener)
+	public static synchronized void removeListener(WebcamListener listener)
 	{
+		listeners.remove(listener);
 		webcam.removeWebcamListener(listener);
 	}
 }
