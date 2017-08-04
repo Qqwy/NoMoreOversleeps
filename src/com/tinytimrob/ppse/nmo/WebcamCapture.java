@@ -100,6 +100,11 @@ public class WebcamCapture
 	private static BufferedImage image;
 	private static ArrayList<WebcamListener> listeners = new ArrayList<WebcamListener>();
 
+	public static synchronized int count()
+	{
+		return listeners.size();
+	}
+
 	public static synchronized void update()
 	{
 		BufferedImage img = webcam.getImage();

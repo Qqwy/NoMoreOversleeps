@@ -24,7 +24,6 @@ import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.utils.DesktopHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
-import com.tinytimrob.ppse.nmo.ws.WebcamWebSocketHandler;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -1395,7 +1394,7 @@ public class MainDialog extends Application
 			timeDiffString.set("Time difference: " + timeDiff + " (next warning: " + nawtd + "s)");
 		}
 
-		webMonitoringString.set(WebcamWebSocketHandler.connectionCounter.get() + " active web sockets");
+		webMonitoringString.set(WebcamCapture.count() + " active web sockets");
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
 		lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
 

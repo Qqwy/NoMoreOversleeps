@@ -18,6 +18,7 @@ import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.WebcamCapture;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
@@ -106,7 +107,7 @@ public class WebServlet extends HttpServlet
 			{
 				data.pause_state = "RUNNING";
 			}
-			data.conn_count = WebcamWebSocketHandler.connectionCounter.get();
+			data.conn_count = WebcamCapture.count();
 			data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
 			data.light_state = IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF";
 			data.schedule = MainDialog.scheduleStatus;
