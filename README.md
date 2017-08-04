@@ -86,7 +86,7 @@ failure of your polyphasic adaptation ;)
 
 ### Setup and usage instructions ###
 
-A pre-compiled version of the latest supported release can be found in the [Downloads](https://bitbucket.org/Tinytimrob/nomoreoversleeps/downloads/) area. This should be compatible with Windows, Mac and Linux.
+A pre-compiled version of the latest supported release can be found pinned to `#sleep_tech` in the Polyphasic Sleep Discord. This should be compatible with Windows, Mac and Linux.
 
 After downloading the package, you should unzip it and launch the application to generate a base config file which can be edited. You must then modify the config files to your liking (`config.json` turns
 features on/off and configures them, and `webusers.properties` contains a list of username/password combos which are valid to access the Web UI). Some example config files are located in the `sample-configs`
