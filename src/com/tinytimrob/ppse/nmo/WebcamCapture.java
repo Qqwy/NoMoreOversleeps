@@ -42,6 +42,22 @@ public class WebcamCapture
 				str = str + "   " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn) + "   " + MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep);
 			}
 			graphics.drawString(str, 4, 14);
+			if (MainDialog.isCurrentlyPaused.get())
+			{
+				graphics.setColor(Color.BLACK);
+				graphics.fillRect(0, 204, 320, 36);
+				graphics.setColor(Color.WHITE);
+				graphics.drawString("PAUSED for \"" + MainDialog.pauseReason + "\"\n", 4, 218);
+				graphics.drawString("until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil), 4, 234);
+			}
+			else
+			{
+				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				graphics.setColor(Color.BLACK);
+				graphics.fillRect(0, 220, 320, 20);
+				graphics.setColor(Color.WHITE);
+				graphics.drawString(pros + (MainDialog.nextActivityWarningID > 0 ? " (" + MainDialog.nextActivityWarningID + ")" : ""), 4, 234);
+			}
 			image.flush();
 			graphics.dispose();
 			return image;
