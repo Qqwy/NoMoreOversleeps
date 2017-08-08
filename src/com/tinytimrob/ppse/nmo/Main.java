@@ -33,7 +33,7 @@ import javafx.scene.text.Font;
 public class Main
 {
 	//-------------------------------------------
-	public static String VERSION = "0.10-GC";
+	public static String VERSION = "0.10.1";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
