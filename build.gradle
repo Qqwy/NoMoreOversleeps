@@ -56,4 +56,5 @@ dependencies {
 	compile 'org.bitlet:weupnp:0.1.4'
 	compile name: 'huelocalsdk'
 	compile name: 'huesdkresources'
+	compile name: 'simplecaptcha', version: '1.2.1'
 }
