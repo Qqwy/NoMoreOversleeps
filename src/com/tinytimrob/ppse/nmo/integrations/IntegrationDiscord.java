@@ -43,6 +43,7 @@ public class IntegrationDiscord extends Integration
 			throw new Exception("You need to specify discord authToken in the configuration file in order for discord integration to work");
 		}
 		jda = new JDABuilder(AccountType.CLIENT).setToken(NMOConfiguration.instance.integrations.discord.authToken).buildBlocking();
+		jda.getPresence().setGame(Game.of("NMO"));
 	}
 
 	@Override
