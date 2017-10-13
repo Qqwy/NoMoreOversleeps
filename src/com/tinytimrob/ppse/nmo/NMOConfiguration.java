@@ -3,6 +3,7 @@ package com.tinytimrob.ppse.nmo;
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine.CommandLineConfiguration;
+import com.tinytimrob.ppse.nmo.integrations.IntegrationDiscord.DiscordConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationFileWriter.FileWriterConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
 import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter.MidiConfiguration;
@@ -122,6 +123,9 @@ public class NMOConfiguration
 
 		@Expose
 		public FileWriterConfiguration fileWriter = new FileWriterConfiguration();
+
+		@Expose
+		public DiscordConfiguration discord = new DiscordConfiguration();
 	}
 
 	@Expose

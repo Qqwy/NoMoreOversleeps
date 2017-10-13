@@ -52,7 +52,7 @@ public class WebcamCapture
 			}
 			else
 			{
-				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				graphics.setColor(Color.BLACK);
 				graphics.fillRect(0, 220, 320, 20);
 				graphics.setColor(Color.WHITE);

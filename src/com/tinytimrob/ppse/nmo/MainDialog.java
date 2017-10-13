@@ -106,6 +106,7 @@ public class MainDialog extends Application
 	public static volatile SleepEntry lastSleepBlockWarning = null;
 	public static volatile SleepEntry nextSleepBlock = null;
 	public static volatile String scheduleStatus = "No schedule configured";
+	public static volatile String scheduleStatusShort = "UNCONFIGURED";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static volatile int tick = 0;
@@ -1265,7 +1266,9 @@ public class MainDialog extends Application
 				{
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
+				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
+				scheduleStatusShort = "SLEEPING [" + minutesRemaining + "m LEFT]";
 				nextSleepBlock = nextSleepBlockDetected;
 				if (!paused)
 				{
@@ -1288,8 +1291,9 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
-				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				scheduleStatus = pros + " [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
+				scheduleStatusShort = pros.equals("AWAKE") ? pros + " [" + minutesRemaining + "m LEFT]" : pros;
 				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
 				{
 					if (nextSleepBlockDetected.approachWarning != -1)
@@ -1299,6 +1303,10 @@ public class MainDialog extends Application
 					lastSleepBlockWarning = nextSleepBlockDetected;
 				}
 			}
+		}
+		else
+		{
+			scheduleStatusShort = "UNCONFIGURED";
 		}
 		if (nextSleepBlock != null && nextSleepBlock != nextSleepBlockDetected)
 		{
@@ -1326,6 +1334,11 @@ public class MainDialog extends Application
 			}
 			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
 			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), null);
+		}
+		if (paused)
+		{
+			long minutesRemaining = (((pausedUntil + 59999) - System.currentTimeMillis()) / 60000);
+			scheduleStatusShort = "\"" + pauseReason + "\" [" + minutesRemaining + "m LEFT]";
 		}
 
 		for (Integration integration : Main.integrations)
@@ -1371,7 +1384,7 @@ public class MainDialog extends Application
 				this.setNextActivityWarningForTimer(timer, timeDiff);
 				try
 				{
-					String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : nextActivityWarningID >= 0 ? "MISSING" : "AWAKE";
+					String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID >= 0 ? "MISSING" : "AWAKE";
 					// the first time, you get an alternative lighter warning, just in case you forgot to pause
 					if (nextActivityWarningID == 1)
 					{

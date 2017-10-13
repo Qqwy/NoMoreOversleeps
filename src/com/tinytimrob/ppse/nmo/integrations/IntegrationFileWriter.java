@@ -95,7 +95,7 @@ public class IntegrationFileWriter extends Integration
 				{
 					int currentMinuteOfDay = ((hour * 60) + minute);
 					boolean currentlySleeping = MainDialog.nextSleepBlock == null ? false : MainDialog.nextSleepBlock.containsTime(currentMinuteOfDay);
-					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "PROBABLE OVERSLEEP" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 					if (currentlySleeping)
 					{
 						Calendar calendar2 = Calendar.getInstance();

@@ -4,6 +4,7 @@ apply plugin: 'idea'
 sourceCompatibility = 1.7
 
 repositories {
+	jcenter()
 	mavenCentral()
 	maven {
 		url "https://maven.ginever.net/"
@@ -57,4 +58,5 @@ dependencies {
 	compile name: 'huelocalsdk'
 	compile name: 'huesdkresources'
 	compile name: 'simplecaptcha', version: '1.2.1'
+	compile 'net.dv8tion:JDA:3.3.1_281'
 }
