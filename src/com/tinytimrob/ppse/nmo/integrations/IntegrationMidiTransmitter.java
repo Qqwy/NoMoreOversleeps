@@ -64,7 +64,7 @@ public class IntegrationMidiTransmitter extends Integration
 							@Override
 							public void send(MidiMessage message, long timeStamp)
 							{
-								MainDialog.resetActivityTimer();
+								MainDialog.resetActivityTimer(IntegrationMidiTransmitter.this.id);
 							}
 
 							@Override

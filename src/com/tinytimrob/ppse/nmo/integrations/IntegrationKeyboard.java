@@ -50,19 +50,19 @@ public class IntegrationKeyboard extends Integration
 			@Override
 			public void nativeKeyTyped(NativeKeyEvent nativeEvent)
 			{
-				MainDialog.resetActivityTimer();
+				MainDialog.resetActivityTimer(IntegrationKeyboard.this.id);
 			}
 
 			@Override
 			public void nativeKeyPressed(NativeKeyEvent nativeEvent)
 			{
-				MainDialog.resetActivityTimer();
+				MainDialog.resetActivityTimer(IntegrationKeyboard.this.id);
 			}
 
 			@Override
 			public void nativeKeyReleased(NativeKeyEvent nativeEvent)
 			{
-				MainDialog.resetActivityTimer();
+				MainDialog.resetActivityTimer(IntegrationKeyboard.this.id);
 			}
 		};
 		GlobalScreen.addNativeKeyListener(this.keyboardHook);

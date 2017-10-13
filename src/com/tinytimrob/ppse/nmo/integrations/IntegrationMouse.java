@@ -43,7 +43,7 @@ public class IntegrationMouse extends Integration
 		if (!epoint.equals(lastCursorPoint))
 		{
 			lastCursorPoint = epoint;
-			MainDialog.resetActivityTimer();
+			MainDialog.resetActivityTimer(this.id);
 		}
 	}
 

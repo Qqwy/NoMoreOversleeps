@@ -52,7 +52,7 @@ public class IntegrationXboxController extends Integration
 			@Override
 			public void buttonChanged(XInputButton arg0, boolean arg1)
 			{
-				MainDialog.resetActivityTimer();
+				MainDialog.resetActivityTimer(IntegrationXboxController.this.id);
 			}
 		});
 	}

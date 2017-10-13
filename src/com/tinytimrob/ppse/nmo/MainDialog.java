@@ -89,6 +89,7 @@ public class MainDialog extends Application
 	public static volatile long pausedUntil = 0;
 	public static volatile long nextActivityWarningID;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
+	public static volatile String lastActivitySource = "system";
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty webMonitoringString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty activeTimerString = new SimpleStringProperty("");
@@ -1358,7 +1359,7 @@ public class MainDialog extends Application
 
 		if (paused)
 		{
-			resetActivityTimer();
+			resetActivityTimer("pause");
 		}
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
@@ -1377,7 +1378,7 @@ public class MainDialog extends Application
 		}
 		else
 		{
-			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime));
+			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime) + " (" + lastActivitySource + ")");
 			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
 			if (timeDiff > (1000 * nawtd))
 			{
@@ -1485,9 +1486,10 @@ public class MainDialog extends Application
 		return timer.secondsForFirstWarning + (awid * timer.secondsForSubsequentWarnings);
 	}
 
-	public static void resetActivityTimer()
+	public static void resetActivityTimer(String source)
 	{
 		lastActivityTime = System.currentTimeMillis();
+		lastActivitySource = source;
 		nextActivityWarningID = 0;
 	}
 
