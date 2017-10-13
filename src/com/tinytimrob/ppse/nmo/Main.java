@@ -8,7 +8,9 @@ import java.util.Collections;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.Configuration;
+import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
 import com.tinytimrob.ppse.nmo.integrations.Integration;
@@ -33,6 +35,8 @@ import javafx.scene.text.Font;
 
 public class Main
 {
+	private static final Logger log = LogWrapper.getLogger();
+
 	//-------------------------------------------
 	public static String VERSION = "0.10.1";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
@@ -109,6 +113,7 @@ public class Main
 				{
 					if (integration.isEnabled())
 					{
+						log.info("Initializing integration module : " + integration.id);
 						integration.init();
 					}
 				}
@@ -120,6 +125,7 @@ public class Main
 				{
 					if (integration.isEnabled())
 					{
+						log.info("Shutting down integration module : " + integration.id);
 						integration.shutdown();
 					}
 				}
