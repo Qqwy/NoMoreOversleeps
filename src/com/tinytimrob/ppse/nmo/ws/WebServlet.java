@@ -98,7 +98,7 @@ public class WebServlet extends HttpServlet
 			long now = System.currentTimeMillis();
 			boolean paused = MainDialog.isCurrentlyPaused.get();
 			data.update = CommonUtils.convertTimestamp(now);
-			data.activity = paused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + (now - MainDialog.lastActivityTime) + "ms ago from " + MainDialog.lastActivitySource;
+			data.activity = paused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + (now - MainDialog.lastActivityTime) + "ms ago from " + MainDialog.lastActivitySource + ")";
 			if (paused)
 			{
 				data.pause_state = "PAUSED for \"" + MainDialog.pauseReason + "\" until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil);
