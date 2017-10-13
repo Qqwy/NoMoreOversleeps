@@ -58,6 +58,9 @@ public class IntegrationDiscord extends Integration
 	@Override
 	public void shutdown() throws Exception
 	{
-
+		if (jda != null)
+		{
+			jda.shutdown();
+		}
 	}
 }
