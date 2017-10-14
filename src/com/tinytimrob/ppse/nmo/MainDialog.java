@@ -1338,8 +1338,11 @@ public class MainDialog extends Application
 		}
 		if (paused)
 		{
-			long minutesRemaining = (((pausedUntil + 59999) - System.currentTimeMillis()) / 60000);
-			scheduleStatusShort = "\"" + pauseReason + "\" [" + minutesRemaining + "m LEFT]";
+			if (!(scheduleStatusShort.startsWith("SLEEPING ") && pauseReason.startsWith("Sleep block: ")))
+			{
+				long minutesRemaining = (((pausedUntil + 59999) - System.currentTimeMillis()) / 60000);
+				scheduleStatusShort = "\"" + pauseReason + "\" [" + minutesRemaining + "m LEFT]";
+			}
 		}
 
 		for (Integration integration : Main.integrations)
