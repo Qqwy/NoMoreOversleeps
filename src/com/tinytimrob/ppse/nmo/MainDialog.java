@@ -226,7 +226,11 @@ public class MainDialog extends Application
 						WebEngine we = (WebEngine) event.getSource();
 						String location = we.getLocation();
 						System.out.println(location);
-						if (location.startsWith(Main.CLIENT_CALLBACK) && location.contains("?code"))
+						if (location.equals("https://pavlok-mvp.herokuapp.com/"))
+						{
+							we.load(url);
+						}
+						else if (location.startsWith(Main.CLIENT_CALLBACK) && location.contains("?code"))
 						{
 							this.handledCallbackYet = true;
 							System.out.println("Detected location: " + location);
