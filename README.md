@@ -57,6 +57,10 @@ triggered from the Web UI or as part of your alarm routine.
 
 In the future, the list of supported actions will hopefully be expanded. If you're good at programming in Java, feel free to add your own (the implementation of new actions is quite simple).
 
+#### Discord integration ####
+
+There is a Discord integration module used by the Polyphasic Sleep Discord community which will update your 'Playing' status with the current schedule information (AWAKE / SLEEPING / MISSING / OVERSLEEPING / PAUSED). To make use of this feature simply enable the Discord integration module and paste in your authtoken. Further instructions are pinned to `#sleep_tech` in the Polyphasic Sleep Discord.
+
 #### Live text file data output ####
 
 NoMoreOversleeps can optionally output text files containing information such as current schedule, time since start of schedule, time since last oversleep, personal best time, and current
@@ -71,7 +75,7 @@ Some ideas I've had include:
 * Load the sleep schedule from a Napchart link rather than having to configure it by hand
 * GPS tracking of phone so you can see where someone is if they aren't at their computer
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
-* Send a message to the polysleeping Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
+* Send a message to the Polyphasic Sleep Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
 * Food tracker so you can monitor what you're eating in case this affects your sleep schedule
 * Productivity tracker so you can input what you're doing in each sleep block to avoid wasting time
 * Integration with EEG to track SWS/REM acquisition
