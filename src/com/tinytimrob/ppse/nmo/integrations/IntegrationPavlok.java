@@ -118,6 +118,26 @@ public class IntegrationPavlok extends Integration
 	@Override
 	public void init()
 	{
+		this.actions.put("/pavlok/led", new Action()
+		{
+			@Override
+			public void onAction() throws Exception
+			{
+				IntegrationPavlok.this.beep(255, "Manually triggered LED flash");
+			}
+
+			@Override
+			public String getName()
+			{
+				return "FLASH PAVLOK LED";
+			}
+
+			@Override
+			public boolean isSecret()
+			{
+				return false;
+			}
+		});
 		this.actions.put("/pavlok/beep", new Action()
 		{
 			@Override
@@ -195,6 +215,12 @@ public class IntegrationPavlok extends Integration
 	public static OAuthResponse postAuthToken(String code) throws Exception
 	{
 		return Communicator.basicJsonMessage("get oauthtoken", "http://pavlok-mvp.herokuapp.com/oauth/token", new OAuthToken(code), OAuthResponse.class, false, null);
+	}
+
+	public void led(long amount, String reason) throws Exception
+	{
+		log.info("Sending: led " + amount + " (" + reason + ")");
+		Communicator.basicJsonMessage("led", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/led/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
 	}
 
 	public void beep(long amount, String reason) throws Exception
