@@ -110,6 +110,7 @@ public class MainDialog extends Application
 	public static volatile String scheduleStatusShort = "UNCONFIGURED";
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
+	public static ArrayList<CustomEventAction> customActions = new ArrayList<CustomEventAction>();
 	public static volatile int tick = 0;
 
 	@Override
@@ -129,6 +130,16 @@ public class MainDialog extends Application
 		{
 			triggerEvent("Adding activity timer: " + entry.name + " " + entry.secondsForFirstWarning + "s/" + entry.secondsForSubsequentWarnings + "s", null);
 		}
+		int q = 0;
+		for (CustomEventAction action : NMOConfiguration.instance.events.custom)
+		{
+			action.originalOrder = q;
+			q++;
+			action.updateNextTriggerTime();
+			triggerEvent("Adding custom event trigger " + action.name + " triggering " + action.describe() + " and next on " + CommonUtils.convertTimestamp(action.nextTriggerTime), null);
+			customActions.add(action);
+		}
+		Collections.sort(customActions);
 
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
@@ -827,6 +838,10 @@ public class MainDialog extends Application
 			this.addEventSummaryToStatusBox(statusBox, "When manually pausing", NMOConfiguration.instance.events.pauseInitiated);
 			this.addEventSummaryToStatusBox(statusBox, "When manually unpausing", NMOConfiguration.instance.events.pauseCancelled);
 			this.addEventSummaryToStatusBox(statusBox, "When pause auto-expires", NMOConfiguration.instance.events.pauseExpired);
+			for (CustomEventAction action : NMOConfiguration.instance.events.custom)
+			{
+				this.addEventSummaryToStatusBox(statusBox, action.name + " (" + action.describe() + ")", action.actions);
+			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #6BA4A5;");
@@ -1175,13 +1190,9 @@ public class MainDialog extends Application
 
 	private void addEventSummaryToStatusBox(VBox statusBox, String description, String[] eventTriggers)
 	{
-		statusBox.getChildren().add(JavaFxHelper.createLabel(description + ":", Color.WHITE, "-fx-font-weight: bold;"));
-		if (eventTriggers.length == 0)
+		if (eventTriggers.length != 0)
 		{
-			statusBox.getChildren().add(JavaFxHelper.createLabel("do nothing", Color.GRAY, "", new Insets(0, 0, 0, 16)));
-		}
-		else
-		{
+			statusBox.getChildren().add(JavaFxHelper.createLabel(description + ":", Color.WHITE, "-fx-font-weight: bold;"));
 			for (int i = 0; i < eventTriggers.length; i++)
 			{
 				// get the description
@@ -1210,9 +1221,9 @@ public class MainDialog extends Application
 	protected void tick()
 	{
 		tick++;
-		if (tick >= 180)
+		if (tick >= NMOConfiguration.instance.garbageCollectionFrequency)
 		{
-			tick -= 180;
+			tick -= NMOConfiguration.instance.garbageCollectionFrequency;
 			System.gc();
 		}
 		if (tick % 2 == 1)
@@ -1385,7 +1396,7 @@ public class MainDialog extends Application
 		}
 		else
 		{
-			lastActivityTimeString.set("Last input activity: " + CommonUtils.dateFormatter.format(lastActivityTime) + " (" + lastActivitySource + ")");
+			lastActivityTimeString.set("Last: " + CommonUtils.dateFormatter.format(lastActivityTime) + " (" + lastActivitySource + ")");
 			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
 			if (timeDiff > (1000 * nawtd))
 			{
@@ -1434,6 +1445,20 @@ public class MainDialog extends Application
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+
+		// trigger custom actions
+		if (!customActions.isEmpty())
+		{
+			CustomEventAction cea = customActions.get(0);
+			while (cea.nextTriggerTime < now)
+			{
+				triggerEvent("Custom action: " + cea.name, cea.actions);
+				cea.updateNextTriggerTime();
+				triggerEvent("Action will next occur on " + CommonUtils.convertTimestamp(cea.nextTriggerTime), null);
+				Collections.sort(customActions);
+				cea = customActions.get(0);
+			}
 		}
 	}
 

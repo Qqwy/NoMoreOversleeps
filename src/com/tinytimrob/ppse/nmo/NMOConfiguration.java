@@ -31,6 +31,9 @@ public class NMOConfiguration
 	public int webcamFrameSkip = 2;
 
 	@Expose
+	public int garbageCollectionFrequency = 3600;
+
+	@Expose
 	public String scheduleName = "";
 
 	@Expose
@@ -87,6 +90,9 @@ public class NMOConfiguration
 
 		@Expose
 		public String[] pauseExpired = new String[0];
+
+		@Expose
+		public CustomEventAction[] custom = new CustomEventAction[0];
 	}
 
 	@Expose
