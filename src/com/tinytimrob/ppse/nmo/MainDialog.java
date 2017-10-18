@@ -497,12 +497,6 @@ public class MainDialog extends Application
 
 			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-			final Label webMonitoringLabel = JavaFxHelper.createLabel("", Color.WHITE);
-			webMonitoringLabel.textProperty().bind(webMonitoringString);
-			statusBox.getChildren().add(webMonitoringLabel);
-
-			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
-
 			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			lastCursorTime.textProperty().bind(lastActivityTimeString);
 			statusBox.getChildren().add(lastCursorTime);
@@ -581,22 +575,24 @@ public class MainDialog extends Application
 			hbox.getChildren().add(pauseControlBox);
 
 			hbox.getChildren().add(new Separator(Orientation.VERTICAL));
-			
-			VBox webcamBox = new VBox(6);
-			webcamBox.setPadding(new Insets(6));
-			Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			l.setPadding(new Insets(0, 0, 0, 2));
-			l.textProperty().bind(webcamName);
-			webcamBox.setMinWidth(330);
-			webcamBox.setMaxWidth(330);
-			webcamBox.getChildren().add(l);
 
+			VBox webcamBox = new VBox(6);
+			webcamBox.setMinWidth(326);
+			webcamBox.setMaxWidth(326);
 			if (NMOConfiguration.instance.integrations.webUI.enabled)
 			{
+				Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+				l.setPadding(new Insets(0, 0, 0, 2));
+				l.textProperty().bind(webcamName);
+				webcamBox.getChildren().add(l);
 				ImageView webcamImageView = new ImageView();
 				webcamImageView.imageProperty().bind(lastWebcamImage);
 				webcamImageView.setPreserveRatio(true);
 				webcamBox.getChildren().add(webcamImageView);
+				webcamBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+				final Label webMonitoringLabel = JavaFxHelper.createLabel("", Color.WHITE);
+				webMonitoringLabel.textProperty().bind(webMonitoringString);
+				webcamBox.getChildren().add(webMonitoringLabel);
 			}
 			else
 			{
@@ -614,7 +610,7 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
-			
+
 			final Button jfxButtonWebUI = JavaFxHelper.createButton("Launch web UI", JavaFxHelper.createIcon(FontAwesomeIcon.LINK, "11", Color.BLACK));
 			jfxButtonWebUI.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonWebUI.setOnAction(new EventHandler<ActionEvent>()
@@ -635,7 +631,7 @@ public class MainDialog extends Application
 			});
 			jfxButtonWebUI.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonWebUI);
-			
+
 			final Button jfxButtonPortForward = JavaFxHelper.createButton("Attempt port auto-forward", JavaFxHelper.createIcon(FontAwesomeIcon.PLUG, "11", Color.BLACK));
 			jfxButtonPortForward.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonPortForward.setOnAction(new EventHandler<ActionEvent>()
@@ -664,7 +660,7 @@ public class MainDialog extends Application
 			});
 			jfxButtonPortForward.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonPortForward);
-			
+
 			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
 			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonConfigure.setDisable(true); // temporary
@@ -1416,7 +1412,7 @@ public class MainDialog extends Application
 			timeDiffString.set("Time difference: " + timeDiff + " (next warning: " + nawtd + "s)");
 		}
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
-		
+
 		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
 			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
