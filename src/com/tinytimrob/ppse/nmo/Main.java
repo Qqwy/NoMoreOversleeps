@@ -24,8 +24,7 @@ import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.pavlok.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
-import com.tinytimrob.ppse.nmo.integration.webui.WebServer;
-import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
+import com.tinytimrob.ppse.nmo.integration.webui.IntegrationWebUI;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import com.tinytimrob.ppse.nmo.utils.Logging;
@@ -64,6 +63,7 @@ public class Main
 		integrations.add(IntegrationDiscord.INSTANCE);
 		integrations.add(ActivityTimerFakeIntegration.INSTANCE);
 		integrations.add(ScheduleFakeIntegration.INSTANCE);
+		integrations.add(IntegrationWebUI.INSTANCE);
 	}
 
 	//-------------------------------------------
@@ -108,7 +108,6 @@ public class Main
 				{
 					AppleHelper.integrate();
 				}
-				WebcamCapture.init();
 				for (Integration integration : integrations)
 				{
 					if (integration.isEnabled())
@@ -117,9 +116,7 @@ public class Main
 						integration.init();
 					}
 				}
-				WebServer.initialize();
 				MainDialog.launch(MainDialog.class, args);
-				WebServer.shutdown();
 				Collections.reverse(integrations);
 				for (Integration integration : integrations)
 				{
@@ -129,7 +126,6 @@ public class Main
 						integration.shutdown();
 					}
 				}
-				WebcamCapture.shutdown();
 				Logging.shutdown();
 				try
 				{

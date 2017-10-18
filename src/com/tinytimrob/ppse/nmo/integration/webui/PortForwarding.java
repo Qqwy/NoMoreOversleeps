@@ -102,18 +102,18 @@ public class PortForwarding
 			}
 			/*
 			PortMappingEntry e = new PortMappingEntry();
-			boolean res = device.getSpecificPortMappingEntry(NMOConfiguration.instance.jettyPort, "TCP", e);
+			boolean res = device.getSpecificPortMappingEntry(NMOConfiguration.instance.integrations.webUI.jettyPort, "TCP", e);
 			log.info(res);
 			if (res)
 			{
 				log.info("Mapped : " + e.getExternalPort() + "->" + e.getInternalClient() + ":" + e.getInternalPort());
 			}
 			*/
-			logAndPrint(messages, "Attempting to delete any existing mappings for port " + NMOConfiguration.instance.jettyPort + "...");
-			boolean b = device.deletePortMapping(NMOConfiguration.instance.jettyPort, "TCP");
+			logAndPrint(messages, "Attempting to delete any existing mappings for port " + NMOConfiguration.instance.integrations.webUI.jettyPort + "...");
+			boolean b = device.deletePortMapping(NMOConfiguration.instance.integrations.webUI.jettyPort, "TCP");
 			logAndPrint(messages, b ? "... successful!" : "... failed :(");
-			logAndPrint(messages, "Attempting to create new NMO mapping for port " + NMOConfiguration.instance.jettyPort + "...");
-			b = device.addPortMapping(NMOConfiguration.instance.jettyPort, NMOConfiguration.instance.jettyPort, device.getLocalAddress().getHostAddress(), "TCP", "NoMoreOversleeps");
+			logAndPrint(messages, "Attempting to create new NMO mapping for port " + NMOConfiguration.instance.integrations.webUI.jettyPort + "...");
+			b = device.addPortMapping(NMOConfiguration.instance.integrations.webUI.jettyPort, NMOConfiguration.instance.integrations.webUI.jettyPort, device.getLocalAddress().getHostAddress(), "TCP", "NoMoreOversleeps");
 			logAndPrint(messages, b ? "... successful!" : "... failed :(");
 		}
 		logAndPrint(messages, "------------");

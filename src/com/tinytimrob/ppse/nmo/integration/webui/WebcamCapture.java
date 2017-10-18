@@ -74,7 +74,7 @@ public class WebcamCapture
 		for (Webcam cam : cams)
 		{
 			log.info("Found webcam: " + cam.getName());
-			if (cam.getName().equals(NMOConfiguration.instance.webcamName))
+			if (cam.getName().equals(NMOConfiguration.instance.integrations.webUI.webcamName))
 			{
 				webcam = cam;
 			}
@@ -82,7 +82,7 @@ public class WebcamCapture
 		if (webcam == null)
 		{
 			webcam = Webcam.getDefault();
-			NMOConfiguration.instance.webcamName = webcam.getName();
+			NMOConfiguration.instance.integrations.webUI.webcamName = webcam.getName();
 			try
 			{
 				Configuration.save();
@@ -154,7 +154,7 @@ public class WebcamCapture
 
 	public static String getCameraName()
 	{
-		return webcam.getName();
+		return webcam == null ? "null" : webcam.getName();
 	}
 
 	public static void shutdown()

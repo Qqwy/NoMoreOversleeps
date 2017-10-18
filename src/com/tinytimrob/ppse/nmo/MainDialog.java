@@ -580,6 +580,30 @@ public class MainDialog extends Application
 			pauseControlBox.getChildren().add(unpauseButton);
 			hbox.getChildren().add(pauseControlBox);
 
+			hbox.getChildren().add(new Separator(Orientation.VERTICAL));
+			
+			VBox webcamBox = new VBox(6);
+			webcamBox.setPadding(new Insets(6));
+			Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+			l.setPadding(new Insets(0, 0, 0, 2));
+			l.textProperty().bind(webcamName);
+			webcamBox.setMinWidth(330);
+			webcamBox.setMaxWidth(330);
+			webcamBox.getChildren().add(l);
+
+			if (NMOConfiguration.instance.integrations.webUI.enabled)
+			{
+				ImageView webcamImageView = new ImageView();
+				webcamImageView.imageProperty().bind(lastWebcamImage);
+				webcamImageView.setPreserveRatio(true);
+				webcamBox.getChildren().add(webcamImageView);
+			}
+			else
+			{
+				webcamBox.getChildren().add(JavaFxHelper.createLabel("Remote monitoring is disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
+			hbox.getChildren().add(webcamBox);
+
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
 			heading.setStyle("-fx-background-color: #6D81A3;");
 			heading.setPadding(new Insets(2));
@@ -590,6 +614,7 @@ public class MainDialog extends Application
 			heading.getChildren().add(spt);
 			HBox.setHgrow(spt, Priority.ALWAYS);
 			heading.setAlignment(Pos.TOP_LEFT);
+			
 			final Button jfxButtonWebUI = JavaFxHelper.createButton("Launch web UI", JavaFxHelper.createIcon(FontAwesomeIcon.LINK, "11", Color.BLACK));
 			jfxButtonWebUI.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonWebUI.setOnAction(new EventHandler<ActionEvent>()
@@ -599,8 +624,8 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						String hostname = NMOConfiguration.instance.hostname.isEmpty() ? PortForwarding.getExternalIP() : NMOConfiguration.instance.hostname;
-						DesktopHelper.browse("http://" + hostname + ":" + NMOConfiguration.instance.jettyPort + "/");
+						String hostname = NMOConfiguration.instance.integrations.webUI.hostname.isEmpty() ? PortForwarding.getExternalIP() : NMOConfiguration.instance.integrations.webUI.hostname;
+						DesktopHelper.browse("http://" + hostname + ":" + NMOConfiguration.instance.integrations.webUI.jettyPort + "/");
 					}
 					catch (Throwable e)
 					{
@@ -608,7 +633,9 @@ public class MainDialog extends Application
 					}
 				}
 			});
+			jfxButtonWebUI.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonWebUI);
+			
 			final Button jfxButtonPortForward = JavaFxHelper.createButton("Attempt port auto-forward", JavaFxHelper.createIcon(FontAwesomeIcon.PLUG, "11", Color.BLACK));
 			jfxButtonPortForward.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonPortForward.setOnAction(new EventHandler<ActionEvent>()
@@ -635,7 +662,9 @@ public class MainDialog extends Application
 					}
 				}
 			});
+			jfxButtonPortForward.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonPortForward);
+			
 			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
 			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
 			jfxButtonConfigure.setDisable(true); // temporary
@@ -645,43 +674,7 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6D81A3; -fx-background-color: #333;");
-			pane.add(frame, 1, 0, 2, 1);
-		}
-
-		// build the webcam frame
-		{
-			VBox vbox = new VBox(6);
-			vbox.setPadding(new Insets(6));
-			Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-			l.setPadding(new Insets(0, 0, 0, 2));
-			l.textProperty().bind(webcamName);
-			vbox.getChildren().add(l);
-
-			ImageView webcamImageView = new ImageView();
-			webcamImageView.imageProperty().bind(lastWebcamImage);
-			webcamImageView.setPreserveRatio(true);
-			vbox.getChildren().add(webcamImageView);
-
-			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
-			heading.setStyle("-fx-background-color: #A36D75;");
-			heading.setPadding(new Insets(2));
-			heading.setSpacing(2);
-			final Label label = JavaFxHelper.createLabel("Webcam", Color.BLACK, "-fx-font-size: 11pt;");
-			heading.getChildren().add(label);
-			final StackPane spt = new StackPane();
-			heading.getChildren().add(spt);
-			HBox.setHgrow(spt, Priority.ALWAYS);
-			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
-			jfxButtonConfigure.setDisable(true); // temporary
-			heading.getChildren().add(jfxButtonConfigure);
-
-			final BorderPane frame = new BorderPane();
-			frame.setTop(heading);
-			frame.setCenter(vbox);
-			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #A36D75; -fx-background-color: #333;");
-			pane.add(frame, 3, 0, 1, 1);
+			pane.add(frame, 1, 0, 3, 1);
 		}
 
 		// PAVLOK
@@ -1380,10 +1373,6 @@ public class MainDialog extends Application
 		{
 			resetActivityTimer("pause");
 		}
-		if (NMOConfiguration.instance.integrations.pavlok.enabled)
-		{
-			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
-		}
 		long timeDiff = paused ? 0 : (now - lastActivityTime);
 		if (pendingTimer != null)
 		{
@@ -1426,26 +1415,36 @@ public class MainDialog extends Application
 			}
 			timeDiffString.set("Time difference: " + timeDiff + " (next warning: " + nawtd + "s)");
 		}
-
-		webMonitoringString.set(WebcamCapture.count() + " active web sockets");
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
-		lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
-
-		try
+		
+		if (NMOConfiguration.instance.integrations.pavlok.enabled)
 		{
-			WebcamCapture.update();
-			BufferedImage img = WebcamCapture.getImage();
-			if (img != null && tick % 4 < 2)
-			{
-				writableImage = SwingFXUtils.toFXImage(img, writableImage);
-				img.flush();
-				lastWebcamImage.set(writableImage);
-			}
-			webcamName.set(WebcamCapture.getCameraName());
+			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
 		}
-		catch (Exception e)
+
+		if (NMOConfiguration.instance.integrations.philipsHue.enabled)
 		{
-			e.printStackTrace();
+			lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
+		}
+
+		if (NMOConfiguration.instance.integrations.webUI.enabled)
+		{
+			webMonitoringString.set(WebcamCapture.count() + " active web sockets");
+			try
+			{
+				BufferedImage img = WebcamCapture.getImage();
+				if (img != null && tick % 4 < 2)
+				{
+					writableImage = SwingFXUtils.toFXImage(img, writableImage);
+					img.flush();
+					lastWebcamImage.set(writableImage);
+				}
+				webcamName.set(WebcamCapture.getCameraName());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		// trigger custom actions

@@ -13,25 +13,11 @@ import com.tinytimrob.ppse.nmo.integration.noise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integration.pavlok.PavlokConfiguration;
 import com.tinytimrob.ppse.nmo.integration.philipshue.PhilipsHueConfiguration;
 import com.tinytimrob.ppse.nmo.integration.twilio.TwilioConfiguration;
+import com.tinytimrob.ppse.nmo.integration.webui.WebUIConfiguration;
 
 public class NMOConfiguration
 {
 	public static NMOConfiguration instance;
-
-	@Expose
-	public String hostname = "";
-
-	@Expose
-	public int jettyPort = 19992;
-
-	@Expose
-	public String webcamName = "";
-
-	@Expose
-	public int webcamFrameSkip = 2;
-
-	@Expose
-	public int garbageCollectionFrequency = 3600;
 
 	@Expose
 	public String scheduleName = "";
@@ -51,16 +37,14 @@ public class NMOConfiguration
 	@Expose
 	public ArrayList<ActivityTimer> timers = new ArrayList<ActivityTimer>();
 
-	/*
-	@Expose
-	public int activityWarningTimeInitialMs = 300000;
-
-	@Expose
-	public int activityWarningTimeIncrementMs = 10000;
-	*/
-
 	@Expose
 	public int oversleepWarningThreshold = 5;
+
+	@Expose
+	public int garbageCollectionFrequency = 3600;
+
+	@Expose
+	public EventConfiguration events = new EventConfiguration();
 
 	public static class EventConfiguration
 	{
@@ -96,7 +80,7 @@ public class NMOConfiguration
 	}
 
 	@Expose
-	public EventConfiguration events = new EventConfiguration();
+	public IntegrationConfiguration integrations = new IntegrationConfiguration();
 
 	public static class IntegrationConfiguration
 	{
@@ -111,6 +95,9 @@ public class NMOConfiguration
 
 		@Expose
 		public MidiConfiguration midiTransmitter = new MidiConfiguration();
+
+		@Expose
+		public WebUIConfiguration webUI = new WebUIConfiguration();
 
 		@Expose
 		public PavlokConfiguration pavlok = new PavlokConfiguration();
@@ -133,7 +120,4 @@ public class NMOConfiguration
 		@Expose
 		public DiscordConfiguration discord = new DiscordConfiguration();
 	}
-
-	@Expose
-	public IntegrationConfiguration integrations = new IntegrationConfiguration();
 }

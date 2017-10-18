@@ -129,7 +129,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 	public void webcamImageObtained(WebcamEvent we)
 	{
 		this.frame++;
-		if (this.frame % NMOConfiguration.instance.webcamFrameSkip != 0)
+		if (this.frame % NMOConfiguration.instance.integrations.webUI.webcamFrameSkip != 0)
 		{
 			return;
 		}
