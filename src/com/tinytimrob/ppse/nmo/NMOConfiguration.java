@@ -2,17 +2,17 @@ package com.tinytimrob.ppse.nmo;
 
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationCommandLine.CommandLineConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationDiscord.DiscordConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationFileWriter.FileWriterConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationKeyboard.KeyboardConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationMidiTransmitter.MidiConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationMouse.MouseConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise.NoiseConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationPavlok.PavlokConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue.PhilipsHueConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationTwilio.TwilioConfiguration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationXboxController.XboxControllerConfiguration;
+import com.tinytimrob.ppse.nmo.integration.cmd.CommandLineConfiguration;
+import com.tinytimrob.ppse.nmo.integration.discord.DiscordConfiguration;
+import com.tinytimrob.ppse.nmo.integration.filewriter.FileWriterConfiguration;
+import com.tinytimrob.ppse.nmo.integration.input.KeyboardConfiguration;
+import com.tinytimrob.ppse.nmo.integration.input.MidiConfiguration;
+import com.tinytimrob.ppse.nmo.integration.input.MouseConfiguration;
+import com.tinytimrob.ppse.nmo.integration.input.XboxControllerConfiguration;
+import com.tinytimrob.ppse.nmo.integration.noise.NoiseConfiguration;
+import com.tinytimrob.ppse.nmo.integration.pavlok.PavlokConfiguration;
+import com.tinytimrob.ppse.nmo.integration.philipshue.PhilipsHueConfiguration;
+import com.tinytimrob.ppse.nmo.integration.twilio.TwilioConfiguration;
 
 public class NMOConfiguration
 {

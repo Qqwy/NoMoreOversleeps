@@ -1,13 +1,12 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.input;
 
-import java.util.ArrayList;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Receiver;
 import org.apache.logging.log4j.Logger;
-import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -21,15 +20,6 @@ public class IntegrationMidiTransmitter extends Integration
 	public static final IntegrationMidiTransmitter INSTANCE = new IntegrationMidiTransmitter();
 	private static final Logger log = LogWrapper.getLogger();
 	int transmitterLoop = -1;
-
-	public static class MidiConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public ArrayList<String> transmitters = new ArrayList<String>();
-	}
 
 	@Override
 	public boolean isEnabled()

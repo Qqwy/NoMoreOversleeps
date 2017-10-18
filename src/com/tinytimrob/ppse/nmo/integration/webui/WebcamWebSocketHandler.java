@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.ws;
+package com.tinytimrob.ppse.nmo.integration.webui;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -20,7 +20,6 @@ import com.github.sarxos.webcam.WebcamListener;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
-import com.tinytimrob.ppse.nmo.WebcamCapture;
 
 @WebSocket
 public class WebcamWebSocketHandler implements WebcamListener

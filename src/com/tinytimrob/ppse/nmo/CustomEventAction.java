@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.integration.discord.Weekday;
 
 public class CustomEventAction implements Comparable<CustomEventAction>
 {

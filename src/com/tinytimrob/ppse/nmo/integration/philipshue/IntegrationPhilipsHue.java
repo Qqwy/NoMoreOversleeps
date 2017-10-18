@@ -1,8 +1,7 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.philipshue;
 
 import java.util.List;
 import org.apache.logging.log4j.Logger;
-import com.google.gson.annotations.Expose;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager;
 import com.philips.lighting.hue.sdk.PHHueSDK;
@@ -17,6 +16,7 @@ import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationPhilipsHue extends Integration
@@ -32,18 +32,6 @@ public class IntegrationPhilipsHue extends Integration
 	public PHBridge activeBridge;
 	public PHSDKListener listener;
 	public volatile int lightState = -1;
-
-	public static class PhilipsHueConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public String bridgeIP = "";
-
-		@Expose
-		public String bridgeUsername = "";
-	}
 
 	@Override
 	public boolean isEnabled()

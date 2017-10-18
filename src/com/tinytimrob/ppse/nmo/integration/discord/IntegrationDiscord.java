@@ -1,7 +1,7 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.discord;
 
-import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import net.dv8tion.jda.core.AccountType;
@@ -14,15 +14,6 @@ public class IntegrationDiscord extends Integration
 	public static final IntegrationDiscord INSTANCE = new IntegrationDiscord();
 	static JDA jda = null;
 	static String lastMessage = "";
-
-	public static class DiscordConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public String authToken = "";
-	}
 
 	public IntegrationDiscord()
 	{

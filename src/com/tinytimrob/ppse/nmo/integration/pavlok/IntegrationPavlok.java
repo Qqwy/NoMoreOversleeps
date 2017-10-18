@@ -1,11 +1,9 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.pavlok;
 
 import org.apache.logging.log4j.Logger;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.Action;
-import com.tinytimrob.ppse.nmo.Main;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
 
@@ -18,96 +16,6 @@ public class IntegrationPavlok extends Integration
 
 	public static final IntegrationPavlok INSTANCE = new IntegrationPavlok();
 	private static final Logger log = LogWrapper.getLogger();
-
-	public static class PavlokConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public OAuthResponse auth = null;
-	}
-
-	public static class OAuthToken
-	{
-		public OAuthToken(String code)
-		{
-			this.code = code;
-		}
-
-		@Expose
-		@SerializedName("client_id")
-		public String client_id = Main.CLIENT_ID;
-
-		@Expose
-		@SerializedName("client_secret")
-		public String client_secret = Main.CLIENT_SECRET;
-
-		@Expose
-		@SerializedName("code")
-		public String code = "";
-
-		@Expose
-		@SerializedName("grant_type")
-		public String grant_type = "authorization_code";
-
-		@Expose
-		@SerializedName("redirect_uri")
-		public String redirect_uri = Main.CLIENT_CALLBACK;
-	}
-
-	public static class OAuthResponse
-	{
-		@Expose
-		@SerializedName("access_token")
-		public String access_token;
-
-		@Expose
-		@SerializedName("token_type")
-		public String token_type;
-
-		@Expose
-		@SerializedName("expires_in")
-		public long expires_in;
-
-		@Expose
-		@SerializedName("refresh_token")
-		public String refresh_token;
-
-		@Expose
-		@SerializedName("scope")
-		public String scope;
-
-		@Expose
-		@SerializedName("created_at")
-		public long created_at;
-
-		@Expose
-		@SerializedName("device")
-		public String device;
-	}
-
-	public static class Stimuli
-	{
-		public Stimuli(long value, String access_token, String reason)
-		{
-			this.value = value;
-			this.access_token = access_token;
-			this.reason = reason;
-		}
-
-		@Expose
-		@SerializedName("value")
-		public long value;
-
-		@Expose
-		@SerializedName("access_token")
-		public String access_token;
-
-		@Expose
-		@SerializedName("reason")
-		public String reason;
-	}
 
 	@Override
 	public boolean isEnabled()

@@ -1,10 +1,10 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.twilio;
 
 import java.net.URI;
 import org.apache.logging.log4j.Logger;
-import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.twilio.http.TwilioRestClient;
 import com.twilio.rest.api.v2010.account.Call;
@@ -19,36 +19,6 @@ public class IntegrationTwilio extends Integration
 
 	public static final IntegrationTwilio INSTANCE = new IntegrationTwilio();
 	private static final Logger log = LogWrapper.getLogger();
-
-	public static class StoredPhoneNumber
-	{
-		@Expose
-		public String name;
-
-		@Expose
-		public String number;
-	}
-
-	public static class TwilioConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public String accountSID = "";
-
-		@Expose
-		public String authToken = "";
-
-		@Expose
-		public String numberFrom = "";
-
-		@Expose
-		public String callingURI = "http://twimlets.com/holdmusic?Bucket=com.twilio.music.ambient";
-
-		@Expose
-		public StoredPhoneNumber[] phoneNumbers = new StoredPhoneNumber[0];
-	}
 
 	public void call(String fromS, String toS)
 	{

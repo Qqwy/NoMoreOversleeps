@@ -1,8 +1,8 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.cmd;
 
 import java.io.File;
-import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class IntegrationCommandLine extends Integration
@@ -13,30 +13,6 @@ public class IntegrationCommandLine extends Integration
 	}
 
 	public static final IntegrationCommandLine INSTANCE = new IntegrationCommandLine();
-
-	public static class StoredCommand
-	{
-		@Expose
-		public String name;
-
-		@Expose
-		public String[] command;
-
-		@Expose
-		public String workingDir;
-
-		@Expose
-		public boolean secret;
-	}
-
-	public static class CommandLineConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public StoredCommand[] commands = new StoredCommand[0];
-	}
 
 	@Override
 	public boolean isEnabled()

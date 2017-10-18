@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.ws;
+package com.tinytimrob.ppse.nmo.integration.webui;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +16,11 @@ import com.google.gson.annotations.Expose;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.WebcamCapture;
-import com.tinytimrob.ppse.nmo.integrations.Integration;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationNoise;
-import com.tinytimrob.ppse.nmo.integrations.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
+import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet

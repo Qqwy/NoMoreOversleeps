@@ -1,7 +1,6 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo;
 
 import java.util.LinkedHashMap;
-import com.tinytimrob.ppse.nmo.Action;
 
 public abstract class Integration
 {

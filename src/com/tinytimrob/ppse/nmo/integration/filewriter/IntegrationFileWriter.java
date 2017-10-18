@@ -1,13 +1,13 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.filewriter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
-import com.google.gson.annotations.Expose;
 import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.tinytimrob.common.PlatformData;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -25,24 +25,6 @@ public class IntegrationFileWriter extends Integration
 	private static File scheduleLastOversleepFile;
 	private static File schedulePersonalBestFile;
 	private static File timeToNextSleepBlockFile;
-
-	public static class FileWriterConfiguration
-	{
-		@Expose
-		public boolean scheduleName;
-
-		@Expose
-		public boolean scheduleStartedOn;
-
-		@Expose
-		public boolean scheduleLastOversleep;
-
-		@Expose
-		public boolean schedulePersonalBest;
-
-		@Expose
-		public boolean timeToNextSleepBlock;
-	}
 
 	@Override
 	public boolean isEnabled()

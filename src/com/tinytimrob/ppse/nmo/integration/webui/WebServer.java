@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.ws;
+package com.tinytimrob.ppse.nmo.integration.webui;
 
 import java.io.File;
 import org.eclipse.jetty.http.HttpGenerator;

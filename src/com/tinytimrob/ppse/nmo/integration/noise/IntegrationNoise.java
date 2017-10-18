@@ -1,11 +1,11 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.noise;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.google.gson.annotations.Expose;
 import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -19,66 +19,6 @@ public class IntegrationNoise extends Integration
 
 	public static final IntegrationNoise INSTANCE = new IntegrationNoise();
 	public static List<PlayingNoise> PLAYING_NOISES = Collections.synchronizedList(new ArrayList<PlayingNoise>());
-
-	public static class PlayingNoise
-	{
-		PlayingNoise(MediaPlayer player, String name)
-		{
-			this.player = player;
-			this.name = name;
-		}
-
-		final MediaPlayer player;
-		final String name;
-
-		public void stop()
-		{
-			try
-			{
-				if (this.player != null)
-				{
-					this.player.stop();
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-			}
-			try
-			{
-				if (this.player != null)
-				{
-					this.player.dispose();
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-			}
-			PLAYING_NOISES.remove(this);
-		}
-	}
-
-	public static class StoredNoise
-	{
-		@Expose
-		public String name;
-
-		@Expose
-		public String path;
-
-		@Expose
-		public boolean secret;
-	}
-
-	public static class NoiseConfiguration
-	{
-		@Expose
-		public boolean enabled;
-
-		@Expose
-		public StoredNoise[] noises = new StoredNoise[0];
-	}
 
 	@Override
 	public boolean isEnabled()

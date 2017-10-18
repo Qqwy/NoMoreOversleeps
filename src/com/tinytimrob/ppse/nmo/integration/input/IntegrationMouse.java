@@ -1,9 +1,9 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.input;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
-import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -16,12 +16,6 @@ public class IntegrationMouse extends Integration
 
 	public static final IntegrationMouse INSTANCE = new IntegrationMouse();
 	public static volatile Point lastCursorPoint = MouseInfo.getPointerInfo().getLocation();
-
-	public static class MouseConfiguration
-	{
-		@Expose
-		public boolean enabled;
-	}
 
 	@Override
 	public boolean isEnabled()

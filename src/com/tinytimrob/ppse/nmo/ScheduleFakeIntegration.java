@@ -1,7 +1,6 @@
 package com.tinytimrob.ppse.nmo;
 
 import com.tinytimrob.common.Configuration;
-import com.tinytimrob.ppse.nmo.integrations.Integration;
 
 public class ScheduleFakeIntegration extends Integration
 {

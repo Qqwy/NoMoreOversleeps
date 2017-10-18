@@ -1,0 +1,12 @@
+package com.tinytimrob.ppse.nmo.integration.twilio;
+
+import com.google.gson.annotations.Expose;
+
+public class StoredPhoneNumber
+{
+	@Expose
+	public String name;
+
+	@Expose
+	public String number;
+}

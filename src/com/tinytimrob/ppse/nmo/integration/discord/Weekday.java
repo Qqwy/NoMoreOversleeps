@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.integration.discord;
 
 public enum Weekday
 {

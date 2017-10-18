@@ -1,10 +1,10 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.input;
 
-import com.google.gson.annotations.Expose;
 import com.ivan.xinput.XInputDevice;
 import com.ivan.xinput.enums.XInputButton;
 import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.ivan.xinput.listener.XInputDeviceListener;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -18,12 +18,6 @@ public class IntegrationXboxController extends Integration
 	public static final IntegrationXboxController INSTANCE = new IntegrationXboxController();
 	XInputDevice device;
 	XInputDeviceListener listener;
-
-	public static class XboxControllerConfiguration
-	{
-		@Expose
-		public boolean enabled;
-	}
 
 	@Override
 	public boolean isEnabled()

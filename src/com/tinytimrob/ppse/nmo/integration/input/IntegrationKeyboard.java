@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo.integrations;
+package com.tinytimrob.ppse.nmo.integration.input;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -6,7 +6,7 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
-import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
@@ -19,12 +19,6 @@ public class IntegrationKeyboard extends Integration
 
 	public static final IntegrationKeyboard INSTANCE = new IntegrationKeyboard();
 	NativeKeyListener keyboardHook;
-
-	public static class KeyboardConfiguration
-	{
-		@Expose
-		public boolean enabled;
-	}
 
 	@Override
 	public boolean isEnabled()

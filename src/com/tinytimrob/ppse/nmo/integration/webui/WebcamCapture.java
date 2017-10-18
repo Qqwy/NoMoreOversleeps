@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.integration.webui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +16,8 @@ import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class WebcamCapture
 {

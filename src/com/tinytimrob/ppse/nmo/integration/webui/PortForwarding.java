@@ -1,4 +1,4 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.integration.webui;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 import org.bitlet.weupnp.PortMappingEntry;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 
 public class PortForwarding
 {
