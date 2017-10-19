@@ -13,6 +13,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
+import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationKeyboard;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationMidiTransmitter;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationMouse;
@@ -804,7 +805,7 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #B649C6; -fx-background-color: #333;");
-			pane.add(frame, 2, 1, 1, 2);
+			pane.add(frame, 2, 1, 1, 3);
 		}
 
 		// EVENT CONTROL
@@ -852,7 +853,7 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6BA4A5; -fx-background-color: #333;");
-			pane.add(frame, 3, 1, 1, 2);
+			pane.add(frame, 3, 1, 1, 3);
 		}
 
 		// TWILIO
@@ -937,6 +938,90 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7BAD58; -fx-background-color: #333;");
 			pane.add(frame, 1, 2, 1, 1);
+		}
+
+		// DISCORD
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			if (IntegrationDiscord.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationDiscord.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #7289DA;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Discord", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7289DA; -fx-background-color: #333;");
+			pane.add(frame, 0, 3, 1, 1);
+		}
+
+		// FILEWRITER
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			if (IntegrationDiscord.INSTANCE.isEnabled())
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration enabled", Color.LIME, "-fx-font-weight: bold;"));
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #AA3456;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("File Writer", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #AA3456; -fx-background-color: #333;");
+			pane.add(frame, 1, 3, 1, 1);
 		}
 
 		// build the log frame

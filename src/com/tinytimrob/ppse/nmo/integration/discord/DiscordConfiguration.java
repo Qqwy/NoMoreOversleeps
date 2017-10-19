@@ -9,4 +9,7 @@ public class DiscordConfiguration
 
 	@Expose
 	public String authToken = "";
+
+	@Expose
+	public SendableMessage[] messages;
 }
