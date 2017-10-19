@@ -14,6 +14,7 @@ import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
+import com.tinytimrob.ppse.nmo.integration.filewriter.IntegrationFileWriter;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationKeyboard;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationMidiTransmitter;
 import com.tinytimrob.ppse.nmo.integration.input.IntegrationMouse;
@@ -993,7 +994,7 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			if (IntegrationDiscord.INSTANCE.isEnabled())
+			if (IntegrationFileWriter.INSTANCE.isEnabled())
 			{
 				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration enabled", Color.LIME, "-fx-font-weight: bold;"));
 			}
