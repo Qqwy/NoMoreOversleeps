@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
@@ -111,7 +112,8 @@ public class IntegrationNoise extends Integration
 
 	public void play(StoredNoise noise)
 	{
-		Media media = new Media(new File(noise.path).toURI().toString());
+		File file = CommonUtils.redirectRelativePathToAppDirectory(noise.path);
+		Media media = new Media(file.getAbsoluteFile().toURI().toString());
 		final PlayingNoise playingNoise = new PlayingNoise(new MediaPlayer(media), noise.name);
 		Runnable endHook = new Runnable()
 		{

@@ -74,4 +74,17 @@ public class CommonUtils
 	{
 		return dateFormatter.format(new Date(timestamp));
 	}
+
+	/** Redirect a path which may or may not be relative so that, if relative, its location is
+	 * determined as a subpath of the installation directory of the application instead of from
+	 * Java's working directory
+	 * 
+	 * @param path Path to potentially redirect
+	 * @return A file object which may have been redirected
+	 */
+	public static File redirectRelativePathToAppDirectory(String path)
+	{
+		File f = new File(path);
+		return f.isAbsolute() ? f : new File(PlatformData.installationDirectory, path).getAbsoluteFile();
+	}
 }
