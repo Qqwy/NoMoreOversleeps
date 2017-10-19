@@ -996,7 +996,70 @@ public class MainDialog extends Application
 
 			if (IntegrationFileWriter.INSTANCE.isEnabled())
 			{
-				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration enabled", Color.LIME, "-fx-font-weight: bold;"));
+				final Label scheduleName = JavaFxHelper.createLabel("scheduleName: ", Color.WHITE, "-fx-font-weight: bold;");
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleName)
+				{
+					scheduleName.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+					scheduleName.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				else
+				{
+					scheduleName.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+					scheduleName.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				statusBox.getChildren().add(scheduleName);
+
+				final Label scheduleStartedOn = JavaFxHelper.createLabel("scheduleStartedOn: ", Color.WHITE, "-fx-font-weight: bold;");
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
+				{
+					scheduleStartedOn.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+					scheduleStartedOn.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				else
+				{
+					scheduleStartedOn.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+					scheduleStartedOn.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				statusBox.getChildren().add(scheduleStartedOn);
+
+				final Label scheduleLastOversleep = JavaFxHelper.createLabel("scheduleLastOversleep: ", Color.WHITE, "-fx-font-weight: bold;");
+				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
+				{
+					scheduleLastOversleep.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+					scheduleLastOversleep.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				else
+				{
+					scheduleLastOversleep.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+					scheduleLastOversleep.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				statusBox.getChildren().add(scheduleLastOversleep);
+
+				final Label schedulePersonalBest = JavaFxHelper.createLabel("schedulePersonalBest: ", Color.WHITE, "-fx-font-weight: bold;");
+				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
+				{
+					schedulePersonalBest.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+					schedulePersonalBest.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				else
+				{
+					schedulePersonalBest.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+					schedulePersonalBest.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				statusBox.getChildren().add(schedulePersonalBest);
+
+				final Label timeToNextSleepBlock = JavaFxHelper.createLabel("timeToNextSleepBlock: ", Color.WHITE, "-fx-font-weight: bold;");
+				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
+				{
+					timeToNextSleepBlock.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
+					timeToNextSleepBlock.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				else
+				{
+					timeToNextSleepBlock.setGraphic(JavaFxHelper.createLabel("DISABLED", Color.RED));
+					timeToNextSleepBlock.setContentDisplay(ContentDisplay.RIGHT);
+				}
+				statusBox.getChildren().add(timeToNextSleepBlock);
 			}
 			else
 			{
