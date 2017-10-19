@@ -11,5 +11,5 @@ public class DiscordConfiguration
 	public String authToken = "";
 
 	@Expose
-	public SendableMessage[] messages;
+	public SendableMessage[] messages = new SendableMessage[0];
 }
