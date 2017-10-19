@@ -37,7 +37,7 @@ public class Main
 	private static final Logger log = LogWrapper.getLogger();
 
 	//-------------------------------------------
-	public static String VERSION = "0.10.3";
+	public static String VERSION = "0.11";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
