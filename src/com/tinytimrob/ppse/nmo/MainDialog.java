@@ -93,6 +93,7 @@ public class MainDialog extends Application
 	public static volatile String pauseReason = "";
 	public static volatile long pausedUntil = 0;
 	public static volatile long nextActivityWarningID;
+	public static volatile boolean oversleepWarningTriggered;
 	public static volatile long lastActivityTime = System.currentTimeMillis();
 	public static volatile String lastActivitySource = "system";
 	public static volatile SimpleStringProperty loginTokenValidUntilString = new SimpleStringProperty("");
@@ -128,6 +129,7 @@ public class MainDialog extends Application
 		triggerEvent("Application started", null);
 
 		nextActivityWarningID = 0;
+		oversleepWarningTriggered = false;
 
 		Collections.sort(NMOConfiguration.instance.schedule);
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
@@ -1656,9 +1658,10 @@ public class MainDialog extends Application
 					{
 						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning1);
 					}
-					else if (nextActivityWarningID == NMOConfiguration.instance.oversleepWarningThreshold)
+					else if (nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold && !oversleepWarningTriggered)
 					{
 						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.oversleepWarning);
+						oversleepWarningTriggered = true;
 					}
 					else
 					{
@@ -1757,6 +1760,7 @@ public class MainDialog extends Application
 		if (timeDiff == 0)
 		{
 			nextActivityWarningID = 0;
+			oversleepWarningTriggered = false;
 		}
 		else if (timeDiff == -1)
 		{
@@ -1780,6 +1784,7 @@ public class MainDialog extends Application
 		lastActivityTime = System.currentTimeMillis();
 		lastActivitySource = source;
 		nextActivityWarningID = 0;
+		oversleepWarningTriggered = false;
 	}
 
 	public static void triggerEvent(String eventDescription, String[] actionArray)
