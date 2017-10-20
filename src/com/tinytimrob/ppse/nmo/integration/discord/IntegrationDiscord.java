@@ -54,7 +54,7 @@ public class IntegrationDiscord extends Integration
 				@Override
 				public String getName()
 				{
-					return "DISCORD " + message.name;
+					return "SEND " + message.name;
 				}
 
 				@Override
