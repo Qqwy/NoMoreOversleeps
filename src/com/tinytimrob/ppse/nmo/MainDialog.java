@@ -113,6 +113,9 @@ public class MainDialog extends Application
 	public static volatile SleepEntry nextSleepBlock = null;
 	public static volatile String scheduleStatus = "No schedule configured";
 	public static volatile String scheduleStatusShort = "UNCONFIGURED";
+	public static volatile SimpleStringProperty scheduleStatusString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty scheduleNextBlockString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty scheduleCountdownString = new SimpleStringProperty("");
 	public static volatile WritableImage writableImage = null;
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static ArrayList<CustomEventAction> customActions = new ArrayList<CustomEventAction>();
@@ -309,6 +312,7 @@ public class MainDialog extends Application
 			jfxButton.setMaxWidth(256);
 			jfxButton.setAlignment(Pos.BASELINE_LEFT);
 			jfxButton.setContentDisplay(ContentDisplay.RIGHT);
+			//jfxButton.setTooltip(new Tooltip(buttonKey)); // I tried it, but it looks a bit janky
 			jfxButton.setOnAction(new EventHandler<ActionEvent>()
 			{
 				@Override
@@ -440,15 +444,32 @@ public class MainDialog extends Application
 
 		// monitoring control
 		{
+			Separator s;
+
 			HBox hbox = new HBox(4);
 			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
 			VBox statusBox = new VBox(4);
-			statusBox.setSpacing(3);
+			statusBox.setSpacing(2);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			final Label status = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 14pt;");
+			status.textProperty().bind(scheduleStatusString);
+			statusBox.getChildren().add(status);
+
+			final Label nextblock = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 12pt;");
+			nextblock.textProperty().bind(scheduleNextBlockString);
+			statusBox.getChildren().add(nextblock);
+
+			final Label countdown = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 16pt");
+			countdown.textProperty().bind(scheduleCountdownString);
+			statusBox.getChildren().add(countdown);
+
+			statusBox.getChildren().add(s = new Separator(Orientation.HORIZONTAL));
+			s.setPadding(new Insets(4, 0, 2, 0));
 
 			final Label keyboard = JavaFxHelper.createLabel("Keyboard: ", Color.WHITE, "-fx-font-weight: bold;");
 			if (IntegrationKeyboard.INSTANCE.isEnabled())
@@ -510,7 +531,8 @@ public class MainDialog extends Application
 				}
 			}
 
-			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			statusBox.getChildren().add(s = new Separator(Orientation.HORIZONTAL));
+			s.setPadding(new Insets(4, 0, 2, 0));
 
 			final Label lastCursorTime = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 			lastCursorTime.textProperty().bind(lastActivityTimeString);
@@ -524,7 +546,9 @@ public class MainDialog extends Application
 			activeTimerLabel.textProperty().bind(activeTimerString);
 			statusBox.getChildren().add(activeTimerLabel);
 
-			statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			statusBox.getChildren().add(s = new Separator(Orientation.HORIZONTAL));
+			s.setPadding(new Insets(4, 0, 2, 0));
+
 			this.addIntegrationButtonsToVbox(ActivityTimerFakeIntegration.INSTANCE, statusBox);
 
 			hbox.getChildren().add(new Separator(Orientation.VERTICAL));
@@ -1486,7 +1510,19 @@ public class MainDialog extends Application
 				{
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
+				// determine second value
+				long secondsRemaining = ((tims - System.currentTimeMillis()) / 1000);
+				long secondsCounter = secondsRemaining % 60;
+				long minutesCounter = (secondsRemaining / 60) % 60;
+				long hoursCounter = (secondsRemaining / 60) / 60;
+				// determine minute value				
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+				// determine status
+				String pros = "SLEEPING";
+				// populate the display fields
+				scheduleStatusString.set(pros);
+				scheduleNextBlockString.set("Active block: " + nextSleepBlockDetected.name);
+				scheduleCountdownString.set("WAKE IN " + StringUtils.leftPad("" + hoursCounter, 2, "0") + ":" + StringUtils.leftPad("" + minutesCounter, 2, "0") + ":" + StringUtils.leftPad("" + secondsCounter, 2, "0"));
 				scheduleStatus = "SLEEPING [" + nextSleepBlockDetected.name + "] UNTIL " + CommonUtils.convertTimestamp(tims);
 				scheduleStatusShort = "SLEEPING [" + minutesRemaining + "m LEFT]";
 				nextSleepBlock = nextSleepBlockDetected;
@@ -1510,8 +1546,19 @@ public class MainDialog extends Application
 				{
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
+				// determine second value
+				long secondsRemaining = ((tims - System.currentTimeMillis()) / 1000);
+				long secondsCounter = secondsRemaining % 60;
+				long minutesCounter = (secondsRemaining / 60) % 60;
+				long hoursCounter = (secondsRemaining / 60) / 60;
+				// determine minute value				
 				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+				// determine status
 				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				// populate the display fields
+				scheduleStatusString.set(pros);
+				scheduleNextBlockString.set("Next block: " + nextSleepBlockDetected.name);
+				scheduleCountdownString.set("SLEEPING IN " + StringUtils.leftPad("" + hoursCounter, 2, "0") + ":" + StringUtils.leftPad("" + minutesCounter, 2, "0") + ":" + StringUtils.leftPad("" + secondsCounter, 2, "0"));
 				scheduleStatus = pros + " [" + nextSleepBlockDetected.name + " STARTS IN " + minutesRemaining + " MINUTE" + (minutesRemaining == 1 ? "" : "S") + "]";
 				scheduleStatusShort = pros.equals("AWAKE") ? pros + " [" + minutesRemaining + "m LEFT]" : pros;
 				if (minutesRemaining <= nextSleepBlockDetected.approachWarning && lastSleepBlockWarning != nextSleepBlockDetected)
