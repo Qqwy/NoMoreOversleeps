@@ -305,8 +305,8 @@ public class MainDialog extends Application
 			final Action clickableButton = integration.getActions().get(buttonKey);
 			final Button jfxButton = new Button(clickableButton.getName());
 			jfxButton.setPadding(new Insets(2, 4, 2, 4));
-			jfxButton.setMinWidth(250);
-			jfxButton.setMaxWidth(250);
+			jfxButton.setMinWidth(256);
+			jfxButton.setMaxWidth(256);
 			jfxButton.setAlignment(Pos.BASELINE_LEFT);
 			jfxButton.setContentDisplay(ContentDisplay.RIGHT);
 			jfxButton.setOnAction(new EventHandler<ActionEvent>()
@@ -333,33 +333,40 @@ public class MainDialog extends Application
 	{
 		// use a grid pane layout
 		GridPane pane = new GridPane();
-		pane.setPadding(new Insets(10, 10, 10, 10));
-		pane.setHgap(10);
-		pane.setVgap(10);
+		pane.setPadding(new Insets(8, 8, 8, 8));
+		pane.setHgap(8);
+		pane.setVgap(8);
 		ColumnConstraints none = new ColumnConstraints();
 		none.setHgrow(Priority.ALWAYS);
 		ColumnConstraints c300 = new ColumnConstraints();
 		c300.setMinWidth(340);
 		c300.setMaxWidth(340);
 		pane.getColumnConstraints().addAll(none, none, none, c300);
-		RowConstraints rnone = new RowConstraints();
-		rnone.setVgrow(Priority.SOMETIMES);
-		pane.getRowConstraints().addAll(rnone, rnone, rnone, rnone, rnone);
+		RowConstraints rcSometimes = new RowConstraints();
+		rcSometimes.setVgrow(Priority.NEVER);
+		RowConstraints rcAlways = new RowConstraints();
+		rcAlways.setVgrow(Priority.ALWAYS);
+		pane.getRowConstraints().addAll(rcSometimes, rcSometimes, rcSometimes, rcSometimes, rcAlways);
 		innerPane.setCenter(pane);
 
 		// schedule
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
-			statusBox.setSpacing(1);
+			VBox statusBox = new VBox(4);
+			statusBox.setSpacing(0);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			statusBox.getChildren().add(JavaFxHelper.createLabel(NMOConfiguration.instance.scheduleName, Color.WHITE, "-fx-font-weight: bold;"));
+			String sn = NMOConfiguration.instance.scheduleName;
+			if (sn == null || sn.isEmpty())
+			{
+				sn = "No schedule name configured";
+			}
+			statusBox.getChildren().add(JavaFxHelper.createLabel(sn, Color.WHITE, "-fx-font-weight: bold;"));
 
 			if (NMOConfiguration.instance.scheduleStartedOn > 0)
 			{
@@ -433,11 +440,11 @@ public class MainDialog extends Application
 
 		// monitoring control
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setSpacing(3);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
@@ -684,11 +691,11 @@ public class MainDialog extends Application
 
 		// PAVLOK
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -731,11 +738,11 @@ public class MainDialog extends Application
 
 		// LIGHTING
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -778,11 +785,11 @@ public class MainDialog extends Application
 
 		// ALARM SOUNDS
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -821,12 +828,12 @@ public class MainDialog extends Application
 
 		// EVENT CONTROL
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
-			statusBox.setSpacing(1);
+			VBox statusBox = new VBox(4);
+			statusBox.setSpacing(0);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -870,11 +877,11 @@ public class MainDialog extends Application
 
 		// TWILIO
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -913,11 +920,11 @@ public class MainDialog extends Application
 
 		// CUSTOM COMMANDS
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -956,11 +963,11 @@ public class MainDialog extends Application
 
 		// DISCORD
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -999,11 +1006,11 @@ public class MainDialog extends Application
 
 		// FILEWRITER
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
@@ -1105,11 +1112,11 @@ public class MainDialog extends Application
 
 		// RANDOMIZER
 		{
-			HBox hbox = new HBox(6);
-			hbox.setPadding(new Insets(6));
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
 			hbox.setAlignment(Pos.TOP_CENTER);
 
-			VBox statusBox = new VBox(6);
+			VBox statusBox = new VBox(4);
 			statusBox.setAlignment(Pos.TOP_LEFT);
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
