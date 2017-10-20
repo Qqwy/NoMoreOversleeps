@@ -12,6 +12,7 @@ import com.tinytimrob.ppse.nmo.integration.input.XboxControllerConfiguration;
 import com.tinytimrob.ppse.nmo.integration.noise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integration.pavlok.PavlokConfiguration;
 import com.tinytimrob.ppse.nmo.integration.philipshue.PhilipsHueConfiguration;
+import com.tinytimrob.ppse.nmo.integration.randomizer.RandomizerConfiguration;
 import com.tinytimrob.ppse.nmo.integration.twilio.TwilioConfiguration;
 import com.tinytimrob.ppse.nmo.integration.webui.WebUIConfiguration;
 
@@ -119,5 +120,8 @@ public class NMOConfiguration
 
 		@Expose
 		public DiscordConfiguration discord = new DiscordConfiguration();
+
+		@Expose
+		public RandomizerConfiguration randomizer = new RandomizerConfiguration();
 	}
 }

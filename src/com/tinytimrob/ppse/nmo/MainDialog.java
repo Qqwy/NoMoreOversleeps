@@ -22,6 +22,7 @@ import com.tinytimrob.ppse.nmo.integration.input.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.pavlok.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.PortForwarding;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
@@ -68,6 +69,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -314,8 +316,8 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						clickableButton.onAction();
 						triggerEvent("<" + clickableButton.getName() + "> from frontend", null);
+						clickableButton.onAction();
 					}
 					catch (Exception e)
 					{
@@ -340,6 +342,9 @@ public class MainDialog extends Application
 		c300.setMinWidth(340);
 		c300.setMaxWidth(340);
 		pane.getColumnConstraints().addAll(none, none, none, c300);
+		RowConstraints rnone = new RowConstraints();
+		rnone.setVgrow(Priority.SOMETIMES);
+		pane.getRowConstraints().addAll(rnone, rnone, rnone, rnone, rnone);
 		innerPane.setCenter(pane);
 
 		// schedule
@@ -423,6 +428,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #26DE42; -fx-background-color: #333;");
 			pane.add(frame, 0, 0, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// monitoring control
@@ -673,6 +679,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6D81A3; -fx-background-color: #333;");
 			pane.add(frame, 1, 0, 3, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// PAVLOK
@@ -719,6 +726,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #DEB026; -fx-background-color: #333;");
 			pane.add(frame, 0, 1, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// LIGHTING
@@ -765,6 +773,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #839CA0; -fx-background-color: #333;");
 			pane.add(frame, 1, 1, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// ALARM SOUNDS
@@ -806,7 +815,8 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #B649C6; -fx-background-color: #333;");
-			pane.add(frame, 2, 1, 1, 3);
+			pane.add(frame, 2, 1, 1, 4);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// EVENT CONTROL
@@ -854,7 +864,8 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #6BA4A5; -fx-background-color: #333;");
-			pane.add(frame, 3, 1, 1, 3);
+			pane.add(frame, 3, 1, 1, 4);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// TWILIO
@@ -897,6 +908,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #A36E6D; -fx-background-color: #333;");
 			pane.add(frame, 0, 2, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// CUSTOM COMMANDS
@@ -939,6 +951,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7BAD58; -fx-background-color: #333;");
 			pane.add(frame, 1, 2, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// DISCORD
@@ -981,6 +994,7 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7289DA; -fx-background-color: #333;");
 			pane.add(frame, 0, 3, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// FILEWRITER
@@ -1085,7 +1099,51 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #AA3456; -fx-background-color: #333;");
-			pane.add(frame, 1, 3, 1, 1);
+			pane.add(frame, 0, 4, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
+		}
+
+		// RANDOMIZER
+		{
+			HBox hbox = new HBox(6);
+			hbox.setPadding(new Insets(6));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(6);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			if (IntegrationRandomizer.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationRandomizer.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #D88B43;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("Randomizer", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #D88B43; -fx-background-color: #333;");
+			pane.add(frame, 1, 3, 1, 2);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
 		// build the log frame
@@ -1690,6 +1748,19 @@ public class MainDialog extends Application
 					}
 				}
 			}
+		}
+		final String eventString = (actionString.isEmpty() ? "" : "<" + actionString + "> ") + eventDescription;
+		log.info("APPEVENT: " + eventString);
+		Platform.runLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + eventString);
+			}
+		});
+		if (actionArray != null)
+		{
 			for (Action aaction : actionsByLookup)
 			{
 				try
@@ -1702,15 +1773,5 @@ public class MainDialog extends Application
 				}
 			}
 		}
-		final String eventString = (actionString.isEmpty() ? "" : "<" + actionString + "> ") + eventDescription;
-		log.info("APPEVENT: " + eventString);
-		Platform.runLater(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + eventString);
-			}
-		});
 	}
 }

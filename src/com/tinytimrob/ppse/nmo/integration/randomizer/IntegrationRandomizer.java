@@ -1,0 +1,67 @@
+package com.tinytimrob.ppse.nmo.integration.randomizer;
+
+import java.util.concurrent.ThreadLocalRandom;
+import com.tinytimrob.ppse.nmo.Action;
+import com.tinytimrob.ppse.nmo.Integration;
+import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
+
+public class IntegrationRandomizer extends Integration
+{
+	public static final IntegrationRandomizer INSTANCE = new IntegrationRandomizer();
+
+	private IntegrationRandomizer()
+	{
+		super("randomizer");
+	}
+
+	@Override
+	public boolean isEnabled()
+	{
+		return NMOConfiguration.instance.integrations.randomizer.enabled;
+	}
+
+	@Override
+	public void init() throws Exception
+	{
+		for (int i = 0; i < NMOConfiguration.instance.integrations.randomizer.randomizers.length; i++)
+		{
+			final RandomizerEntry randomizer = NMOConfiguration.instance.integrations.randomizer.randomizers[i];
+			this.actions.put("/randomizer/" + i, new Action()
+			{
+				@Override
+				public void onAction() throws Exception
+				{
+					int option = ThreadLocalRandom.current().nextInt(randomizer.actions.length);
+					String randPath = randomizer.actions[option];
+					MainDialog.triggerEvent("Randomizer " + randomizer.name + " fired", new String[] { randPath });
+				}
+
+				@Override
+				public String getName()
+				{
+					return "RANDOM " + randomizer.name;
+				}
+
+				@Override
+				public boolean isSecret()
+				{
+					return randomizer.secret;
+				}
+			});
+		}
+	}
+
+	@Override
+	public void update() throws Exception
+	{
+		// nothing to do
+	}
+
+	@Override
+	public void shutdown() throws Exception
+	{
+		// nothing to do
+	}
+
+}

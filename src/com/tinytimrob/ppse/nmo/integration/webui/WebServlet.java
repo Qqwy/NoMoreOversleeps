@@ -124,7 +124,16 @@ public class WebServlet extends HttpServlet
 			for (Integration integration : Main.integrations)
 			{
 				LinkedHashMap<String, Action> actions = integration.getActions();
-				if (!actions.isEmpty())
+				// secret action fix
+				int actionsNotSecret = 0;
+				for (Action action : actions.values())
+				{
+					if (!action.isSecret())
+					{
+						actionsNotSecret++;
+					}
+				}
+				if (actionsNotSecret > 0)
 				{
 					colour++;
 					if (colour >= colours.length)

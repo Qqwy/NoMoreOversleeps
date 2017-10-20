@@ -23,6 +23,7 @@ import com.tinytimrob.ppse.nmo.integration.input.IntegrationXboxController;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.pavlok.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.IntegrationWebUI;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
@@ -37,7 +38,7 @@ public class Main
 	private static final Logger log = LogWrapper.getLogger();
 
 	//-------------------------------------------
-	public static String VERSION = "0.11";
+	public static String VERSION = "0.12-dev";
 	public static String JAVA_UPDATE_URL = "https://launcher.ginever.net/javaupdate";
 
 	//-------------------------------------------
@@ -61,6 +62,7 @@ public class Main
 		integrations.add(IntegrationCommandLine.INSTANCE);
 		integrations.add(IntegrationFileWriter.INSTANCE);
 		integrations.add(IntegrationDiscord.INSTANCE);
+		integrations.add(IntegrationRandomizer.INSTANCE);
 		integrations.add(ActivityTimerFakeIntegration.INSTANCE);
 		integrations.add(ScheduleFakeIntegration.INSTANCE);
 		integrations.add(IntegrationWebUI.INSTANCE);
