@@ -26,6 +26,7 @@ import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.PortForwarding;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
+import com.tinytimrob.ppse.nmo.integration.wemo.IntegrationWemo;
 import com.tinytimrob.ppse.nmo.utils.DesktopHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -1136,6 +1137,49 @@ public class MainDialog extends Application
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
+		// WEMO
+		{
+			HBox hbox = new HBox(4);
+			hbox.setPadding(new Insets(4));
+			hbox.setAlignment(Pos.TOP_CENTER);
+
+			VBox statusBox = new VBox(4);
+			statusBox.setAlignment(Pos.TOP_LEFT);
+			hbox.getChildren().add(statusBox);
+			HBox.setHgrow(statusBox, Priority.ALWAYS);
+
+			if (IntegrationWemo.INSTANCE.isEnabled())
+			{
+				this.addIntegrationButtonsToVbox(IntegrationWemo.INSTANCE, statusBox);
+			}
+			else
+			{
+				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
+			}
+
+			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
+			heading.setStyle("-fx-background-color: #D88B43;");
+			heading.setPadding(new Insets(2));
+			heading.setSpacing(2);
+			final Label label = JavaFxHelper.createLabel("WeMo Insight", Color.BLACK, "-fx-font-size: 11pt;");
+			heading.getChildren().add(label);
+			final StackPane spt = new StackPane();
+			heading.getChildren().add(spt);
+			HBox.setHgrow(spt, Priority.ALWAYS);
+			heading.setAlignment(Pos.TOP_LEFT);
+			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
+			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
+			jfxButtonConfigure.setDisable(true); // temporary
+			heading.getChildren().add(jfxButtonConfigure);
+
+			final BorderPane frame = new BorderPane();
+			frame.setTop(heading);
+			frame.setCenter(hbox);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #D88B43; -fx-background-color: #333;");
+			pane.add(frame, 1, 3, 1, 1);
+			GridPane.setVgrow(pane, Priority.ALWAYS);
+		}
+
 		// RANDOMIZER
 		{
 			HBox hbox = new HBox(4);
@@ -1157,7 +1201,7 @@ public class MainDialog extends Application
 			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
-			heading.setStyle("-fx-background-color: #D88B43;");
+			heading.setStyle("-fx-background-color: #8BD843;");
 			heading.setPadding(new Insets(2));
 			heading.setSpacing(2);
 			final Label label = JavaFxHelper.createLabel("Randomizer", Color.BLACK, "-fx-font-size: 11pt;");
@@ -1174,8 +1218,8 @@ public class MainDialog extends Application
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
 			frame.setCenter(hbox);
-			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #D88B43; -fx-background-color: #333;");
-			pane.add(frame, 1, 3, 1, 2);
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #8BD843; -fx-background-color: #333;");
+			pane.add(frame, 1, 4, 1, 1);
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 

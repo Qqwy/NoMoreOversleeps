@@ -15,6 +15,7 @@ import com.tinytimrob.ppse.nmo.integration.philipshue.PhilipsHueConfiguration;
 import com.tinytimrob.ppse.nmo.integration.randomizer.RandomizerConfiguration;
 import com.tinytimrob.ppse.nmo.integration.twilio.TwilioConfiguration;
 import com.tinytimrob.ppse.nmo.integration.webui.WebUIConfiguration;
+import com.tinytimrob.ppse.nmo.integration.wemo.WemoConfiguration;
 
 public class NMOConfiguration
 {
@@ -123,5 +124,8 @@ public class NMOConfiguration
 
 		@Expose
 		public RandomizerConfiguration randomizer = new RandomizerConfiguration();
+
+		@Expose
+		public WemoConfiguration wemo = new WemoConfiguration();
 	}
 }
