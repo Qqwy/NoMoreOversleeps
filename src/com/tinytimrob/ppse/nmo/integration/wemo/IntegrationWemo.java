@@ -106,7 +106,7 @@ public class IntegrationWemo extends Integration
 				int responseCode = connection.getResponseCode();
 				in = connection.getInputStream();
 				String responseString = IOUtils.toString(in, CommonUtils.charsetUTF8);
-				System.out.println(responseString);
+				//System.out.println(responseString);
 			}
 			catch (Throwable t)
 			{
