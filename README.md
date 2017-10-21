@@ -39,6 +39,10 @@ people to remotely monitor you, letting them see whether or not you are at your 
 
 In the event that the people who are monitoring you think that you're asleep at the wrong time, they can perform any of the actions you have configured to try and wake you up.
 
+#### Custom events ####
+
+In addition to the automated and manual monitoring, it is possible to create custom events which trigger actions at specific times on specific days of the week.
+
 #### Configurable actions ####
 
 The following actions can currently be configured for use with both automated and manual monitoring:
@@ -46,14 +50,19 @@ The following actions can currently be configured for use with both automated an
 * **Activity warning timer change**: Switch to a different activity warning timer
 * **Noise/Sound playback**: Configure any number of sounds of your choice
 * **Command line execution**: Run any application on your machine
-* **Pavlok**: Beep, vibrate or shock
+* **Pavlok**: Flash, beep, vibrate or shock
 * **Twilio**: Call a phone number (e.g. your mobile)
+* **Discord**: Send a predefined message to a server, group or user
 * **Philips Hue smart light bulbs**: Turn the light bulbs on or off
+* **WeMo Insight smart switches**: Turn the switches on or off
 
 In particular, the command line execution can be particularly valuable, as it allows you to link NMO to other utility programs to perform more advanced functionality beyond that which
 is offered by NMO out of the box. For example, a popular utility for NMO is [NirCmd](http://www.nirsoft.net/utils/nircmd.html) which can be used to create actions that automatically
 unmute your sound card, change system volume to maximum and/or switch your sound output back to speakers if you left your headphones plugged in - then these actions can be remotely
 triggered from the Web UI or as part of your alarm routine.
+
+A randomizer system is now also included, allowing you to create multiple groups of actions; when a randomizer group is executed, it triggers a random action from the group. You can use this
+e.g. to play random noises from a list.
 
 In the future, the list of supported actions will hopefully be expanded. If you're good at programming in Java, feel free to add your own (the implementation of new actions is quite simple).
 
@@ -75,7 +84,6 @@ Some ideas I've had include:
 * Load the sleep schedule from a Napchart link rather than having to configure it by hand
 * GPS tracking of phone so you can see where someone is if they aren't at their computer
 * Tracking function so you can record your sleeping (and possible oversleeping) along with how good each sleep/nap felt
-* Send a message to the Polyphasic Sleep Discord if you fail to wake up so that you can be really embarrased for being such a huge failure
 * Food tracker so you can monitor what you're eating in case this affects your sleep schedule
 * Productivity tracker so you can input what you're doing in each sleep block to avoid wasting time
 * Integration with EEG to track SWS/REM acquisition
@@ -123,6 +131,8 @@ To update the code to the newest release, the procedure is simply to `hg pull` a
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 * Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
+* Philips Hue integration only allows you to toggle on/off the default lighting group and not individual lights. This might be improved in future.
+* WeMo switches and Philips Hue bridges are connected via IP address which means that the config must be updated if the IP of the switch/bridge changes. It would be better to use name-based device detection over UPnP instead.
 
 ### Contribution guidelines ###
 
