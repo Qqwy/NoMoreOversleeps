@@ -791,7 +791,7 @@ public class MainDialog extends Application
 			heading.setStyle("-fx-background-color: #839CA0;");
 			heading.setPadding(new Insets(2));
 			heading.setSpacing(2);
-			final Label label = JavaFxHelper.createLabel("Lighting", Color.BLACK, "-fx-font-size: 11pt;");
+			final Label label = JavaFxHelper.createLabel("Philips Hue", Color.BLACK, "-fx-font-size: 11pt;");
 			heading.getChildren().add(label);
 			final StackPane spt = new StackPane();
 			heading.getChildren().add(spt);
