@@ -175,7 +175,7 @@ public class MainDialog extends Application
 		//==================================================================
 		// CONFIGURE THE STAGE
 		//==================================================================
-		stage.setTitle("NoMoreOversleeps v" + Main.VERSION);
+		stage.setTitle("NoMoreOversleeps Polyphasic Sleeping Alarm v" + Main.VERSION);
 		stage.getIcons().add(new Image(JavaFxHelper.buildResourcePath("icon.png")));
 		stage.setResizable(true);
 		stage.setMinWidth(1210);
@@ -371,9 +371,9 @@ public class MainDialog extends Application
 			String sn = NMOConfiguration.instance.scheduleName;
 			if (sn == null || sn.isEmpty())
 			{
-				sn = "No schedule name configured";
+				sn = "UNKNOWN SCHEDULE";
 			}
-			statusBox.getChildren().add(JavaFxHelper.createLabel(sn, Color.WHITE, "-fx-font-weight: bold;"));
+			statusBox.getChildren().add(JavaFxHelper.createLabel(sn, Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 14pt;"));
 
 			if (NMOConfiguration.instance.scheduleStartedOn > 0)
 			{
