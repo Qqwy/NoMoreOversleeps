@@ -13,6 +13,7 @@ import com.tinytimrob.ppse.nmo.integration.noise.NoiseConfiguration;
 import com.tinytimrob.ppse.nmo.integration.pavlok.PavlokConfiguration;
 import com.tinytimrob.ppse.nmo.integration.philipshue.PhilipsHueConfiguration;
 import com.tinytimrob.ppse.nmo.integration.randomizer.RandomizerConfiguration;
+import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkConfiguration;
 import com.tinytimrob.ppse.nmo.integration.twilio.TwilioConfiguration;
 import com.tinytimrob.ppse.nmo.integration.webui.WebUIConfiguration;
 import com.tinytimrob.ppse.nmo.integration.wemo.WemoConfiguration;
@@ -111,6 +112,12 @@ public class NMOConfiguration
 		public PhilipsHueConfiguration philipsHue = new PhilipsHueConfiguration();
 
 		@Expose
+		public TPLinkConfiguration tplink = new TPLinkConfiguration();
+
+		@Expose
+		public WemoConfiguration wemo = new WemoConfiguration();
+
+		@Expose
 		public NoiseConfiguration noise = new NoiseConfiguration();
 
 		@Expose
@@ -124,8 +131,5 @@ public class NMOConfiguration
 
 		@Expose
 		public RandomizerConfiguration randomizer = new RandomizerConfiguration();
-
-		@Expose
-		public WemoConfiguration wemo = new WemoConfiguration();
 	}
 }

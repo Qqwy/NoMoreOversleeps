@@ -1,5 +1,7 @@
 package com.tinytimrob.ppse.nmo.integration.philipshue;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
@@ -31,7 +33,9 @@ public class IntegrationPhilipsHue extends Integration
 	public PHHueSDK sdk;
 	public PHBridge activeBridge;
 	public PHSDKListener listener;
-	public volatile int lightState = -1;
+	//public volatile int lightState = -1;
+	public volatile LinkedHashMap<String, Integer> lightStates = new LinkedHashMap<String, Integer>();
+	public volatile LinkedHashMap<String, PHLight> lights = new LinkedHashMap<String, PHLight>();
 
 	@Override
 	public boolean isEnabled()
@@ -42,66 +46,71 @@ public class IntegrationPhilipsHue extends Integration
 	@Override
 	public void init()
 	{
-		this.actions.put("/philipshue/on", new Action()
+		for (int i = 0; i < NMOConfiguration.instance.integrations.philipsHue.lights.length; i++)
 		{
-			@Override
-			public void onAction() throws Exception
+			final String bulbName = NMOConfiguration.instance.integrations.philipsHue.lights[i];
+			this.lightStates.put(bulbName, -1);
+			this.actions.put("/philipshue/" + i + "/on", new Action()
 			{
-				IntegrationPhilipsHue.this.toggle(true);
-			}
+				@Override
+				public void onAction() throws Exception
+				{
+					IntegrationPhilipsHue.this.toggle(bulbName, true);
+				}
 
-			@Override
-			public String getName()
-			{
-				return "LIGHT ON";
-			}
+				@Override
+				public String getName()
+				{
+					return "TURN ON " + bulbName;
+				}
 
-			@Override
-			public boolean isSecret()
+				@Override
+				public boolean isSecret()
+				{
+					return false;
+				}
+			});
+			this.actions.put("/philipshue/" + i + "/off", new Action()
 			{
-				return false;
-			}
-		});
-		this.actions.put("/philipshue/off", new Action()
-		{
-			@Override
-			public void onAction() throws Exception
-			{
-				IntegrationPhilipsHue.this.toggle(false);
-			}
+				@Override
+				public void onAction() throws Exception
+				{
+					IntegrationPhilipsHue.this.toggle(bulbName, false);
+				}
 
-			@Override
-			public String getName()
-			{
-				return "LIGHT OFF";
-			}
+				@Override
+				public String getName()
+				{
+					return "TURN OFF " + bulbName;
+				}
 
-			@Override
-			public boolean isSecret()
+				@Override
+				public boolean isSecret()
+				{
+					return false;
+				}
+			});
+			this.actions.put("/philipshue/" + i + "/toggle", new Action()
 			{
-				return false;
-			}
-		});
-		this.actions.put("/philipshue/toggle", new Action()
-		{
-			@Override
-			public void onAction() throws Exception
-			{
-				IntegrationPhilipsHue.this.toggle(IntegrationPhilipsHue.this.lightState == -1);
-			}
+				@Override
+				public void onAction() throws Exception
+				{
+					IntegrationPhilipsHue.this.toggle(bulbName, IntegrationPhilipsHue.this.lightStates.get(bulbName) == -1);
+				}
 
-			@Override
-			public String getName()
-			{
-				return "LIGHT TOGGLE";
-			}
+				@Override
+				public String getName()
+				{
+					return "TOGGLE " + bulbName;
+				}
 
-			@Override
-			public boolean isSecret()
-			{
-				return true;
-			}
-		});
+				@Override
+				public boolean isSecret()
+				{
+					return true;
+				}
+			});
+		}
 
 		this.sdk = PHHueSDK.getInstance();
 		this.sdk.setAppName("NoMoreOversleeps");
@@ -145,9 +154,13 @@ public class IntegrationPhilipsHue extends Integration
 					List<PHLight> u = bridge.getResourceCache().getAllLights();
 					if (!u.isEmpty())
 					{
-						PHLightState phls = u.get(0).getLastKnownLightState();
-						IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
-						log.info("Updating light state: " + IntegrationPhilipsHue.this.lightState);
+						PHLight light = u.get(0);
+						PHLightState phls = light.getLastKnownLightState();
+						String bulbName = light.getName();
+						int state = phls.isOn() ? phls.getBrightness() : -1;
+						IntegrationPhilipsHue.this.lights.put(bulbName, light);
+						IntegrationPhilipsHue.this.lightStates.put(bulbName, state);
+						log.info("Updating light state: " + bulbName + " = " + state);
 					}
 				}
 			}
@@ -172,8 +185,13 @@ public class IntegrationPhilipsHue extends Integration
 				List<PHLight> u = bridge.getResourceCache().getAllLights();
 				if (!u.isEmpty())
 				{
-					PHLightState phls = u.get(0).getLastKnownLightState();
-					IntegrationPhilipsHue.this.lightState = phls.isOn() ? phls.getBrightness() : -1;
+					PHLight light = u.get(0);
+					PHLightState phls = light.getLastKnownLightState();
+					String bulbName = light.getName();
+					int state = phls.isOn() ? phls.getBrightness() : -1;
+					IntegrationPhilipsHue.this.lights.put(bulbName, light);
+					IntegrationPhilipsHue.this.lightStates.put(bulbName, state);
+					log.info("Updating light state: " + bulbName + " = " + state);
 				}
 			}
 
@@ -211,15 +229,18 @@ public class IntegrationPhilipsHue extends Integration
 		// TODO Auto-generated method stub
 	}
 
-	public void toggle(boolean state)
+	public void toggle(String name, boolean state) throws IOException
 	{
+		PHLight light = this.lights.get(name);
+		if (light == null)
+			throw new IOException("No such light: " + name);
 		PHLightState lightState = new PHLightState();
 		lightState.setOn(state);
 		if (state)
 		{
 			lightState.setBrightness(Integer.MAX_VALUE, true);
 		}
-		this.activeBridge.setLightStateForDefaultGroup(lightState);
+		this.activeBridge.updateLightState(light, lightState);
 	}
 
 	@Override

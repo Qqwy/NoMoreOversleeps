@@ -23,6 +23,7 @@ import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.pavlok.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
+import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.PortForwarding;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
@@ -763,7 +764,7 @@ public class MainDialog extends Application
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
-		// LIGHTING
+		// HOME AUTOMATION
 		{
 			HBox hbox = new HBox(4);
 			hbox.setPadding(new Insets(4));
@@ -774,13 +775,26 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			if (IntegrationPhilipsHue.INSTANCE.isEnabled())
+			boolean enabled = IntegrationPhilipsHue.INSTANCE.isEnabled() || IntegrationTPLink.INSTANCE.isEnabled() || IntegrationWemo.INSTANCE.isEnabled();
+
+			if (enabled)
 			{
-				final Label lightingStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
-				lightingStateLabel.textProperty().bind(lightingStateString);
-				statusBox.getChildren().add(lightingStateLabel);
-				statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
-				this.addIntegrationButtonsToVbox(IntegrationPhilipsHue.INSTANCE, statusBox);
+				if (IntegrationPhilipsHue.INSTANCE.isEnabled())
+				{
+					final Label lightingStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+					lightingStateLabel.textProperty().bind(lightingStateString);
+					statusBox.getChildren().add(lightingStateLabel);
+					statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
+					this.addIntegrationButtonsToVbox(IntegrationPhilipsHue.INSTANCE, statusBox);
+				}
+				if (IntegrationTPLink.INSTANCE.isEnabled())
+				{
+					this.addIntegrationButtonsToVbox(IntegrationTPLink.INSTANCE, statusBox);
+				}
+				if (IntegrationWemo.INSTANCE.isEnabled())
+				{
+					this.addIntegrationButtonsToVbox(IntegrationWemo.INSTANCE, statusBox);
+				}
 			}
 			else
 			{
@@ -791,7 +805,7 @@ public class MainDialog extends Application
 			heading.setStyle("-fx-background-color: #839CA0;");
 			heading.setPadding(new Insets(2));
 			heading.setSpacing(2);
-			final Label label = JavaFxHelper.createLabel("Philips Hue", Color.BLACK, "-fx-font-size: 11pt;");
+			final Label label = JavaFxHelper.createLabel("Home Automation", Color.BLACK, "-fx-font-size: 11pt;");
 			heading.getChildren().add(label);
 			final StackPane spt = new StackPane();
 			heading.getChildren().add(spt);
@@ -806,7 +820,7 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #839CA0; -fx-background-color: #333;");
-			pane.add(frame, 1, 1, 1, 1);
+			pane.add(frame, 1, 1, 1, 2);
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
@@ -984,7 +998,7 @@ public class MainDialog extends Application
 			frame.setTop(heading);
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #7BAD58; -fx-background-color: #333;");
-			pane.add(frame, 1, 2, 1, 1);
+			pane.add(frame, 1, 3, 1, 1);
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
@@ -1134,49 +1148,6 @@ public class MainDialog extends Application
 			frame.setCenter(hbox);
 			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #AA3456; -fx-background-color: #333;");
 			pane.add(frame, 0, 4, 1, 1);
-			GridPane.setVgrow(pane, Priority.ALWAYS);
-		}
-
-		// WEMO
-		{
-			HBox hbox = new HBox(4);
-			hbox.setPadding(new Insets(4));
-			hbox.setAlignment(Pos.TOP_CENTER);
-
-			VBox statusBox = new VBox(4);
-			statusBox.setAlignment(Pos.TOP_LEFT);
-			hbox.getChildren().add(statusBox);
-			HBox.setHgrow(statusBox, Priority.ALWAYS);
-
-			if (IntegrationWemo.INSTANCE.isEnabled())
-			{
-				this.addIntegrationButtonsToVbox(IntegrationWemo.INSTANCE, statusBox);
-			}
-			else
-			{
-				statusBox.getChildren().add(JavaFxHelper.createLabel("Integration disabled", Color.GRAY, "-fx-font-weight: bold;"));
-			}
-
-			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
-			heading.setStyle("-fx-background-color: #D88B43;");
-			heading.setPadding(new Insets(2));
-			heading.setSpacing(2);
-			final Label label = JavaFxHelper.createLabel("WeMo Insight", Color.BLACK, "-fx-font-size: 11pt;");
-			heading.getChildren().add(label);
-			final StackPane spt = new StackPane();
-			heading.getChildren().add(spt);
-			HBox.setHgrow(spt, Priority.ALWAYS);
-			heading.setAlignment(Pos.TOP_LEFT);
-			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
-			jfxButtonConfigure.setPadding(new Insets(2, 4, 2, 4));
-			jfxButtonConfigure.setDisable(true); // temporary
-			heading.getChildren().add(jfxButtonConfigure);
-
-			final BorderPane frame = new BorderPane();
-			frame.setTop(heading);
-			frame.setCenter(hbox);
-			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #D88B43; -fx-background-color: #333;");
-			pane.add(frame, 1, 3, 1, 1);
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
 
@@ -1728,7 +1699,14 @@ public class MainDialog extends Application
 
 		if (NMOConfiguration.instance.integrations.philipsHue.enabled)
 		{
-			lightingStateString.set("LIGHTING: " + (IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF"));
+			String state = "";
+			for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
+			{
+				state += (!state.isEmpty() ? "\n" : "");
+				int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
+				state += key + ":  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
+			}
+			lightingStateString.set(state);
 		}
 
 		if (NMOConfiguration.instance.integrations.webUI.enabled)

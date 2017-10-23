@@ -109,8 +109,8 @@ fieldset[disabled] .btn-purple.active {
       </#if>
       <#if integration_philipsHue>
       <tr>
-        <td><strong>Light</strong></td>
-        <td id="nmo_light_state">?</td>
+        <td><strong>Devices</strong></td>
+        <td id="nmo_ha_state">?</td>
       </tr>
       </#if>
     </tbody>
@@ -147,7 +147,7 @@ fieldset[disabled] .btn-purple.active {
                     $('#nmo_conn_count').html(json.conn_count);
                     $('#nmo_schedule').html(json.schedule);
                     $('#nmo_noise_state').html(json.noise_state);
-                    $('#nmo_light_state').html(json.light_state);
+                    $('#nmo_ha_state').html(json.ha_state);
                     $('#logframe').attr('src',function(i,val){return val;});
                 }
             });

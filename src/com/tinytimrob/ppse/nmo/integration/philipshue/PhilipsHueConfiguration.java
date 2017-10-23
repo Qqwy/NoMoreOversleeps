@@ -12,4 +12,7 @@ public class PhilipsHueConfiguration
 
 	@Expose
 	public String bridgeUsername = "";
+
+	@Expose
+	public String[] lights = new String[0];
 }

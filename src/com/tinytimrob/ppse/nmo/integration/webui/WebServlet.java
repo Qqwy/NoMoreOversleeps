@@ -46,7 +46,7 @@ public class WebServlet extends HttpServlet
 		public String noise_state;
 
 		@Expose
-		public String light_state;
+		public String ha_state;
 	}
 
 	private static final long serialVersionUID = 6713485873809808119L;
@@ -108,7 +108,14 @@ public class WebServlet extends HttpServlet
 			}
 			data.conn_count = WebcamCapture.count();
 			data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
-			data.light_state = IntegrationPhilipsHue.INSTANCE.lightState > -1 ? "ON, LIGHT LEVEL " + IntegrationPhilipsHue.INSTANCE.lightState : "OFF";
+			String state = "";
+			for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
+			{
+				state += (!state.isEmpty() ? "<br/>" : "");
+				int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
+				state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
+			}
+			data.ha_state = state;
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
