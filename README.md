@@ -131,7 +131,6 @@ To update the code to the newest release, the procedure is simply to `hg pull` a
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 * Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
-* Philips Hue integration only allows you to toggle on/off the default lighting group and not individual lights. This might be improved in future.
 * TP-LINK switches, WeMo switches and Philips Hue bridges are connected via IP address which means that the config must be updated if the IP of the switch/bridge changes. It would be better to use name-based device detection over UPnP instead.
 
 ### Contribution guidelines ###
