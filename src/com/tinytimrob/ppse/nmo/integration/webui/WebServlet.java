@@ -129,7 +129,11 @@ public class WebServlet extends HttpServlet
 			{
 				sn = "UNKNOWN SCHEDULE";
 			}
-			data.schedule_name = sn;
+			data.schedule_name = "<b>" + sn + "</b>";
+			if (NMOConfiguration.instance.scheduleStartedOn > 0)
+			{
+				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOConfiguration.instance.scheduleStartedOn) + "<br/>(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)";
+			}
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
