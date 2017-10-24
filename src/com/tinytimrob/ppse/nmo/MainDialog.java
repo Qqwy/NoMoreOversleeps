@@ -123,6 +123,7 @@ public class MainDialog extends Application
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static ArrayList<CustomEventAction> customActions = new ArrayList<CustomEventAction>();
 	public static volatile int tick = 0;
+	private static volatile long now = 0;
 
 	@Override
 	public void start(Stage stage) throws Exception
@@ -1291,7 +1292,6 @@ public class MainDialog extends Application
 			@Override
 			public void handle(ActionEvent event)
 			{
-				long now = System.currentTimeMillis();
 				pausedUntil = now + (pp * 60000);
 				pauseReason = reason.getText();
 				triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
@@ -1476,9 +1476,10 @@ public class MainDialog extends Application
 			return;
 		}
 
-		long now = System.currentTimeMillis();
+		now = System.currentTimeMillis();
 		boolean paused = pausedUntil > now;
 		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(now);
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
 		int minute = calendar.get(Calendar.MINUTE);
 		int currentMinuteOfDay = ((hour * 60) + minute);
@@ -1514,6 +1515,7 @@ public class MainDialog extends Application
 			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
 			{
 				Calendar calendar2 = Calendar.getInstance();
+				calendar2.setTimeInMillis(now);
 				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.end / 60);
 				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.end % 60);
 				calendar2.set(Calendar.SECOND, 0);
@@ -1528,12 +1530,12 @@ public class MainDialog extends Application
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
 				// determine second value
-				long secondsRemaining = (((tims + 999) - System.currentTimeMillis()) / 1000);
+				long secondsRemaining = (((tims + 999) - now) / 1000);
 				long secondsCounter = secondsRemaining % 60;
 				long minutesCounter = (secondsRemaining / 60) % 60;
 				long hoursCounter = (secondsRemaining / 60) / 60;
 				// determine minute value				
-				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+				long minutesRemaining = (((tims + 59999) - now) / 60000);
 				// determine status
 				String pros = "SLEEPING";
 				// populate the display fields
@@ -1554,6 +1556,7 @@ public class MainDialog extends Application
 			else
 			{
 				Calendar calendar2 = Calendar.getInstance();
+				calendar2.setTimeInMillis(now);
 				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
 				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
 				calendar2.set(Calendar.SECOND, 0);
@@ -1564,12 +1567,12 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				// determine second value
-				long secondsRemaining = (((tims + 999) - System.currentTimeMillis()) / 1000);
+				long secondsRemaining = (((tims + 999) - now) / 1000);
 				long secondsCounter = secondsRemaining % 60;
 				long minutesCounter = (secondsRemaining / 60) % 60;
 				long hoursCounter = (secondsRemaining / 60) / 60;
 				// determine minute value				
-				long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+				long minutesRemaining = (((tims + 59999) - now) / 60000);
 				// determine status
 				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				// populate the display fields
@@ -1607,6 +1610,7 @@ public class MainDialog extends Application
 			nextSleepBlock = nextSleepBlockDetected;
 
 			Calendar calendar3 = Calendar.getInstance();
+			calendar3.setTimeInMillis(now);
 			calendar3.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
 			calendar3.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
 			calendar3.set(Calendar.SECOND, 0);
@@ -1616,14 +1620,14 @@ public class MainDialog extends Application
 			{
 				tims += 86400000L; // nap loops over to next day. add 1 day.
 			}
-			long minutesRemaining = (((tims + 59999) - System.currentTimeMillis()) / 60000);
+			long minutesRemaining = (((tims + 59999) - now) / 60000);
 			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), null);
 		}
 		if (paused)
 		{
 			if (!(scheduleStatusShort.startsWith("SLEEPING ") && pauseReason.startsWith("Sleep block: ")))
 			{
-				long minutesRemaining = (((pausedUntil + 59999) - System.currentTimeMillis()) / 60000);
+				long minutesRemaining = (((pausedUntil + 59999) - now) / 60000);
 				scheduleStatusShort = "\"" + pauseReason + "\" [" + minutesRemaining + "m LEFT]";
 			}
 		}
@@ -1647,7 +1651,9 @@ public class MainDialog extends Application
 		{
 			resetActivityTimer("pause");
 		}
-		long timeDiff = paused ? 0 : (now - lastActivityTime);
+		long lastActivityTime_ = lastActivityTime;
+		String lastActivitySource_ = lastActivitySource;
+		long timeDiff = paused ? 0 : (now - lastActivityTime_);
 		if (pendingTimer != null)
 		{
 			this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
@@ -1660,7 +1666,7 @@ public class MainDialog extends Application
 		}
 		else
 		{
-			lastActivityTimeString.set("Last: " + CommonUtils.dateFormatter.format(lastActivityTime) + " (" + lastActivitySource + ")");
+			lastActivityTimeString.set("Last: " + CommonUtils.dateFormatter.format(lastActivityTime_) + " (" + lastActivitySource_ + ")");
 			long nawtd = getNextActivityWarningTimeDiff(nextActivityWarningID);
 			if (timeDiff > (1000 * nawtd))
 			{
@@ -1688,7 +1694,7 @@ public class MainDialog extends Application
 					e.printStackTrace();
 				}
 			}
-			String humanlyReadableTimeDiff = String.format("%.3f", Math.abs(timeDiff / 1000.0));
+			String humanlyReadableTimeDiff = String.format("%.3f", timeDiff / 1000.0);
 			timeDiffString.set("Time difference: " + humanlyReadableTimeDiff + "s (next warning: " + nawtd + "s)");
 		}
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
@@ -1787,7 +1793,7 @@ public class MainDialog extends Application
 		}
 		else if (timeDiff == -1)
 		{
-			timeDiff = System.currentTimeMillis() - lastActivityTime;
+			timeDiff = now - lastActivityTime;
 		}
 		long awid = 0;
 		while (timeDiff > (1000 * getNextActivityWarningTimeDiff(awid))) // fixes shortening the gap in the middle of inactivity causing massive warning spam
@@ -1804,7 +1810,7 @@ public class MainDialog extends Application
 
 	public static void resetActivityTimer(String source)
 	{
-		lastActivityTime = System.currentTimeMillis();
+		lastActivityTime = now;
 		lastActivitySource = source;
 		nextActivityWarningID = 0;
 		oversleepWarningTriggered = false;
@@ -1838,7 +1844,7 @@ public class MainDialog extends Application
 			@Override
 			public void run()
 			{
-				events.add(CommonUtils.dateFormatter.format(System.currentTimeMillis()) + ": " + eventString);
+				events.add(CommonUtils.dateFormatter.format(now) + ": " + eventString);
 			}
 		});
 		if (actionArray != null)
