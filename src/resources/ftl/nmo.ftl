@@ -86,12 +86,20 @@ fieldset[disabled] .btn-purple.active {
         <td id="nmo_last_refresh">never</td>
       </tr>
       <tr>
+        <td style="width:230px;"><strong>Schedule</strong></td>
+        <td id="nmo_schedule_name">?</td>
+      </tr>
+      <tr>
         <td style="width:230px;"><strong>Current part of schedule</strong></td>
         <td id="nmo_schedule">?</td>
       </tr>
       <tr>
         <td><strong>Activity detection state</strong></td>
         <td id="nmo_pause_state">?</td>
+      </tr>
+      <tr>
+        <td style="width:230px;"><strong>Active timer</strong></td>
+        <td id="nmo_active_timer">?</td>
       </tr>
       <tr>
         <td style="width:230px;"><strong>Last activity detected</strong></td>
@@ -143,9 +151,11 @@ fieldset[disabled] .btn-purple.active {
                     var json = $.parseJSON(data);
                     $('#nmo_last_refresh').html(json.update);
                     $('#nmo_activity').html(json.activity);
+                    $('#nmo_active_timer').html(json.active_timer);
                     $('#nmo_pause_state').html(json.pause_state);
                     $('#nmo_conn_count').html(json.conn_count);
                     $('#nmo_schedule').html(json.schedule);
+                    $('#nmo_schedule_name').html(json.schedule_name);
                     $('#nmo_noise_state').html(json.noise_state);
                     $('#nmo_ha_state').html(json.ha_state);
                     $('#logframe').attr('src',function(i,val){return val;});

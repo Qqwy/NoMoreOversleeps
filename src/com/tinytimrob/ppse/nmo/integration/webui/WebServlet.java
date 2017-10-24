@@ -19,6 +19,7 @@ import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
+import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import freemarker.template.TemplateException;
@@ -31,7 +32,13 @@ public class WebServlet extends HttpServlet
 		public String update;
 
 		@Expose
+		public String active_timer;
+
+		@Expose
 		public String activity;
+
+		@Expose
+		public String schedule_name;
 
 		@Expose
 		public String schedule;
@@ -97,7 +104,8 @@ public class WebServlet extends HttpServlet
 			long now = System.currentTimeMillis();
 			boolean paused = MainDialog.isCurrentlyPaused.get();
 			data.update = CommonUtils.convertTimestamp(now);
-			data.activity = paused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + (now - MainDialog.lastActivityTime) + "ms ago from " + MainDialog.lastActivitySource + ")";
+			data.activity = paused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + String.format("%.3f", (now - MainDialog.lastActivityTime) / 1000.0) + "s ago from " + MainDialog.lastActivitySource + ")";
+			data.active_timer = MainDialog.timer == null ? "null" : MainDialog.timer.name + " (" + MainDialog.timer.secondsForFirstWarning + "s/" + MainDialog.timer.secondsForSubsequentWarnings + "s)";
 			if (paused)
 			{
 				data.pause_state = "PAUSED for \"" + MainDialog.pauseReason + "\" until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil);
@@ -116,6 +124,12 @@ public class WebServlet extends HttpServlet
 				state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
 			}
 			data.ha_state = state;
+			String sn = NMOConfiguration.instance.scheduleName;
+			if (sn == null || sn.isEmpty())
+			{
+				sn = "UNKNOWN SCHEDULE";
+			}
+			data.schedule_name = sn;
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
