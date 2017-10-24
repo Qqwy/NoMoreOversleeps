@@ -1647,8 +1647,7 @@ public class MainDialog extends Application
 		{
 			resetActivityTimer("pause");
 		}
-		long timeDiff = paused ? 0 : Math.abs(now - lastActivityTime);
-		timeDiff = Math.abs(timeDiff); // Normalizes negative zero to positive zero.
+		long timeDiff = paused ? 0 : (now - lastActivityTime);
 		if (pendingTimer != null)
 		{
 			this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
@@ -1689,7 +1688,7 @@ public class MainDialog extends Application
 					e.printStackTrace();
 				}
 			}
-			String humanlyReadableTimeDiff = String.format("%.3f", timeDiff / 1000.0);			
+			String humanlyReadableTimeDiff = String.format("%.3f", Math.abs(timeDiff / 1000.0));
 			timeDiffString.set("Time difference: " + humanlyReadableTimeDiff + "s (next warning: " + nawtd + "s)");
 		}
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
