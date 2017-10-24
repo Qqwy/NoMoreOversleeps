@@ -54,7 +54,7 @@ The following actions can currently be configured for use with both automated an
 * **Twilio**: Call a phone number (e.g. your mobile)
 * **Discord**: Send a predefined message to a server, group or user
 * **Philips Hue smart light bulbs**: Turn the light bulbs on or off
-* **WeMo Insight smart switches**: Turn the switches on or off
+* **TP-Link & WeMo Insight smart switches**: Turn the switches on or off
 
 In particular, the command line execution can be particularly valuable, as it allows you to link NMO to other utility programs to perform more advanced functionality beyond that which
 is offered by NMO out of the box. For example, a popular utility for NMO is [NirCmd](http://www.nirsoft.net/utils/nircmd.html) which can be used to create actions that automatically
@@ -132,7 +132,7 @@ To update the code to the newest release, the procedure is simply to `hg pull` a
 * Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 * Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
 * Philips Hue integration only allows you to toggle on/off the default lighting group and not individual lights. This might be improved in future.
-* WeMo switches and Philips Hue bridges are connected via IP address which means that the config must be updated if the IP of the switch/bridge changes. It would be better to use name-based device detection over UPnP instead.
+* TP-LINK switches, WeMo switches and Philips Hue bridges are connected via IP address which means that the config must be updated if the IP of the switch/bridge changes. It would be better to use name-based device detection over UPnP instead.
 
 ### Contribution guidelines ###
 
