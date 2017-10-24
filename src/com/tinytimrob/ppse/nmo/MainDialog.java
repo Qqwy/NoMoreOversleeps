@@ -1528,7 +1528,7 @@ public class MainDialog extends Application
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
 				}
 				// determine second value
-				long secondsRemaining = ((tims - System.currentTimeMillis()) / 1000);
+				long secondsRemaining = (((tims + 999) - System.currentTimeMillis()) / 1000);
 				long secondsCounter = secondsRemaining % 60;
 				long minutesCounter = (secondsRemaining / 60) % 60;
 				long hoursCounter = (secondsRemaining / 60) / 60;
@@ -1564,7 +1564,7 @@ public class MainDialog extends Application
 					tims += 86400000L; // nap loops over to next day. add 1 day.
 				}
 				// determine second value
-				long secondsRemaining = ((tims - System.currentTimeMillis()) / 1000);
+				long secondsRemaining = (((tims + 999) - System.currentTimeMillis()) / 1000);
 				long secondsCounter = secondsRemaining % 60;
 				long minutesCounter = (secondsRemaining / 60) % 60;
 				long hoursCounter = (secondsRemaining / 60) / 60;
