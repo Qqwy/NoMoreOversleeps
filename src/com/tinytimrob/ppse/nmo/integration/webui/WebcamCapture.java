@@ -32,7 +32,7 @@ public class WebcamCapture
 		{
 			image = GRAY.filter(image, null);
 			Graphics2D graphics = image.createGraphics();
-			Font font = new Font("ARIAL", Font.PLAIN, 12);
+			Font font = new Font("ARIAL", Font.PLAIN, 11);
 			graphics.setFont(font);
 			graphics.setColor(Color.BLACK);
 			graphics.fillRect(0, 0, 320, 20);
