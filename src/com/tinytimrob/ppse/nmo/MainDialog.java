@@ -1172,7 +1172,7 @@ public class MainDialog extends Application
 			}
 
 			final HBox heading = JavaFxHelper.createHorizontalBox(Control.USE_COMPUTED_SIZE, 24);
-			heading.setStyle("-fx-background-color: #8BD843;");
+			heading.setStyle("-fx-background-color: #D88B43;");
 			heading.setPadding(new Insets(2));
 			heading.setSpacing(2);
 			final Label label = JavaFxHelper.createLabel("Randomizer", Color.BLACK, "-fx-font-size: 11pt;");
@@ -1189,7 +1189,7 @@ public class MainDialog extends Application
 			final BorderPane frame = new BorderPane();
 			frame.setTop(heading);
 			frame.setCenter(hbox);
-			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #8BD843; -fx-background-color: #333;");
+			frame.setStyle("-fx-border-width: 1px; -fx-border-color: #D88B43; -fx-background-color: #333;");
 			pane.add(frame, 1, 4, 1, 1);
 			GridPane.setVgrow(pane, Priority.ALWAYS);
 		}
