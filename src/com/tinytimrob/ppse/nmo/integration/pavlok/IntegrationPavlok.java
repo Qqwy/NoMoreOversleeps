@@ -31,7 +31,7 @@ public class IntegrationPavlok extends Integration
 			@Override
 			public void onAction() throws Exception
 			{
-				IntegrationPavlok.this.beep(255, "Manually triggered LED flash");
+				IntegrationPavlok.this.led(4, "Manually triggered LED flash");
 			}
 
 			@Override
