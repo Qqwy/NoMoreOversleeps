@@ -1656,7 +1656,11 @@ public class MainDialog extends Application
 		long timeDiff = paused ? 0 : (now - lastActivityTime_);
 		if (pendingTimer != null)
 		{
-			this.setNextActivityWarningForTimer(pendingTimer, timeDiff);
+			if (pendingTimer != MainDialog.timer)
+			{
+				resetActivityTimer("pendingTimer");
+				this.setNextActivityWarningForTimer(pendingTimer, 0);
+			}
 			pendingTimer = null;
 		}
 		if (paused)
