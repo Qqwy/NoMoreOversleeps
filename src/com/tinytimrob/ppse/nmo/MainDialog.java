@@ -24,6 +24,7 @@ import com.tinytimrob.ppse.nmo.integration.pavlok.IntegrationPavlok;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
+import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.PortForwarding;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
@@ -105,6 +106,7 @@ public class MainDialog extends Application
 	public static volatile SimpleStringProperty timeDiffString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty webcamName = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lightingStateString = new SimpleStringProperty("");
+	public static volatile SimpleStringProperty tplinkStateString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty startedString = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty startedString2 = new SimpleStringProperty("");
 	public static volatile SimpleStringProperty lastOversleepString = new SimpleStringProperty("");
@@ -790,6 +792,10 @@ public class MainDialog extends Application
 				}
 				if (IntegrationTPLink.INSTANCE.isEnabled())
 				{
+					final Label tplinkStateLabel = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
+					tplinkStateLabel.textProperty().bind(tplinkStateString);
+					statusBox.getChildren().add(tplinkStateLabel);
+					statusBox.getChildren().add(new Separator(Orientation.HORIZONTAL));
 					this.addIntegrationButtonsToVbox(IntegrationTPLink.INSTANCE, statusBox);
 				}
 				if (IntegrationWemo.INSTANCE.isEnabled())
@@ -1718,6 +1724,18 @@ public class MainDialog extends Application
 				state += key + ":  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
 			}
 			lightingStateString.set(state);
+		}
+
+		if (NMOConfiguration.instance.integrations.tplink.enabled)
+		{
+			String state = "";
+			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			{
+				TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
+				state += (!state.isEmpty() ? "\n" : "");
+				state += tpde.name + ":  " + (tpde.isSwitchedOn ? "ON" : "OFF");
+			}
+			tplinkStateString.set(state);
 		}
 
 		if (NMOConfiguration.instance.integrations.webUI.enabled)

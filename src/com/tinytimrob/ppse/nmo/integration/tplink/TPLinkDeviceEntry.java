@@ -12,4 +12,6 @@ public class TPLinkDeviceEntry
 
 	@Expose
 	public boolean secret;
+
+	public transient boolean isSwitchedOn;
 }

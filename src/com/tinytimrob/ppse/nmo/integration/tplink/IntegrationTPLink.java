@@ -7,6 +7,7 @@ import com.tinytimrob.ppse.nmo.NMOConfiguration;
 public class IntegrationTPLink extends Integration
 {
 	public static final IntegrationTPLink INSTANCE = new IntegrationTPLink();
+	private int updateloop = 0;
 
 	private IntegrationTPLink()
 	{
@@ -72,7 +73,17 @@ public class IntegrationTPLink extends Integration
 	@Override
 	public void update() throws Exception
 	{
-		// nothing to do
+		this.updateloop++;
+		if (this.updateloop > 30)
+		{
+			this.updateloop -= 30;
+			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			{
+				final TPLinkDeviceEntry entry = NMOConfiguration.instance.integrations.tplink.devices[i];
+				final TPLinkDevice device = new TPLinkDevice(entry.ipAddress);
+				entry.isSwitchedOn = device.isOn();
+			}
+		}
 	}
 
 	@Override

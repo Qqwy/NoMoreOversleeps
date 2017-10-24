@@ -22,6 +22,8 @@ import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
+import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
+import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -117,11 +119,23 @@ public class WebServlet extends HttpServlet
 			data.conn_count = WebcamCapture.count();
 			data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
 			String state = "";
-			for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
+			if (IntegrationPhilipsHue.INSTANCE.isEnabled())
 			{
-				state += (!state.isEmpty() ? "<br/>" : "");
-				int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
-				state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
+				for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
+				{
+					state += (!state.isEmpty() ? "<br/>" : "");
+					int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
+					state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
+				}
+			}
+			if (IntegrationTPLink.INSTANCE.isEnabled())
+			{
+				for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+				{
+					TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
+					state += (!state.isEmpty() ? "<br/>" : "");
+					state += "<b>" + tpde.name + "</b>:  " + (tpde.isSwitchedOn ? "ON" : "OFF");
+				}
 			}
 			data.ha_state = state;
 			String sn = NMOConfiguration.instance.scheduleName;
