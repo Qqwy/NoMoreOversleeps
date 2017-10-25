@@ -26,7 +26,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 {
 	private static final Logger log = LogWrapper.getLogger();
 	private Session session;
-	private String connectionIP;
+	public String connectionIP;
 
 	private void teardown()
 	{
@@ -46,7 +46,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 				//
 			}
 		}
-		WebcamCapture.removeListener(this);
+		WebcamCapture.removeSocketHandler(this);
 	}
 
 	@OnWebSocketConnect
@@ -55,7 +55,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 		this.session = session;
 		this.connectionIP = session.getRemoteAddress().getAddress().toString();
 		log.info("WebSocket connect from " + this.connectionIP);
-		WebcamCapture.addListener(this);
+		WebcamCapture.addSocketHandler(this);
 	}
 
 	@OnWebSocketMessage

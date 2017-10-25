@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamImageTransformer;
-import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 import com.tinytimrob.common.CommonUtils;
@@ -116,11 +115,16 @@ public class WebcamCapture
 	}
 
 	private static BufferedImage image;
-	private static ArrayList<WebcamListener> listeners = new ArrayList<WebcamListener>();
+	public static final ArrayList<WebcamWebSocketHandler> socketHandlers = new ArrayList<WebcamWebSocketHandler>();
+
+	public static synchronized WebcamWebSocketHandler[] getConnections()
+	{
+		return socketHandlers.toArray(new WebcamWebSocketHandler[0]);
+	}
 
 	public static synchronized int count()
 	{
-		return listeners.size();
+		return socketHandlers.size();
 	}
 
 	public static synchronized void update()
@@ -129,16 +133,16 @@ public class WebcamCapture
 		if (img == null || WebcamDefaultDevice.FAULTY)
 		{
 			webcam.close();
-			ArrayList<WebcamListener> listenersclose = (ArrayList<WebcamListener>) listeners.clone();
-			for (WebcamListener l : listenersclose)
+			ArrayList<WebcamWebSocketHandler> handlers = (ArrayList<WebcamWebSocketHandler>) socketHandlers.clone();
+			for (WebcamWebSocketHandler handler : handlers)
 			{
-				removeListener(l);
+				removeSocketHandler(handler);
 			}
 			webcam = null;
 			init();
-			for (WebcamListener l : listenersclose)
+			for (WebcamWebSocketHandler handler : handlers)
 			{
-				addListener(l);
+				addSocketHandler(handler);
 			}
 		}
 		else
@@ -160,22 +164,22 @@ public class WebcamCapture
 	public static void shutdown()
 	{
 		webcam.close();
-		ArrayList<WebcamListener> listenersclose = (ArrayList<WebcamListener>) listeners.clone();
-		for (WebcamListener l : listenersclose)
+		ArrayList<WebcamWebSocketHandler> handlers = (ArrayList<WebcamWebSocketHandler>) socketHandlers.clone();
+		for (WebcamWebSocketHandler handler : handlers)
 		{
-			removeListener(l);
+			removeSocketHandler(handler);
 		}
 	}
 
-	public static synchronized void addListener(WebcamListener listener)
+	public static synchronized void addSocketHandler(WebcamWebSocketHandler handler)
 	{
-		listeners.add(listener);
-		webcam.addWebcamListener(listener);
+		socketHandlers.add(handler);
+		webcam.addWebcamListener(handler);
 	}
 
-	public static synchronized void removeListener(WebcamListener listener)
+	public static synchronized void removeSocketHandler(WebcamWebSocketHandler handler)
 	{
-		listeners.remove(listener);
-		webcam.removeWebcamListener(listener);
+		socketHandlers.remove(handler);
+		webcam.removeWebcamListener(handler);
 	}
 }

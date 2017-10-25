@@ -28,6 +28,7 @@ import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.PortForwarding;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
+import com.tinytimrob.ppse.nmo.integration.webui.WebcamWebSocketHandler;
 import com.tinytimrob.ppse.nmo.integration.wemo.IntegrationWemo;
 import com.tinytimrob.ppse.nmo.utils.DesktopHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
@@ -1740,7 +1741,13 @@ public class MainDialog extends Application
 
 		if (NMOConfiguration.instance.integrations.webUI.enabled)
 		{
-			webMonitoringString.set(WebcamCapture.count() + " active web sockets");
+			WebcamWebSocketHandler[] sockets = WebcamCapture.getConnections();
+			String socketString = sockets.length + " active web sockets";
+			for (int i = 0; i < sockets.length; i++)
+			{
+				socketString += (i == 0 ? ":\n" : i % 3 == 0 ? "\n" : "  ") + sockets[i].connectionIP;
+			}
+			webMonitoringString.set(socketString);
 			try
 			{
 				BufferedImage img = WebcamCapture.getImage();
