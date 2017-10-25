@@ -10,6 +10,7 @@ import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 
 public class IntegrationFileWriter extends Integration
 {
@@ -63,15 +64,15 @@ public class IntegrationFileWriter extends Integration
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
 				{
-					FileUtils.writeStringToFile(scheduleStartedOnFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleStartedOnFile, FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
 				{
-					FileUtils.writeStringToFile(scheduleLastOversleepFile, MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleLastOversleepFile, FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
 				{
-					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
 				{
@@ -90,11 +91,11 @@ public class IntegrationFileWriter extends Integration
 						{
 							tims += 86400000L; // nap loops over to next day. add 1 day.
 						}
-						FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + FormattingHelper.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
 					}
 					else if (MainDialog.isCurrentlyPaused.get())
 					{
-						FileUtils.writeStringToFile(timeToNextSleepBlockFile, "AFK [" + MainDialog.pauseReason + " - " + MainDialog.formatTimeElapsedWithoutDays(MainDialog.pausedUntil, now - 59999) + " left]", Charsets.UTF_8, false);
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, "AFK [" + MainDialog.pauseReason + " - " + FormattingHelper.formatTimeElapsedWithoutDays(MainDialog.pausedUntil, now - 59999) + " left]", Charsets.UTF_8, false);
 					}
 					else if (MainDialog.nextSleepBlock == null)
 					{
@@ -112,7 +113,7 @@ public class IntegrationFileWriter extends Integration
 						{
 							tims += 86400000L; // nap loops over to next day. add 1 day.
 						}
-						FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + MainDialog.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
+						FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + FormattingHelper.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
 					}
 				}
 			}
