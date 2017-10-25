@@ -10,9 +10,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
-import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
 import com.tinytimrob.ppse.nmo.integration.filewriter.IntegrationFileWriter;
@@ -174,9 +174,9 @@ public class MainDialog extends Application
 		}
 
 		// fix bad "last oversleep" value
-		if (NMOConfiguration.instance.scheduleLastOversleep < NMOConfiguration.instance.scheduleStartedOn)
+		if (NMOStatistics.instance.scheduleLastOversleep < NMOStatistics.instance.scheduleStartedOn)
 		{
-			NMOConfiguration.instance.scheduleLastOversleep = NMOConfiguration.instance.scheduleStartedOn;
+			NMOStatistics.instance.scheduleLastOversleep = NMOStatistics.instance.scheduleStartedOn;
 		}
 
 		//==================================================================
@@ -274,7 +274,7 @@ public class MainDialog extends Application
 									map.put(name, value);
 								}
 								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.postAuthToken(map.get("code"));
-								Configuration.save();
+								NMOConfiguration.save();
 								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
 								triggerEvent("<VIBRATE PAVLOK> Connection test", null);
 								outerPane.setContent(innerPane);
@@ -382,7 +382,7 @@ public class MainDialog extends Application
 			}
 			statusBox.getChildren().add(JavaFxHelper.createLabel(sn, Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 14pt;"));
 
-			if (NMOConfiguration.instance.scheduleStartedOn > 0)
+			if (NMOStatistics.instance.scheduleStartedOn > 0)
 			{
 				final Label started = JavaFxHelper.createLabel("Started: ", Color.WHITE, "-fx-font-weight: bold;");
 				final Label startedG = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: normal;");
@@ -1493,17 +1493,17 @@ public class MainDialog extends Application
 		int minute = calendar.get(Calendar.MINUTE);
 		int currentMinuteOfDay = ((hour * 60) + minute);
 
-		if (NMOConfiguration.instance.scheduleStartedOn > 0)
+		if (NMOStatistics.instance.scheduleStartedOn > 0)
 		{
-			startedString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleStartedOn));
-			startedString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
-			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
-			lastOversleepString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
-			if ((now - NMOConfiguration.instance.scheduleLastOversleep) > NMOConfiguration.instance.schedulePersonalBest)
+			startedString.set(CommonUtils.dateFormatter2.format(NMOStatistics.instance.scheduleStartedOn));
+			startedString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)");
+			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOStatistics.instance.scheduleLastOversleep));
+			lastOversleepString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleLastOversleep) + " ago)");
+			if ((now - NMOStatistics.instance.scheduleLastOversleep) > NMOStatistics.instance.schedulePersonalBest)
 			{
-				NMOConfiguration.instance.schedulePersonalBest = now - NMOConfiguration.instance.scheduleLastOversleep;
+				NMOStatistics.instance.schedulePersonalBest = now - NMOStatistics.instance.scheduleLastOversleep;
 			}
-			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0));
+			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.schedulePersonalBest, 0));
 		}
 
 		SleepEntry nextSleepBlockDetected = null;

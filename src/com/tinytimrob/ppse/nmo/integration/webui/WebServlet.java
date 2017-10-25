@@ -20,12 +20,12 @@ import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
-
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -146,9 +146,9 @@ public class WebServlet extends HttpServlet
 				sn = "UNKNOWN SCHEDULE";
 			}
 			data.schedule_name = "<b>" + sn + "</b>";
-			if (NMOConfiguration.instance.scheduleStartedOn > 0)
+			if (NMOStatistics.instance.scheduleStartedOn > 0)
 			{
-				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOConfiguration.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)";
+				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOStatistics.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)";
 			}
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));

@@ -1,7 +1,6 @@
 package com.tinytimrob.ppse.nmo;
 
-import com.tinytimrob.common.Configuration;
-import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 
 public class ScheduleFakeIntegration extends Integration
 {
@@ -21,17 +20,17 @@ public class ScheduleFakeIntegration extends Integration
 	@Override
 	public void init() throws Exception
 	{
-		if (NMOConfiguration.instance.scheduleStartedOn > 0)
+		if (NMOStatistics.instance.scheduleStartedOn > 0)
 		{
 			this.actions.put("/schedule/resetLastOversleep", new Action()
 			{
 				@Override
 				public void onAction() throws Exception
 				{
-					NMOConfiguration.instance.scheduleLastOversleep = System.currentTimeMillis();
+					NMOStatistics.instance.scheduleLastOversleep = System.currentTimeMillis();
 					try
 					{
-						Configuration.save();
+						NMOStatistics.save();
 					}
 					catch (Throwable t)
 					{

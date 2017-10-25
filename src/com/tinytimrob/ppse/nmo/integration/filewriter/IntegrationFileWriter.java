@@ -10,6 +10,7 @@ import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 
 public class IntegrationFileWriter extends Integration
@@ -64,15 +65,15 @@ public class IntegrationFileWriter extends Integration
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
 				{
-					FileUtils.writeStringToFile(scheduleStartedOnFile, FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleStartedOnFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleStartedOn), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
 				{
-					FileUtils.writeStringToFile(scheduleLastOversleepFile, FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleLastOversleepFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleLastOversleep), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
 				{
-					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
 				}
 				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
 				{

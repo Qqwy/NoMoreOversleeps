@@ -1,6 +1,5 @@
 package com.tinytimrob.ppse.nmo;
 
-import com.tinytimrob.common.Configuration;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class ActivityTimerFakeIntegration extends Integration
@@ -28,7 +27,7 @@ public class ActivityTimerFakeIntegration extends Integration
 			activityWarningTimer.secondsForFirstWarning = 300;
 			activityWarningTimer.secondsForSubsequentWarnings = 10;
 			NMOConfiguration.instance.timers.add(activityWarningTimer);
-			Configuration.save();
+			NMOConfiguration.save();
 		}
 		final int numTimers = NMOConfiguration.instance.timers.size();
 		if (numTimers > 1)

@@ -2,6 +2,7 @@ package com.tinytimrob.ppse.nmo.config;
 
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.common.Configuration;
 import com.tinytimrob.ppse.nmo.ActivityTimer;
 import com.tinytimrob.ppse.nmo.CustomEventAction;
 import com.tinytimrob.ppse.nmo.SleepEntry;
@@ -25,20 +26,21 @@ public class NMOConfiguration
 {
 	public static NMOConfiguration instance;
 
+	public static void load() throws Exception
+	{
+		instance = Configuration.load(NMOConfiguration.class, "config.json");
+	}
+
+	public static void save() throws Exception
+	{
+		Configuration.save(instance, "config.json");
+	}
+
 	@Expose
 	public String scheduleName = "";
 
 	@Expose
 	public ArrayList<SleepEntry> schedule = new ArrayList<SleepEntry>();
-
-	@Expose
-	public long scheduleStartedOn = 0;
-
-	@Expose
-	public long scheduleLastOversleep = 0;
-
-	@Expose
-	public long schedulePersonalBest = 0;
 
 	@Expose
 	public ArrayList<ActivityTimer> timers = new ArrayList<ActivityTimer>();

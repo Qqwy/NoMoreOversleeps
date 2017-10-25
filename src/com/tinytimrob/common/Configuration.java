@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 public class Configuration
 {
 	private static final Logger log = LogWrapper.getLogger();
-	static Object data = null;
 
 	/**
 	 * Load configuration data into a Java object
@@ -22,11 +21,12 @@ public class Configuration
 	 * @throws Exception If loading fails horribly for some reason and the program can't continue
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T load(Class<T> clazz) throws Exception
+	public static <T> T load(Class<T> clazz, String path) throws Exception
 	{
-		log.info("Loading configuration from disk");
+		log.info("Loading " + path + " from disk");
+		T data;
 
-		File file = new File(PlatformData.installationDirectory, "config.json");
+		File file = new File(PlatformData.installationDirectory, path);
 		if (file.exists())
 		{
 			String configurationString = FileUtils.readFileToString(file, CommonUtils.charsetUTF8);
@@ -34,22 +34,22 @@ public class Configuration
 		}
 		else
 		{
-			log.warn("Configuration file does not exist, reverting to defaults and saving");
+			log.warn(path + " does not exist, reverting to defaults and saving");
 			data = clazz.newInstance();
 		}
-		save();
-		return (T) data;
+		save(data, path);
+		return data;
 	}
 
 	/**
 	 * Saves the current state of configuration to disk
 	 * @throws Exception If saving fails horribly for some reason
 	 */
-	public static void save() throws Exception
+	public static <T> void save(T data, String path) throws Exception
 	{
-		log.info("Saving configuration to disk");
+		log.info("Saving configuration " + path + " to disk");
 
-		File file = new File(PlatformData.installationDirectory, "config.json");
+		File file = new File(PlatformData.installationDirectory, path);
 		String jsonString = CommonUtils.GSON.toJson(data);
 		try
 		{
@@ -57,8 +57,8 @@ public class Configuration
 		}
 		catch (Throwable t)
 		{
-			log.error("Failed to save configuration!");
-			throw new RuntimeException("Unable to save configuration data, check disk permissions", t);
+			log.error("Failed to save " + path + "!");
+			throw new RuntimeException("Unable to save " + path + ", check disk permissions", t);
 		}
 	}
 

@@ -14,7 +14,6 @@ import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
 import com.philips.lighting.model.PHLight;
 import com.philips.lighting.model.PHLightState;
-import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Action;
@@ -176,7 +175,7 @@ public class IntegrationPhilipsHue extends Integration
 				NMOConfiguration.instance.integrations.philipsHue.bridgeUsername = username;
 				try
 				{
-					Configuration.save();
+					NMOConfiguration.save();
 				}
 				catch (Exception e)
 				{

@@ -13,10 +13,10 @@ import com.github.sarxos.webcam.WebcamImageTransformer;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;
 import com.tinytimrob.common.CommonUtils;
-import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.MainDialog;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 
 public class WebcamCapture
@@ -39,9 +39,9 @@ public class WebcamCapture
 			graphics.setColor(Color.WHITE);
 			long now = System.currentTimeMillis();
 			String str = CommonUtils.convertTimestamp(now);
-			if (NMOConfiguration.instance.scheduleStartedOn != 0)
+			if (NMOStatistics.instance.scheduleStartedOn != 0)
 			{
-				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.scheduleStartedOn == 0 ? 0 : now, NMOConfiguration.instance.scheduleLastOversleep);
+				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleLastOversleep);
 			}
 			graphics.drawString(str, 4, 14);
 			if (MainDialog.isCurrentlyPaused.get())
@@ -85,7 +85,7 @@ public class WebcamCapture
 			NMOConfiguration.instance.integrations.webUI.webcamName = webcam.getName();
 			try
 			{
-				Configuration.save();
+				NMOConfiguration.save();
 			}
 			catch (Exception e)
 			{

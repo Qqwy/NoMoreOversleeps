@@ -14,6 +14,7 @@ import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOStatistics;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
 import com.tinytimrob.ppse.nmo.integration.filewriter.IntegrationFileWriter;
@@ -96,12 +97,22 @@ public class Main
 				Logging.initialize();
 				try
 				{
-					NMOConfiguration.instance = Configuration.load(NMOConfiguration.class);
+					NMOConfiguration.load();
 				}
 				catch (Throwable t)
 				{
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					JOptionPane.showMessageDialog(null, "Parsing of config.json failed; please check for JSON syntax errors", "NoMoreOversleeps", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				try
+				{
+					NMOStatistics.load();
+				}
+				catch (Throwable t)
+				{
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					JOptionPane.showMessageDialog(null, "Parsing of stats.json failed; please check for JSON syntax errors", "NoMoreOversleeps", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				//===========================================================================================
@@ -136,7 +147,7 @@ public class Main
 				Logging.shutdown();
 				try
 				{
-					Configuration.save();
+					Configuration.save(NMOStatistics.instance, "stats.json");
 				}
 				catch (Throwable t)
 				{
