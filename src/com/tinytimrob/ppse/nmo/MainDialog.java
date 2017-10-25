@@ -31,6 +31,7 @@ import com.tinytimrob.ppse.nmo.integration.webui.WebcamCapture;
 import com.tinytimrob.ppse.nmo.integration.webui.WebcamWebSocketHandler;
 import com.tinytimrob.ppse.nmo.integration.wemo.IntegrationWemo;
 import com.tinytimrob.ppse.nmo.utils.DesktopHelper;
+import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.animation.AnimationTimer;
@@ -1494,14 +1495,14 @@ public class MainDialog extends Application
 		if (NMOConfiguration.instance.scheduleStartedOn > 0)
 		{
 			startedString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleStartedOn));
-			startedString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
+			startedString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)");
 			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOConfiguration.instance.scheduleLastOversleep));
-			lastOversleepString2.set("(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
+			lastOversleepString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleLastOversleep) + " ago)");
 			if ((now - NMOConfiguration.instance.scheduleLastOversleep) > NMOConfiguration.instance.schedulePersonalBest)
 			{
 				NMOConfiguration.instance.schedulePersonalBest = now - NMOConfiguration.instance.scheduleLastOversleep;
 			}
-			personalBestString.set(MainDialog.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0));
+			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOConfiguration.instance.schedulePersonalBest, 0));
 		}
 
 		SleepEntry nextSleepBlockDetected = null;
@@ -1778,38 +1779,6 @@ public class MainDialog extends Application
 				cea = customActions.get(0);
 			}
 		}
-	}
-
-	public static String formatTimeElapsedWithDays(long now, long time)
-	{
-		now = (now / 1000) * 1000;
-		time = (time / 1000) * 1000;
-		long elapsed = Math.max(0, now - time);
-		long days = elapsed / 86400000;
-		elapsed = elapsed - (days * 86400000);
-		long hours = elapsed / 3600000;
-		elapsed = elapsed - (hours * 3600000);
-		long minutes = elapsed / 60000;
-		elapsed = elapsed - (minutes * 60000);
-		//long seconds = elapsed / 1000;
-
-		return String.format("%01dd %01dh %01dm", days, hours, minutes);
-	}
-
-	public static String formatTimeElapsedWithoutDays(long now, long time)
-	{
-		now = (now / 1000) * 1000;
-		time = (time / 1000) * 1000;
-		long elapsed = Math.max(0, now - time);
-		//long days = elapsed / 86400000;
-		//elapsed = elapsed - (days * 86400000);
-		long hours = elapsed / 3600000;
-		elapsed = elapsed - (hours * 3600000);
-		long minutes = elapsed / 60000;
-		elapsed = elapsed - (minutes * 60000);
-		//long seconds = elapsed / 1000;
-
-		return String.format("%01dh %01dm", hours, minutes);
 	}
 
 	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)

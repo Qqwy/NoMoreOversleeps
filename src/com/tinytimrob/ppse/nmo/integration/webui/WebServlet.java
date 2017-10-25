@@ -24,6 +24,8 @@ import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
+import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
+
 import freemarker.template.TemplateException;
 
 public class WebServlet extends HttpServlet
@@ -146,7 +148,7 @@ public class WebServlet extends HttpServlet
 			data.schedule_name = "<b>" + sn + "</b>";
 			if (NMOConfiguration.instance.scheduleStartedOn > 0)
 			{
-				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOConfiguration.instance.scheduleStartedOn) + "<br/>(" + MainDialog.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)";
+				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOConfiguration.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOConfiguration.instance.scheduleStartedOn) + " ago)";
 			}
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
