@@ -13,6 +13,7 @@ import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.common.PlatformType;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
 import com.tinytimrob.ppse.nmo.integration.filewriter.IntegrationFileWriter;

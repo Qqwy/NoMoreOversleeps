@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integration.cmd.IntegrationCommandLine;
 import com.tinytimrob.ppse.nmo.integration.discord.IntegrationDiscord;
 import com.tinytimrob.ppse.nmo.integration.filewriter.IntegrationFileWriter;

@@ -19,7 +19,7 @@ import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.Main;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.integration.noise.IntegrationNoise;
 import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;

@@ -1,6 +1,7 @@
 package com.tinytimrob.ppse.nmo;
 
 import com.tinytimrob.common.Configuration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class ActivityTimerFakeIntegration extends Integration
 {

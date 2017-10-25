@@ -10,7 +10,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.Main;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationWemo extends Integration
 {

@@ -1,7 +1,10 @@
-package com.tinytimrob.ppse.nmo;
+package com.tinytimrob.ppse.nmo.config;
 
 import java.util.ArrayList;
 import com.google.gson.annotations.Expose;
+import com.tinytimrob.ppse.nmo.ActivityTimer;
+import com.tinytimrob.ppse.nmo.CustomEventAction;
+import com.tinytimrob.ppse.nmo.SleepEntry;
 import com.tinytimrob.ppse.nmo.integration.cmd.CommandLineConfiguration;
 import com.tinytimrob.ppse.nmo.integration.discord.DiscordConfiguration;
 import com.tinytimrob.ppse.nmo.integration.filewriter.FileWriterConfiguration;

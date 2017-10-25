@@ -7,7 +7,7 @@ import java.util.List;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 

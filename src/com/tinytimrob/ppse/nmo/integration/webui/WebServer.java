@@ -19,7 +19,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Main;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class WebServer
 {

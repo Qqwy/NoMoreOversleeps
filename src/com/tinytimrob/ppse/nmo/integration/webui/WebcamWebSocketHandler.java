@@ -19,7 +19,7 @@ import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.LogWrapper;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 @WebSocket
 public class WebcamWebSocketHandler implements WebcamListener

@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Logger;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.Communicator;
 
 public class IntegrationPavlok extends Integration

@@ -1,7 +1,7 @@
 package com.tinytimrob.ppse.nmo.integration.webui;
 
 import com.tinytimrob.ppse.nmo.Integration;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationWebUI extends Integration
 {

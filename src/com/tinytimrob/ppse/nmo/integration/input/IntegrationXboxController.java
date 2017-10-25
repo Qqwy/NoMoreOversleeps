@@ -6,7 +6,7 @@ import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.ivan.xinput.listener.XInputDeviceListener;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationXboxController extends Integration
 {

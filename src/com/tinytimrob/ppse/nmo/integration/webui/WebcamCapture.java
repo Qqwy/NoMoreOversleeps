@@ -16,7 +16,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.Configuration;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 
 public class WebcamCapture

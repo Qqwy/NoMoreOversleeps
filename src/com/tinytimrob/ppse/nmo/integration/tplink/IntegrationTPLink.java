@@ -2,7 +2,7 @@ package com.tinytimrob.ppse.nmo.integration.tplink;
 
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationTPLink extends Integration
 {

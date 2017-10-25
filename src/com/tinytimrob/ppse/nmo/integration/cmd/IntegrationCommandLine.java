@@ -3,7 +3,7 @@ package com.tinytimrob.ppse.nmo.integration.cmd;
 import java.io.File;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationCommandLine extends Integration
 {

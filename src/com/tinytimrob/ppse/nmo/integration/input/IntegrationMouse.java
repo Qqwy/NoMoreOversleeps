@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.awt.PointerInfo;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 public class IntegrationMouse extends Integration
 {

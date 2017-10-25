@@ -4,7 +4,7 @@ import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Action;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;

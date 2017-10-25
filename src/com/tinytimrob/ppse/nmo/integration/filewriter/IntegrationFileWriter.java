@@ -9,7 +9,7 @@ import com.ivan.xinput.exceptions.XInputNotLoadedException;
 import com.tinytimrob.common.PlatformData;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.MainDialog;
-import com.tinytimrob.ppse.nmo.NMOConfiguration;
+import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 
 public class IntegrationFileWriter extends Integration
