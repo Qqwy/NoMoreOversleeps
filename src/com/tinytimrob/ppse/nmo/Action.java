@@ -6,5 +6,7 @@ public interface Action
 
 	public String getName();
 
+	public boolean isHidden();
+
 	public boolean isSecret();
 }

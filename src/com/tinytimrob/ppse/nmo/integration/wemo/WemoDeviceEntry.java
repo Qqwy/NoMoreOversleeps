@@ -11,5 +11,8 @@ public class WemoDeviceEntry
 	public String ipAddress = "";
 
 	@Expose
+	public boolean hidden;
+
+	@Expose
 	public boolean secret;
 }

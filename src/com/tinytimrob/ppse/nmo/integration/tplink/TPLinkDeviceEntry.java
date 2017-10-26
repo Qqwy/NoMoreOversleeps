@@ -11,6 +11,9 @@ public class TPLinkDeviceEntry
 	public String ipAddress = "";
 
 	@Expose
+	public boolean hidden;
+
+	@Expose
 	public boolean secret;
 
 	public transient boolean isSwitchedOn;

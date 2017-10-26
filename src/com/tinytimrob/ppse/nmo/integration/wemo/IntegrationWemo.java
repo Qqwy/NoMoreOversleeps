@@ -48,6 +48,12 @@ public class IntegrationWemo extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return entry.hidden;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return entry.secret;
@@ -65,6 +71,12 @@ public class IntegrationWemo extends Integration
 				public String getName()
 				{
 					return "TURN OFF " + entry.name;
+				}
+
+				@Override
+				public boolean isHidden()
+				{
+					return entry.hidden;
 				}
 
 				@Override

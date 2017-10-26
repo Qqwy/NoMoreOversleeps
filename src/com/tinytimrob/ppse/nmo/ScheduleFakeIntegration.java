@@ -45,6 +45,12 @@ public class ScheduleFakeIntegration extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return false;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return true;

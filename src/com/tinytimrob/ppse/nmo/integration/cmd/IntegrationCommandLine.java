@@ -41,6 +41,12 @@ public class IntegrationCommandLine extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return command.hidden;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return command.secret;

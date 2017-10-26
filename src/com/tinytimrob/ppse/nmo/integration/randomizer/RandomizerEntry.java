@@ -11,5 +11,8 @@ public class RandomizerEntry
 	public String[] actions = new String[0];
 
 	@Expose
+	public boolean hidden;
+
+	@Expose
 	public boolean secret;
 }

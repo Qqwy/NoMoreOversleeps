@@ -64,6 +64,12 @@ public class IntegrationPhilipsHue extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return false;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return false;
@@ -84,6 +90,12 @@ public class IntegrationPhilipsHue extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return false;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return false;
@@ -101,6 +113,12 @@ public class IntegrationPhilipsHue extends Integration
 				public String getName()
 				{
 					return "TOGGLE " + bulbName;
+				}
+
+				@Override
+				public boolean isHidden()
+				{
+					return false;
 				}
 
 				@Override

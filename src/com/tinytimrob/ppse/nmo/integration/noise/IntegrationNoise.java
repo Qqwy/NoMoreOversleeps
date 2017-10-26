@@ -48,6 +48,12 @@ public class IntegrationNoise extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return noise.hidden;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return noise.secret;
@@ -70,6 +76,12 @@ public class IntegrationNoise extends Integration
 			public String getName()
 			{
 				return "STOP ALL NOISES";
+			}
+
+			@Override
+			public boolean isHidden()
+			{
+				return false;
 			}
 
 			@Override

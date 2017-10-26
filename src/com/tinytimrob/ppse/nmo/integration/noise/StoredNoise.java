@@ -11,5 +11,8 @@ public class StoredNoise
 	public String path;
 
 	@Expose
+	public boolean hidden;
+
+	@Expose
 	public boolean secret;
 }

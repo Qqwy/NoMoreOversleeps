@@ -44,6 +44,12 @@ public class IntegrationRandomizer extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return randomizer.hidden;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
 					return randomizer.secret;

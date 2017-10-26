@@ -41,6 +41,12 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
+			public boolean isHidden()
+			{
+				return false;
+			}
+
+			@Override
 			public boolean isSecret()
 			{
 				return false;
@@ -58,6 +64,12 @@ public class IntegrationPavlok extends Integration
 			public String getName()
 			{
 				return "BEEP PAVLOK";
+			}
+
+			@Override
+			public boolean isHidden()
+			{
+				return false;
 			}
 
 			@Override
@@ -81,6 +93,12 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
+			public boolean isHidden()
+			{
+				return false;
+			}
+
+			@Override
 			public boolean isSecret()
 			{
 				return false;
@@ -98,6 +116,12 @@ public class IntegrationPavlok extends Integration
 			public String getName()
 			{
 				return "SHOCK PAVLOK";
+			}
+
+			@Override
+			public boolean isHidden()
+			{
+				return false;
 			}
 
 			@Override

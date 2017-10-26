@@ -9,4 +9,10 @@ public class StoredPhoneNumber
 
 	@Expose
 	public String number;
+
+	@Expose
+	public boolean hidden;
+
+	@Expose
+	public boolean secret;
 }

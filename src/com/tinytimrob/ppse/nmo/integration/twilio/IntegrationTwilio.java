@@ -62,9 +62,15 @@ public class IntegrationTwilio extends Integration
 				}
 
 				@Override
+				public boolean isHidden()
+				{
+					return number.hidden;
+				}
+
+				@Override
 				public boolean isSecret()
 				{
-					return false;
+					return number.secret;
 				}
 			});
 		}

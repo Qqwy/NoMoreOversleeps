@@ -14,5 +14,8 @@ public class StoredCommand
 	public String workingDir;
 
 	@Expose
+	public boolean hidden;
+
+	@Expose
 	public boolean secret;
 }

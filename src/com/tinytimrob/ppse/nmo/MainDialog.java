@@ -316,6 +316,10 @@ public class MainDialog extends Application
 		{
 			System.out.println("*" + buttonKey);
 			final Action clickableButton = integration.getActions().get(buttonKey);
+			if (clickableButton.isHidden())
+			{
+				continue;
+			}
 			final Button jfxButton = new Button(clickableButton.getName());
 			jfxButton.setPadding(new Insets(2, 4, 2, 4));
 			jfxButton.setMinWidth(256);
