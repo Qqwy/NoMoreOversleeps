@@ -1527,17 +1527,7 @@ public class MainDialog extends Application
 		{
 			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
 			{
-				Calendar calendar2 = Calendar.getInstance();
-				calendar2.setTimeInMillis(now);
-				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.end / 60);
-				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.end % 60);
-				calendar2.set(Calendar.SECOND, 0);
-				calendar2.set(Calendar.MILLISECOND, 0);
-				long tims = calendar2.getTimeInMillis();
-				if (nextSleepBlockDetected.end < currentMinuteOfDay)
-				{
-					tims += 86400000L; // nap loops over to next day. add 1 day.
-				}
+				long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.end, currentMinuteOfDay);
 				if (!scheduleStatus.startsWith("SLEEPING"))
 				{
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
@@ -1568,17 +1558,7 @@ public class MainDialog extends Application
 			}
 			else
 			{
-				Calendar calendar2 = Calendar.getInstance();
-				calendar2.setTimeInMillis(now);
-				calendar2.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
-				calendar2.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
-				calendar2.set(Calendar.SECOND, 0);
-				calendar2.set(Calendar.MILLISECOND, 0);
-				long tims = calendar2.getTimeInMillis();
-				if (nextSleepBlockDetected.start < currentMinuteOfDay)
-				{
-					tims += 86400000L; // nap loops over to next day. add 1 day.
-				}
+				long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.start, currentMinuteOfDay);
 				// determine second value
 				long secondsRemaining = (((tims + 999) - now) / 1000);
 				long secondsCounter = secondsRemaining % 60;
@@ -1621,18 +1601,7 @@ public class MainDialog extends Application
 		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
 		{
 			nextSleepBlock = nextSleepBlockDetected;
-
-			Calendar calendar3 = Calendar.getInstance();
-			calendar3.setTimeInMillis(now);
-			calendar3.set(Calendar.HOUR_OF_DAY, nextSleepBlockDetected.start / 60);
-			calendar3.set(Calendar.MINUTE, nextSleepBlockDetected.start % 60);
-			calendar3.set(Calendar.SECOND, 0);
-			calendar3.set(Calendar.MILLISECOND, 0);
-			long tims = calendar3.getTimeInMillis();
-			if (nextSleepBlockDetected.start < currentMinuteOfDay)
-			{
-				tims += 86400000L; // nap loops over to next day. add 1 day.
-			}
+			long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.start, currentMinuteOfDay);
 			long minutesRemaining = (((tims + 59999) - now) / 60000);
 			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), null);
 		}
@@ -1784,6 +1753,22 @@ public class MainDialog extends Application
 				cea = customActions.get(0);
 			}
 		}
+	}
+
+	private long getNextOccurranceOfMinute(int minutesOfDay, int currentMinute)
+	{
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(now);
+		calendar.set(Calendar.HOUR_OF_DAY, minutesOfDay / 60);
+		calendar.set(Calendar.MINUTE, minutesOfDay % 60);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		long tims = calendar.getTimeInMillis();
+		if (minutesOfDay < currentMinute)
+		{
+			tims += 86400000L; // nap loops over to next day. add 1 day.
+		}
+		return tims;
 	}
 
 	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)
