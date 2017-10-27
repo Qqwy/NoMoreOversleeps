@@ -2,7 +2,6 @@ package com.tinytimrob.ppse.nmo;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -128,7 +127,7 @@ public class MainDialog extends Application
 	public static ObservableList<String> events = FXCollections.observableArrayList();
 	public static ArrayList<CustomEventAction> customActions = new ArrayList<CustomEventAction>();
 	public static volatile int tick = 0;
-	private static volatile long now = 0;
+	public static volatile long now = System.currentTimeMillis();
 
 	@Override
 	public void start(Stage stage) throws Exception
@@ -143,6 +142,7 @@ public class MainDialog extends Application
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
 			triggerEvent("Adding sleep block: " + entry.describe(), null);
+			entry.updateNextTriggerTime();
 		}
 		for (ActivityTimer entry : NMOConfiguration.instance.timers)
 		{
@@ -1491,11 +1491,12 @@ public class MainDialog extends Application
 
 		now = System.currentTimeMillis();
 		boolean paused = pausedUntil > now;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(now);
-		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-		int minute = calendar.get(Calendar.MINUTE);
-		int currentMinuteOfDay = ((hour * 60) + minute);
+
+		// Update next trigger time for all sleep blocks
+		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		{
+			entry.updateNextTriggerTime();
+		}
 
 		if (NMOStatistics.instance.scheduleStartedOn > 0)
 		{
@@ -1510,13 +1511,20 @@ public class MainDialog extends Application
 			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.schedulePersonalBest, 0));
 		}
 
+		// update next trigger time for next sleep block
+		if (nextSleepBlock != null && nextSleepBlock.nextEndTime <= now)
+		{
+			nextSleepBlock.updateNextTriggerTime();
+		}
+
 		SleepEntry nextSleepBlockDetected = null;
+		long startTimeDetected = Long.MAX_VALUE;
 		for (SleepEntry entry : NMOConfiguration.instance.schedule)
 		{
-			if (entry.containsTime(currentMinuteOfDay) || entry.start >= currentMinuteOfDay)
+			if (entry.containsTimeValue(now) || entry.nextStartTime >= now && entry.nextStartTime < startTimeDetected)
 			{
 				nextSleepBlockDetected = entry;
-				break;
+				startTimeDetected = entry.nextStartTime;
 			}
 		}
 		if (nextSleepBlockDetected == null && !NMOConfiguration.instance.schedule.isEmpty())
@@ -1525,9 +1533,9 @@ public class MainDialog extends Application
 		}
 		if (nextSleepBlockDetected != null)
 		{
-			if (nextSleepBlockDetected.containsTime(currentMinuteOfDay))
+			if (nextSleepBlockDetected.containsTimeValue(now))
 			{
-				long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.end, currentMinuteOfDay);
+				long tims = nextSleepBlockDetected.nextEndTime;
 				if (!scheduleStatus.startsWith("SLEEPING"))
 				{
 					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
@@ -1558,7 +1566,7 @@ public class MainDialog extends Application
 			}
 			else
 			{
-				long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.start, currentMinuteOfDay);
+				long tims = nextSleepBlockDetected.nextStartTime;
 				// determine second value
 				long secondsRemaining = (((tims + 999) - now) / 1000);
 				long secondsCounter = secondsRemaining % 60;
@@ -1600,8 +1608,12 @@ public class MainDialog extends Application
 		}
 		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
 		{
+			if (nextSleepBlock != null)
+			{
+				nextSleepBlock.updateNextTriggerTime();
+			}
 			nextSleepBlock = nextSleepBlockDetected;
-			long tims = this.getNextOccurranceOfMinute(nextSleepBlockDetected.start, currentMinuteOfDay);
+			long tims = nextSleepBlockDetected.nextStartTime;
 			long minutesRemaining = (((tims + 59999) - now) / 60000);
 			triggerEvent("The next sleep block is " + nextSleepBlockDetected.name + " which starts in " + minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s"), null);
 		}
@@ -1753,22 +1765,6 @@ public class MainDialog extends Application
 				cea = customActions.get(0);
 			}
 		}
-	}
-
-	private long getNextOccurranceOfMinute(int minutesOfDay, int currentMinute)
-	{
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(now);
-		calendar.set(Calendar.HOUR_OF_DAY, minutesOfDay / 60);
-		calendar.set(Calendar.MINUTE, minutesOfDay % 60);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		long tims = calendar.getTimeInMillis();
-		if (minutesOfDay < currentMinute)
-		{
-			tims += 86400000L; // nap loops over to next day. add 1 day.
-		}
-		return tims;
 	}
 
 	private void setNextActivityWarningForTimer(ActivityTimer activityWarningTimer, long timeDiff)

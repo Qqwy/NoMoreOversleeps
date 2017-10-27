@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo;
 
+import java.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import com.google.gson.annotations.Expose;
 
@@ -46,16 +47,9 @@ public class SleepEntry implements Comparable<SleepEntry>
 		return i;
 	}
 
-	public boolean containsTime(int currentMinuteOfDay)
+	public boolean containsTimeValue(long now)
 	{
-		if (this.start > this.end)
-		{
-			return currentMinuteOfDay >= this.start || currentMinuteOfDay < this.end;
-		}
-		else
-		{
-			return currentMinuteOfDay >= this.start && currentMinuteOfDay < this.end;
-		}
+		return now >= this.nextStartTime && now < this.nextEndTime;
 	}
 
 	public String describe()
@@ -66,5 +60,45 @@ public class SleepEntry implements Comparable<SleepEntry>
 	public String describeTime()
 	{
 		return StringUtils.leftPad("" + (this.start / 60), 2, "0") + ":" + StringUtils.leftPad("" + (this.start % 60), 2, "0") + " - " + StringUtils.leftPad("" + (this.end / 60), 2, "0") + ":" + StringUtils.leftPad("" + (this.end % 60), 2, "0");
+	}
+
+	public transient long nextStartTime;
+	public transient long nextEndTime;
+
+	public void updateNextTriggerTime()
+	{
+		long currentTime = MainDialog.now;
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTimeInMillis(currentTime);
+		calendar2.set(Calendar.HOUR_OF_DAY, this.start / 60);
+		calendar2.set(Calendar.MINUTE, this.start % 60);
+		calendar2.set(Calendar.SECOND, 0);
+		calendar2.set(Calendar.MILLISECOND, 0);
+		long m = calendar2.getTimeInMillis();
+		long n = m + ((this.end - this.start) * 60000L);
+		if (n < currentTime)
+		{
+			calendar2 = Calendar.getInstance();
+			calendar2.setTimeInMillis(currentTime + 86400000L);
+			calendar2.set(Calendar.HOUR_OF_DAY, this.start / 60);
+			calendar2.set(Calendar.MINUTE, this.start % 60);
+			calendar2.set(Calendar.SECOND, 0);
+			calendar2.set(Calendar.MILLISECOND, 0);
+			m = calendar2.getTimeInMillis();
+			n = m + ((this.end - this.start) * 60000L);
+		}
+		else if ((n - currentTime) >= 604800000L)
+		{
+			calendar2 = Calendar.getInstance();
+			calendar2.setTimeInMillis(currentTime - 86400000L);
+			calendar2.set(Calendar.HOUR_OF_DAY, this.start / 60);
+			calendar2.set(Calendar.MINUTE, this.start % 60);
+			calendar2.set(Calendar.SECOND, 0);
+			calendar2.set(Calendar.MILLISECOND, 0);
+			m = calendar2.getTimeInMillis();
+			n = m + ((this.end - this.start) * 60000L);
+		}
+		this.nextStartTime = m;
+		this.nextEndTime = n;
 	}
 }

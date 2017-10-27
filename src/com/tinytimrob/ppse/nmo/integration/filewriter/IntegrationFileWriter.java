@@ -78,20 +78,11 @@ public class IntegrationFileWriter extends Integration
 				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
 				{
 					int currentMinuteOfDay = ((hour * 60) + minute);
-					boolean currentlySleeping = MainDialog.nextSleepBlock == null ? false : MainDialog.nextSleepBlock.containsTime(currentMinuteOfDay);
+					boolean currentlySleeping = MainDialog.nextSleepBlock == null ? false : MainDialog.nextSleepBlock.containsTimeValue(System.currentTimeMillis());
 					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 					if (currentlySleeping)
 					{
-						Calendar calendar2 = Calendar.getInstance();
-						calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.end / 60);
-						calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.end % 60);
-						calendar2.set(Calendar.SECOND, 0);
-						calendar2.set(Calendar.MILLISECOND, 0);
-						long tims = calendar2.getTimeInMillis();
-						if (MainDialog.nextSleepBlock.end < currentMinuteOfDay)
-						{
-							tims += 86400000L; // nap loops over to next day. add 1 day.
-						}
+						long tims = MainDialog.nextSleepBlock.nextEndTime;
 						FileUtils.writeStringToFile(timeToNextSleepBlockFile, MainDialog.nextSleepBlock.name + " [ends in " + FormattingHelper.formatTimeElapsedWithoutDays(tims, now - 59999) + "]", Charsets.UTF_8, false);
 					}
 					else if (MainDialog.isCurrentlyPaused.get())
@@ -104,16 +95,7 @@ public class IntegrationFileWriter extends Integration
 					}
 					else
 					{
-						Calendar calendar2 = Calendar.getInstance();
-						calendar2.set(Calendar.HOUR_OF_DAY, MainDialog.nextSleepBlock.start / 60);
-						calendar2.set(Calendar.MINUTE, MainDialog.nextSleepBlock.start % 60);
-						calendar2.set(Calendar.SECOND, 0);
-						calendar2.set(Calendar.MILLISECOND, 0);
-						long tims = calendar2.getTimeInMillis();
-						if (MainDialog.nextSleepBlock.start < currentMinuteOfDay)
-						{
-							tims += 86400000L; // nap loops over to next day. add 1 day.
-						}
+						long tims = MainDialog.nextSleepBlock.nextStartTime;
 						FileUtils.writeStringToFile(timeToNextSleepBlockFile, pros + " [" + FormattingHelper.formatTimeElapsedWithoutDays(tims, now - 59999) + " until " + MainDialog.nextSleepBlock.name + "]", Charsets.UTF_8, false);
 					}
 				}
