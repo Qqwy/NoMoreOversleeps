@@ -215,36 +215,35 @@ fieldset[disabled] .btn-purple.active {
         		}
         	});
         });
-    });
-$(document).ready(function() {
-	var ws = new ReconnectingWebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/webcam");
-	ws.onopen = function(e) {
-		if (typeof console !== 'undefined') {
-			console.info('WS open');
-		}
-	};
-	ws.onmessage = function (e) {
-		var data = JSON.parse(e.data), type = data.type, i = 0, $webcams = $('#webcams'), $img = null;
-		if (typeof console !== 'undefined') {
-			console.info('WS message', type);
-		}
-		$img = $('#webcamImage');
-		$img.attr("src", "data:image/jpeg;base64," + data.image).addClass('shadow').trigger("change");
-		setTimeout(function() {
-			$img.removeClass('shadow').trigger("change");
-		}, 1000);
-	};
-	ws.onclose = function() {
-		if (typeof console !== 'undefined') {
-			console.info('WS close');
-		}
-	};
-	ws.onerror = function(err) {
-		if (typeof console !== 'undefined') {
-			console.info('WS error ' + err.data + ' ' + err.code + ' ' + err.message + ' ' + err + ' ' + err.detail + ' ' + err.originalEvent);
-		}
-	};
-});
+
+		var webcam_websocket = new ReconnectingWebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/webcam");
+		webcam_websocket.onopen = function(e) {
+			if (typeof console !== 'undefined') {
+				console.info('webcam_websocket open');
+			}
+		};
+		webcam_websocket.onmessage = function (e) {
+			var data = JSON.parse(e.data), type = data.type, i = 0, $webcams = $('#webcams'), $img = null;
+			if (typeof console !== 'undefined') {
+				console.info('webcam_websocket message', type);
+			}
+			$img = $('#webcamImage');
+			$img.attr("src", "data:image/jpeg;base64," + data.image).addClass('shadow').trigger("change");
+			setTimeout(function() {
+				$img.removeClass('shadow').trigger("change");
+			}, 1000);
+		};
+		webcam_websocket.onclose = function() {
+			if (typeof console !== 'undefined') {
+				console.info('webcam_websocket close');
+			}
+		};
+		webcam_websocket.onerror = function(err) {
+			if (typeof console !== 'undefined') {
+				console.info('webcam_websocket error ' + err.data + ' ' + err.code + ' ' + err.message + ' ' + err + ' ' + err.detail + ' ' + err.originalEvent);
+			}
+		};
+	});
 </script>
 </body>
 </html>
