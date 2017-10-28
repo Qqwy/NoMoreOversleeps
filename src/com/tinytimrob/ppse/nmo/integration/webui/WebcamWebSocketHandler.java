@@ -56,7 +56,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 	{
 		Map<String, List<String>> params = session.getUpgradeRequest().getParameterMap();
 		List<String> keys = params.get("key");
-		if (keys == null || keys.size() != 1 || !keys.get(0).equals(NMOConfiguration.instance.integrations.webUI.webcamSecurityKey))
+		if (keys == null || keys.size() != 1 || !keys.get(0).equals(NMOConfiguration.INSTANCE.integrations.webUI.webcamSecurityKey))
 		{
 			throw new AuthenticationException("Not authorized");
 		}
@@ -137,7 +137,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 	public void webcamImageObtained(WebcamEvent we)
 	{
 		this.frame++;
-		if (this.frame % NMOConfiguration.instance.integrations.webUI.webcamFrameSkip != 0)
+		if (this.frame % NMOConfiguration.INSTANCE.integrations.webUI.webcamFrameSkip != 0)
 		{
 			return;
 		}

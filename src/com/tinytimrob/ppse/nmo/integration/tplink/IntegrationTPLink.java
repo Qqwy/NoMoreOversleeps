@@ -17,15 +17,15 @@ public class IntegrationTPLink extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.tplink.enabled;
+		return NMOConfiguration.INSTANCE.integrations.tplink.enabled;
 	}
 
 	@Override
 	public void init() throws Exception
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.tplink.devices.length; i++)
 		{
-			final TPLinkDeviceEntry entry = NMOConfiguration.instance.integrations.tplink.devices[i];
+			final TPLinkDeviceEntry entry = NMOConfiguration.INSTANCE.integrations.tplink.devices[i];
 			final TPLinkDevice device = new TPLinkDevice(entry.ipAddress);
 			this.actions.put("/tplink/" + i + "/on", new Action()
 			{
@@ -101,9 +101,9 @@ public class IntegrationTPLink extends Integration
 		if (this.updateloop > 30)
 		{
 			this.updateloop -= 30;
-			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.tplink.devices.length; i++)
 			{
-				final TPLinkDeviceEntry entry = NMOConfiguration.instance.integrations.tplink.devices[i];
+				final TPLinkDeviceEntry entry = NMOConfiguration.INSTANCE.integrations.tplink.devices[i];
 				final TPLinkDevice device = new TPLinkDevice(entry.ipAddress);
 				entry.isSwitchedOn = device.isOn();
 			}

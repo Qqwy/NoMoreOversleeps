@@ -31,7 +31,7 @@ public class IntegrationFileWriter extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.fileWriter.scheduleName || NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn || NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep || NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest || NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock;
+		return NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleName || NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleStartedOn || NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleLastOversleep || NMOConfiguration.INSTANCE.integrations.fileWriter.schedulePersonalBest || NMOConfiguration.INSTANCE.integrations.fileWriter.timeToNextSleepBlock;
 	}
 
 	@Override
@@ -59,27 +59,27 @@ public class IntegrationFileWriter extends Integration
 			lastSecond = second;
 			try
 			{
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleName)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleName)
 				{
-					FileUtils.writeStringToFile(scheduleNameFile, NMOConfiguration.instance.scheduleName, Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleNameFile, NMOConfiguration.INSTANCE.scheduleName, Charsets.UTF_8, false);
 				}
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleStartedOn)
 				{
-					FileUtils.writeStringToFile(scheduleStartedOnFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleStartedOn), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleStartedOnFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleStartedOn), Charsets.UTF_8, false);
 				}
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleLastOversleep)
 				{
-					FileUtils.writeStringToFile(scheduleLastOversleepFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleLastOversleep), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(scheduleLastOversleepFile, FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleLastOversleep), Charsets.UTF_8, false);
 				}
-				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.schedulePersonalBest)
 				{
-					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.schedulePersonalBest, 0), Charsets.UTF_8, false);
+					FileUtils.writeStringToFile(schedulePersonalBestFile, MainDialog.nextSleepBlock == null ? "N/A" : FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.schedulePersonalBest, 0), Charsets.UTF_8, false);
 				}
-				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.timeToNextSleepBlock)
 				{
 					int currentMinuteOfDay = ((hour * 60) + minute);
 					boolean currentlySleeping = MainDialog.nextSleepBlock == null ? false : MainDialog.nextSleepBlock.containsTimeValue(System.currentTimeMillis());
-					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+					String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 					if (currentlySleeping)
 					{
 						long tims = MainDialog.nextSleepBlock.nextEndTime;

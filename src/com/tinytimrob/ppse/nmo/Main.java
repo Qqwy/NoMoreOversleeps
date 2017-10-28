@@ -149,7 +149,7 @@ public class Main
 				Logging.shutdown();
 				try
 				{
-					Configuration.save(NMOStatistics.instance, "stats.json");
+					Configuration.save(NMOStatistics.INSTANCE, "stats.json");
 				}
 				catch (Throwable t)
 				{

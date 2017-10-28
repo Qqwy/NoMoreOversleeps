@@ -33,7 +33,7 @@ public class WebServer
 		//=================================
 		SERVER = new Server();
 		ServerConnector httpConnector = new ServerConnector(SERVER);
-		httpConnector.setPort(NMOConfiguration.instance.integrations.webUI.jettyPort);
+		httpConnector.setPort(NMOConfiguration.INSTANCE.integrations.webUI.jettyPort);
 		httpConnector.setName("Main");
 		SERVER.addConnector(httpConnector);
 		HandlerCollection handlerCollection = new HandlerCollection();

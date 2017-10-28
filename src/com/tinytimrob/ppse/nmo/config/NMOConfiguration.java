@@ -24,16 +24,16 @@ import com.tinytimrob.ppse.nmo.integration.wemo.WemoConfiguration;
 
 public class NMOConfiguration
 {
-	public static NMOConfiguration instance;
+	public static NMOConfiguration INSTANCE;
 
 	public static void load() throws Exception
 	{
-		instance = Configuration.load(NMOConfiguration.class, "config.json");
+		INSTANCE = Configuration.load(NMOConfiguration.class, "config.json");
 	}
 
 	public static void save() throws Exception
 	{
-		Configuration.save(instance, "config.json");
+		Configuration.save(INSTANCE, "config.json");
 	}
 
 	@Expose

@@ -28,21 +28,21 @@ public class IntegrationDiscord extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.discord.enabled;
+		return NMOConfiguration.INSTANCE.integrations.discord.enabled;
 	}
 
 	@Override
 	public void init() throws Exception
 	{
-		if (CommonUtils.isNullOrEmpty(NMOConfiguration.instance.integrations.discord.authToken))
+		if (CommonUtils.isNullOrEmpty(NMOConfiguration.INSTANCE.integrations.discord.authToken))
 		{
 			throw new Exception("You need to specify discord authToken in the configuration file in order for discord integration to work");
 		}
-		jda = new JDABuilder(AccountType.CLIENT).setToken(NMOConfiguration.instance.integrations.discord.authToken).buildBlocking();
+		jda = new JDABuilder(AccountType.CLIENT).setToken(NMOConfiguration.INSTANCE.integrations.discord.authToken).buildBlocking();
 		jda.getPresence().setGame(Game.of("NMO"));
-		for (int i = 0; i < NMOConfiguration.instance.integrations.discord.messages.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.discord.messages.length; i++)
 		{
-			final SendableMessage message = NMOConfiguration.instance.integrations.discord.messages[i];
+			final SendableMessage message = NMOConfiguration.INSTANCE.integrations.discord.messages[i];
 			this.actions.put("/discord/" + i, new Action()
 			{
 				@Override

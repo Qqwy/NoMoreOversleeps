@@ -20,14 +20,14 @@ public class ScheduleFakeIntegration extends Integration
 	@Override
 	public void init() throws Exception
 	{
-		if (NMOStatistics.instance.scheduleStartedOn > 0)
+		if (NMOStatistics.INSTANCE.scheduleStartedOn > 0)
 		{
 			this.actions.put("/schedule/resetLastOversleep", new Action()
 			{
 				@Override
 				public void onAction() throws Exception
 				{
-					NMOStatistics.instance.scheduleLastOversleep = System.currentTimeMillis();
+					NMOStatistics.INSTANCE.scheduleLastOversleep = System.currentTimeMillis();
 					try
 					{
 						NMOStatistics.save();

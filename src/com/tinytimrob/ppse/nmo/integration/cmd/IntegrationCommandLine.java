@@ -17,15 +17,15 @@ public class IntegrationCommandLine extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.cmd.enabled;
+		return NMOConfiguration.INSTANCE.integrations.cmd.enabled;
 	}
 
 	@Override
 	public void init()
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.cmd.commands.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.cmd.commands.length; i++)
 		{
-			final StoredCommand command = NMOConfiguration.instance.integrations.cmd.commands[i];
+			final StoredCommand command = NMOConfiguration.INSTANCE.integrations.cmd.commands[i];
 			this.actions.put("/cmd/" + i, new Action()
 			{
 				@Override

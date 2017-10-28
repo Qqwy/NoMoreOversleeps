@@ -152,7 +152,7 @@ public class WebServlet extends HttpServlet
 		model.put("version", Main.VERSION);
 		model.put("system", PlatformData.computerName);
 		model.put("actionButtons", this.determineWebUIButtons());
-		model.put("webcamKey", NMOConfiguration.instance.integrations.webUI.webcamSecurityKey);
+		model.put("webcamKey", NMOConfiguration.INSTANCE.integrations.webUI.webcamSecurityKey);
 		for (Integration integration : Main.integrations)
 		{
 			model.put("integration_" + integration.id, integration.isEnabled());
@@ -243,23 +243,23 @@ public class WebServlet extends HttpServlet
 		}
 		if (IntegrationTPLink.INSTANCE.isEnabled())
 		{
-			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.tplink.devices.length; i++)
 			{
-				TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
+				TPLinkDeviceEntry tpde = NMOConfiguration.INSTANCE.integrations.tplink.devices[i];
 				state += (!state.isEmpty() ? "<br/>" : "");
 				state += "<b>" + tpde.name + "</b>:  " + (tpde.isSwitchedOn ? "ON" : "OFF");
 			}
 		}
 		data.ha_state = state;
-		String sn = NMOConfiguration.instance.scheduleName;
+		String sn = NMOConfiguration.INSTANCE.scheduleName;
 		if (sn == null || sn.isEmpty())
 		{
 			sn = "UNKNOWN SCHEDULE";
 		}
 		data.schedule_name = "<b>" + sn + "</b>";
-		if (NMOStatistics.instance.scheduleStartedOn > 0)
+		if (NMOStatistics.INSTANCE.scheduleStartedOn > 0)
 		{
-			data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOStatistics.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)";
+			data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOStatistics.INSTANCE.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.INSTANCE.scheduleStartedOn) + " ago)";
 		}
 		data.schedule = MainDialog.scheduleStatus;
 		response.getWriter().append(CommonUtils.GSON.toJson(data));

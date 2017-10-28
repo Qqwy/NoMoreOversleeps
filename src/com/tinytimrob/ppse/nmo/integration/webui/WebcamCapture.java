@@ -39,9 +39,9 @@ public class WebcamCapture
 			graphics.setColor(Color.WHITE);
 			long now = System.currentTimeMillis();
 			String str = CommonUtils.convertTimestamp(now);
-			if (NMOStatistics.instance.scheduleStartedOn != 0)
+			if (NMOStatistics.INSTANCE.scheduleStartedOn != 0)
 			{
-				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleLastOversleep);
+				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleLastOversleep);
 			}
 			graphics.drawString(str, 4, 14);
 			if (MainDialog.isCurrentlyPaused.get())
@@ -54,7 +54,7 @@ public class WebcamCapture
 			}
 			else
 			{
-				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				graphics.setColor(Color.BLACK);
 				graphics.fillRect(0, 220, 320, 20);
 				graphics.setColor(Color.WHITE);
@@ -74,7 +74,7 @@ public class WebcamCapture
 		for (Webcam cam : cams)
 		{
 			log.info("Found webcam: " + cam.getName());
-			if (cam.getName().equals(NMOConfiguration.instance.integrations.webUI.webcamName))
+			if (cam.getName().equals(NMOConfiguration.INSTANCE.integrations.webUI.webcamName))
 			{
 				webcam = cam;
 			}
@@ -82,7 +82,7 @@ public class WebcamCapture
 		if (webcam == null)
 		{
 			webcam = Webcam.getDefault();
-			NMOConfiguration.instance.integrations.webUI.webcamName = webcam.getName();
+			NMOConfiguration.INSTANCE.integrations.webUI.webcamName = webcam.getName();
 			try
 			{
 				NMOConfiguration.save();
