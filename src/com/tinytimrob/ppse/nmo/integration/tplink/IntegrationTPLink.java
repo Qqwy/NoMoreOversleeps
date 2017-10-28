@@ -42,13 +42,19 @@ public class IntegrationTPLink extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return entry.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return entry.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return entry.secret;
 				}
@@ -68,13 +74,19 @@ public class IntegrationTPLink extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return entry.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return entry.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return entry.secret;
 				}

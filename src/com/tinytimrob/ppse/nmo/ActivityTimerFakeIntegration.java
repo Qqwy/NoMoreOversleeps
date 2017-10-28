@@ -50,13 +50,19 @@ public class ActivityTimerFakeIntegration extends Integration
 					}
 
 					@Override
-					public boolean isHidden()
+					public boolean isHiddenFromFrontend()
 					{
 						return false;
 					}
 
 					@Override
-					public boolean isSecret()
+					public boolean isHiddenFromWebUI()
+					{
+						return numTimers < 2;
+					}
+
+					@Override
+					public boolean isBlockedFromWebUI()
 					{
 						return numTimers < 2;
 					}

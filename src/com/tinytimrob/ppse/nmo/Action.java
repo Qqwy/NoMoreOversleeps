@@ -6,7 +6,9 @@ public interface Action
 
 	public String getName();
 
-	public boolean isHidden();
+	public boolean isHiddenFromFrontend();
 
-	public boolean isSecret();
+	public boolean isHiddenFromWebUI();
+
+	public boolean isBlockedFromWebUI();
 }

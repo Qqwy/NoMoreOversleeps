@@ -25,8 +25,17 @@ form {
 	display: inline-block;
 	margin: 1px;
 }
-.nmo-button {
+.nmo-rhs-pane > form {
+	margin: 1px -1px;
+}
+.nmo-action-button {
 	width: 348px !important;
+}
+.nmo-pause-button {
+	width: 128px !important;
+}
+.nmo-unpause-button {
+	width: 388px !important;
 }
 .btn {
 	padding: 3px !important;
@@ -76,15 +85,22 @@ fieldset[disabled] .btn-purple.active {
   color: #764CAD; 
   background-color: #ffffff; 
 }
+.nmo-lhs-pane {
+	max-width: 700px;
+	margin-right: 440px;
+}
+.nmo-rhs-pane {
+ 	width: 430px;
+}
 @media (min-width: 768px) {
- .nmo-webcam-pane {
+ .nmo-rhs-pane {
  	display: block;
  	clear: both;
  	float: none;
  }
 }
 @media (min-width: 992px) {
- .nmo-webcam-pane {
+ .nmo-rhs-pane {
  	float: right;
  	margin-top: -10px;
  	text-align: right;
@@ -141,9 +157,38 @@ fieldset[disabled] .btn-purple.active {
       </#if>
     </tbody>
   </table>
-  <div class="nmo-webcam-pane">
-  <h4>Webcam</h4><img id="webcamImage" height=320/></div>
-  <div style="max-width: 700px; margin-right: 440px">
+  <div class="nmo-rhs-pane">
+  	<h4>Webcam</h4>
+  	<img id="webcamImage" height=320/>
+  </div>
+  <#if integration_pause>
+  <div class="nmo-rhs-pane" style="margin-top: 10px">
+  	<h4>Pause Controls</h4>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/5"><button type="submit" class="btn btn-basic nmo-pause-button">5m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/10"><button type="submit" class="btn btn-basic nmo-pause-button">10m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/15"><button type="submit" class="btn btn-basic nmo-pause-button">15m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/20"><button type="submit" class="btn btn-basic nmo-pause-button">20m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/25"><button type="submit" class="btn btn-basic nmo-pause-button">25m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/30"><button type="submit" class="btn btn-basic nmo-pause-button">30m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/45"><button type="submit" class="btn btn-basic nmo-pause-button">45m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/60"><button type="submit" class="btn btn-basic nmo-pause-button">1h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/90"><button type="submit" class="btn btn-basic nmo-pause-button">1h30m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/105"><button type="submit" class="btn btn-basic nmo-pause-button">1h45m</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/120"><button type="submit" class="btn btn-basic nmo-pause-button">2h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/180"><button type="submit" class="btn btn-basic nmo-pause-button">3h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/240"><button type="submit" class="btn btn-basic nmo-pause-button">4h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/300"><button type="submit" class="btn btn-basic nmo-pause-button">5h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/360"><button type="submit" class="btn btn-basic nmo-pause-button">6h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/420"><button type="submit" class="btn btn-basic nmo-pause-button">7h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/480"><button type="submit" class="btn btn-basic nmo-pause-button">8h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/540"><button type="submit" class="btn btn-basic nmo-pause-button">9h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/600"><button type="submit" class="btn btn-basic nmo-pause-button">10h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/660"><button type="submit" class="btn btn-basic nmo-pause-button">11h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/720"><button type="submit" class="btn btn-basic nmo-pause-button">12h</button></form>
+  	<form method="POST" data-js-ajax-form="true" action="/ui/pause/0"><button type="submit" class="btn btn-basic nmo-unpause-button">UNPAUSE</button></form>
+  </div>
+  </#if>
+  <div class="nmo-lhs-pane">
   <h4>Manual controls</h4>
   	${actionButtons}
   </div>

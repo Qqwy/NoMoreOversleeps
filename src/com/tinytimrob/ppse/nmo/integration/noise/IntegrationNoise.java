@@ -48,13 +48,19 @@ public class IntegrationNoise extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return noise.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return noise.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return noise.secret;
 				}
@@ -79,13 +85,19 @@ public class IntegrationNoise extends Integration
 			}
 
 			@Override
-			public boolean isHidden()
+			public boolean isHiddenFromFrontend()
 			{
 				return false;
 			}
 
 			@Override
-			public boolean isSecret()
+			public boolean isHiddenFromWebUI()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isBlockedFromWebUI()
 			{
 				return false;
 			}

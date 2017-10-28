@@ -62,13 +62,19 @@ public class IntegrationTwilio extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return number.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return number.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return number.secret;
 				}

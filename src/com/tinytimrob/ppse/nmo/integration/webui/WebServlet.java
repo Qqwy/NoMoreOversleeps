@@ -169,7 +169,7 @@ public class WebServlet extends HttpServlet
 				int actionsNotSecret = 0;
 				for (Action action : actions.values())
 				{
-					if (!action.isSecret())
+					if (!action.isHiddenFromWebUI())
 					{
 						actionsNotSecret++;
 					}
@@ -183,9 +183,9 @@ public class WebServlet extends HttpServlet
 				for (String key : actions.keySet())
 				{
 					Action action = actions.get(key);
-					if (!action.isSecret())
+					if (!action.isHiddenFromWebUI())
 					{
-						actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-button'>" + action.getName() + "</button></form>";
+						actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-action-button'>" + action.getName() + "</button></form>";
 					}
 				}
 			}
@@ -228,7 +228,7 @@ public class WebServlet extends HttpServlet
 				for (Integration integrations : Main.integrations)
 				{
 					Action button = integrations.getActions().get(PATH.substring(3));
-					if (button != null && !button.isSecret())
+					if (button != null && !button.isBlockedFromWebUI())
 					{
 						button.onAction();
 						MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);

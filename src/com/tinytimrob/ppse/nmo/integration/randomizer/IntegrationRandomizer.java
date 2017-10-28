@@ -44,13 +44,19 @@ public class IntegrationRandomizer extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return randomizer.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return randomizer.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return randomizer.secret;
 				}

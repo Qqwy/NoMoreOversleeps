@@ -41,13 +41,19 @@ public class IntegrationCommandLine extends Integration
 				}
 
 				@Override
-				public boolean isHidden()
+				public boolean isHiddenFromFrontend()
 				{
 					return command.hidden;
 				}
 
 				@Override
-				public boolean isSecret()
+				public boolean isHiddenFromWebUI()
+				{
+					return command.secret;
+				}
+
+				@Override
+				public boolean isBlockedFromWebUI()
 				{
 					return command.secret;
 				}

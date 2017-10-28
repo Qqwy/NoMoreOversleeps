@@ -316,7 +316,7 @@ public class MainDialog extends Application
 		{
 			System.out.println("*" + buttonKey);
 			final Action clickableButton = integration.getActions().get(buttonKey);
-			if (clickableButton.isHidden())
+			if (clickableButton.isHiddenFromFrontend())
 			{
 				continue;
 			}

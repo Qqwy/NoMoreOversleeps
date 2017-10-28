@@ -41,13 +41,19 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
-			public boolean isHidden()
+			public boolean isHiddenFromFrontend()
 			{
 				return false;
 			}
 
 			@Override
-			public boolean isSecret()
+			public boolean isHiddenFromWebUI()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isBlockedFromWebUI()
 			{
 				return false;
 			}
@@ -67,13 +73,19 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
-			public boolean isHidden()
+			public boolean isHiddenFromFrontend()
 			{
 				return false;
 			}
 
 			@Override
-			public boolean isSecret()
+			public boolean isHiddenFromWebUI()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isBlockedFromWebUI()
 			{
 				return false;
 			}
@@ -93,13 +105,19 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
-			public boolean isHidden()
+			public boolean isHiddenFromFrontend()
 			{
 				return false;
 			}
 
 			@Override
-			public boolean isSecret()
+			public boolean isHiddenFromWebUI()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isBlockedFromWebUI()
 			{
 				return false;
 			}
@@ -119,13 +137,19 @@ public class IntegrationPavlok extends Integration
 			}
 
 			@Override
-			public boolean isHidden()
+			public boolean isHiddenFromFrontend()
 			{
 				return false;
 			}
 
 			@Override
-			public boolean isSecret()
+			public boolean isHiddenFromWebUI()
+			{
+				return false;
+			}
+
+			@Override
+			public boolean isBlockedFromWebUI()
 			{
 				return false;
 			}

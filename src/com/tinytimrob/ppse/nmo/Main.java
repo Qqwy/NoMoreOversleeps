@@ -29,6 +29,7 @@ import com.tinytimrob.ppse.nmo.integration.randomizer.IntegrationRandomizer;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.twilio.IntegrationTwilio;
 import com.tinytimrob.ppse.nmo.integration.webui.IntegrationWebUI;
+import com.tinytimrob.ppse.nmo.integration.webui.PauseFakeIntegration;
 import com.tinytimrob.ppse.nmo.integration.wemo.IntegrationWemo;
 import com.tinytimrob.ppse.nmo.utils.AppleHelper;
 import com.tinytimrob.ppse.nmo.utils.JavaFxHelper;
@@ -71,6 +72,7 @@ public class Main
 		integrations.add(IntegrationRandomizer.INSTANCE);
 		integrations.add(ActivityTimerFakeIntegration.INSTANCE);
 		integrations.add(ScheduleFakeIntegration.INSTANCE);
+		integrations.add(PauseFakeIntegration.INSTANCE);
 		integrations.add(IntegrationWebUI.INSTANCE);
 	}
 

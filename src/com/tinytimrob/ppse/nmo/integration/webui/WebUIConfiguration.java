@@ -21,4 +21,7 @@ public class WebUIConfiguration
 
 	@Expose
 	public String webcamSecurityKey = "";
+
+	@Expose
+	public boolean allowRemotePauseControl = false;
 }
