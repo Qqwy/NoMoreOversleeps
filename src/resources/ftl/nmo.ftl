@@ -195,7 +195,7 @@ fieldset[disabled] .btn-purple.active {
   <div></div>
   <div style="clear:both;"></div>
   <h4>Log</h4>
-  <iframe id="logframe" style="width:100%; height:390px" src="/ui/log"></iframe>
+  <pre id="nmo_log_container"></pre>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js" integrity="sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC" crossorigin="anonymous" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous" type="text/javascript"></script>
@@ -244,8 +244,11 @@ fieldset[disabled] .btn-purple.active {
                     $('#nmo_schedule_name').html(json.schedule_name);
                     $('#nmo_noise_state').html(json.noise_state);
                     $('#nmo_ha_state').html(json.ha_state);
-                    $('#logframe').attr('src',function(i,val){return val;});
                 }
+            });
+            
+            $.get("/ui/log", function(log){
+            	$("#nmo_log_container").html(log);
             });
         }
         pollState();
