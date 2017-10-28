@@ -176,7 +176,7 @@ public class WebServlet extends HttpServlet
 	private String determineWebUIButtons()
 	{
 		String actionButtons = "";
-		String[] colours = { "danger", "info", "success", "primary", "purple", "warning" };
+		String[] colours = { "danger", "nmo-orange", "nmo-gold", "success", "info", "primary", "nmo-purp" };
 		int colour = -1;
 		for (Integration integration : Main.integrations)
 		{
