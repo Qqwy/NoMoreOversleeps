@@ -186,15 +186,15 @@ fieldset[disabled] .btn-purple.active {
         setInterval(pollState, 1863);
         
         /**
-         Any form with the data-js-ajax-form data attribute
-         will be submitted using AJAX, using the correct submission method.
-         The extra parameter 'ajax_form=true' will be readable 
-         to differentiate from a normal request on the server-side.
-         
-         On successful response, the function in the 'data-js-ajax-form-callback' will be called,
-         with the response object as argument.
-         (If this data attribute is not provided, nothing will be called.)
-         
+        * 	Any form with the data-js-ajax-form data attribute
+        * 	will be submitted using AJAX, using the correct submission method.
+        * 	The extra parameter 'ajax_form=true' will be readable 
+        * 	to differentiate from a normal request on the server-side.
+        * 
+        * 	On successful response, the function in the 'data-js-ajax-form-callback' will be called,
+        * 	with the response object as argument.
+        *	(If this data attribute is not provided, nothing will be called.)
+        *
         */
         $("form[data-js-ajax-form]").submit(function(event){
         	event.preventDefault();
