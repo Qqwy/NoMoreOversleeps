@@ -22,10 +22,14 @@
 <![endif]-->
 <style>
 form {
-	margin-bottom: 4px;
+	display: inline-block;
+	margin: 1px;
+}
+.nmo-button {
+	width: 348px !important;
 }
 .btn {
-	padding: 2px !important;
+	padding: 3px !important;
 }
 .btn-purple { 
   color: #ffffff; 
@@ -71,6 +75,18 @@ fieldset[disabled] .btn-purple.active {
 .btn-purple .badge { 
   color: #764CAD; 
   background-color: #ffffff; 
+}
+@media (min-width: 768px) {
+ .nmo-webcam-pane {
+ 	display: block;
+ 	clear: both;
+ 	float: none;
+ }
+}
+@media (min-width: 992px) {
+ .nmo-webcam-pane {
+ 	float: right;
+ }
 }
 </style>
 </head>
@@ -123,9 +139,12 @@ fieldset[disabled] .btn-purple.active {
       </#if>
     </tbody>
   </table>
+  <div class="nmo-webcam-pane">
+  <h4>Webcam</h4><img id="webcamImage" height=320/></div>
+  <div style="max-width: 700px; margin-right: 440px">
   <h4>Manual controls</h4>
-  <div style="float:right;"><img id="webcamImage" height=320/></div>
-  ${actionButtons}
+  	${actionButtons}
+  </div>
   <div></div>
   <div style="clear:both;"></div>
   <h4>Log</h4>

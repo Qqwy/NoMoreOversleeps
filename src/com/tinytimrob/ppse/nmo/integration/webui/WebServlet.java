@@ -185,7 +185,7 @@ public class WebServlet extends HttpServlet
 					Action action = actions.get(key);
 					if (!action.isSecret())
 					{
-						actionButtons += "<form method='POST' data-js-ajax-form='true' action='" + key + "'><button type='submit' class='btn btn-" + colours[colour] + "' style='width:286px;'>" + action.getName() + "</button></form>";
+						actionButtons += "<form method='POST' data-js-ajax-form='true' action='" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-button'>" + action.getName() + "</button></form>";
 					}
 				}
 			}
@@ -224,12 +224,15 @@ public class WebServlet extends HttpServlet
 				{
 					button.onAction();
 					MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);
-					
+
 					// When calling through AJAX, no response HTML necessary
-					if (request.getParameter("ajax_form") != null) {
+					if (request.getParameter("ajax_form") != null)
+					{
 						response.setStatus(HttpServletResponse.SC_OK);
-					} else {
-						response.sendRedirect("/");						
+					}
+					else
+					{
+						response.sendRedirect("/");
 					}
 					return;
 				}
