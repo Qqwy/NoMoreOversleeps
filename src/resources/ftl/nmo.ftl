@@ -86,6 +86,8 @@ fieldset[disabled] .btn-purple.active {
 @media (min-width: 992px) {
  .nmo-webcam-pane {
  	float: right;
+ 	margin-top: -10px;
+ 	text-align: right;
  }
 }
 </style>
@@ -235,7 +237,12 @@ fieldset[disabled] .btn-purple.active {
         	});
         });
 
-		var webcam_websocket = new ReconnectingWebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/webcam");
+		var socket_security = 'ws';
+		if (location.protocol === 'https:')
+		{
+			socket_security = 'wss';
+		}
+		var webcam_websocket = new ReconnectingWebSocket(socket_security + "://" + window.location.hostname + ":" + window.location.port + "/webcam");
 		webcam_websocket.onopen = function(e) {
 			if (typeof console !== 'undefined') {
 				console.info('webcam_websocket open');
