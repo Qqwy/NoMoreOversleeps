@@ -248,7 +248,7 @@ fieldset[disabled] .btn-purple.active {
             });
             
             $.get("/ui/log", function(log){
-            	$("#nmo_log_container").html(log);
+            	$("#nmo_log_container").text(log);
             });
         }
         pollState();
