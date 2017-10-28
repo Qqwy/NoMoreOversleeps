@@ -17,9 +17,6 @@ public class WebUIConfiguration
 	public String webcamName = "";
 
 	@Expose
-	public int webcamFrameSkip = 2;
-
-	@Expose
 	public String webcamSecurityKey = "";
 
 	@Expose
