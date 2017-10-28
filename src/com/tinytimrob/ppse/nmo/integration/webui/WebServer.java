@@ -54,8 +54,8 @@ public class WebServer
 		ServletContextHandler contextHandler = new ServletContextHandler();
 		contextHandler.setSecurityHandler(basicAuth("NoMoreOversleeps"));
 		contextHandler.setContextPath("/");
-		ServletHolder webcamServletHolder = new ServletHolder("webcam", websocketServlet);
-		contextHandler.addServlet(webcamServletHolder, "/webcam");
+		ServletHolder webcamServletHolder = new ServletHolder("swc", websocketServlet);
+		contextHandler.addServlet(webcamServletHolder, "/swc");
 		ServletHolder napchartServlet = new ServletHolder("default", new WebServlet());
 		contextHandler.addServlet(napchartServlet, "/*");
 		handlerCollection.addHandler(contextHandler);
@@ -83,7 +83,7 @@ public class WebServer
 		constraint.setAuthenticate(true);
 		ConstraintMapping cm = new ConstraintMapping();
 		cm.setConstraint(constraint);
-		cm.setPathSpec("/*");
+		cm.setPathSpec("/ui/*");
 		ConstraintSecurityHandler csh = new ConstraintSecurityHandler();
 		csh.setAuthenticator(new BasicAuthenticator());
 		csh.setRealmName("myrealm");

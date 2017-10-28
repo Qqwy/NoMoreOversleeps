@@ -1,5 +1,6 @@
 package com.tinytimrob.ppse.nmo.integration.webui;
 
+import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.ppse.nmo.Integration;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
@@ -21,6 +22,11 @@ public class IntegrationWebUI extends Integration
 	@Override
 	public void init() throws Exception
 	{
+		if (CommonUtils.isNullOrEmpty(NMOConfiguration.instance.integrations.webUI.webcamSecurityKey))
+		{
+			NMOConfiguration.instance.integrations.webUI.webcamSecurityKey = CommonUtils.generateAsciiCryptoKey(64);
+			NMOConfiguration.save();
+		}
 		WebcamCapture.init();
 		WebServer.initialize();
 	}

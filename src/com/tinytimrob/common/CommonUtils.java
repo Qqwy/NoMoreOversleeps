@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -86,5 +87,23 @@ public class CommonUtils
 	{
 		File f = new File(path);
 		return f.isAbsolute() ? f : new File(PlatformData.installationDirectory, path).getAbsoluteFile();
+	}
+
+	public static final String[] ASCII_CHARACTERS = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
+	/**
+	 * Generate a secure crypto key using only ASCII characters
+	 * @param length Length of the key
+	 * @return The key
+	 */
+	public static String generateAsciiCryptoKey(int length)
+	{
+		SecureRandom secureRandom = new SecureRandom();
+		String ret = "";
+		for (int i = 0; i < length; i++)
+		{
+			ret += ASCII_CHARACTERS[secureRandom.nextInt(ASCII_CHARACTERS.length)];
+		}
+		return ret;
 	}
 }

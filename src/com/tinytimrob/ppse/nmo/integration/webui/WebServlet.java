@@ -84,7 +84,7 @@ public class WebServlet extends HttpServlet
 			}
 			return;
 		}
-		else if (PATH.equals("/log"))
+		else if (PATH.equals("/ui/log"))
 		{
 			// send log
 			int x = 0;
@@ -101,7 +101,7 @@ public class WebServlet extends HttpServlet
 			}
 			response.getWriter().append(writer.toString());
 		}
-		else if (PATH.equals("/json"))
+		else if (PATH.equals("/ui/json"))
 		{
 			// send json update
 			JsonData data = new JsonData();
@@ -153,7 +153,7 @@ public class WebServlet extends HttpServlet
 			data.schedule = MainDialog.scheduleStatus;
 			response.getWriter().append(CommonUtils.GSON.toJson(data));
 		}
-		else if (PATH.equals("/"))
+		else if (PATH.equals("/ui/"))
 		{
 			// send main web page
 			HashMap<String, Object> model = new HashMap<String, Object>();
@@ -185,12 +185,13 @@ public class WebServlet extends HttpServlet
 					Action action = actions.get(key);
 					if (!action.isSecret())
 					{
-						actionButtons += "<form method='POST' data-js-ajax-form='true' action='" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-button'>" + action.getName() + "</button></form>";
+						actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-button'>" + action.getName() + "</button></form>";
 					}
 				}
 			}
 			model.put("system", PlatformData.computerName);
 			model.put("actionButtons", actionButtons);
+			model.put("webcamKey", NMOConfiguration.instance.integrations.webUI.webcamSecurityKey);
 			for (Integration integration : Main.integrations)
 			{
 				model.put("integration_" + integration.id, integration.isEnabled());
@@ -203,6 +204,11 @@ public class WebServlet extends HttpServlet
 			{
 				throw new ServletException(e);
 			}
+		}
+		else if (PATH.equals("/"))
+		{
+			response.sendRedirect("/ui/");
+			return;
 		}
 		else
 		{
@@ -217,24 +223,27 @@ public class WebServlet extends HttpServlet
 		try
 		{
 			String PATH = request.getPathInfo();
-			for (Integration integrations : Main.integrations)
+			if (PATH.startsWith("/ui/"))
 			{
-				Action button = integrations.getActions().get(PATH);
-				if (button != null && !button.isSecret())
+				for (Integration integrations : Main.integrations)
 				{
-					button.onAction();
-					MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);
+					Action button = integrations.getActions().get(PATH.substring(3));
+					if (button != null && !button.isSecret())
+					{
+						button.onAction();
+						MainDialog.triggerEvent("<" + button.getName() + "> from /" + request.getRemoteAddr(), null);
 
-					// When calling through AJAX, no response HTML necessary
-					if (request.getParameter("ajax_form") != null)
-					{
-						response.setStatus(HttpServletResponse.SC_OK);
+						// When calling through AJAX, no response HTML necessary
+						if (request.getParameter("ajax_form") != null)
+						{
+							response.setStatus(HttpServletResponse.SC_OK);
+						}
+						else
+						{
+							response.sendRedirect("/");
+						}
+						return;
 					}
-					else
-					{
-						response.sendRedirect("/");
-					}
-					return;
 				}
 			}
 			response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);

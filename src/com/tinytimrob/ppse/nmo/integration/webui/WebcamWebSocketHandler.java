@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -50,8 +52,14 @@ public class WebcamWebSocketHandler implements WebcamListener
 	}
 
 	@OnWebSocketConnect
-	public void onConnect(Session session)
+	public void onConnect(Session session) throws AuthenticationException
 	{
+		Map<String, List<String>> params = session.getUpgradeRequest().getParameterMap();
+		List<String> keys = params.get("key");
+		if (keys == null || keys.size() != 1 || !keys.get(0).equals(NMOConfiguration.instance.integrations.webUI.webcamSecurityKey))
+		{
+			throw new AuthenticationException("Not authorized");
+		}
 		this.session = session;
 		this.connectionIP = session.getRemoteAddress().getAddress().toString();
 		log.info("WebSocket connect from " + this.connectionIP);
