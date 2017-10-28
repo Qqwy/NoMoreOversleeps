@@ -22,6 +22,7 @@ import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 public class WebcamCapture
 {
 	private static final Logger log = LogWrapper.getLogger();
+	private static WebcamData wd = new WebcamData();
 
 	public static class WebcamTransformer implements WebcamImageTransformer
 	{
@@ -111,6 +112,7 @@ public class WebcamCapture
 		log.info("Selected image dimension: " + dimension.getWidth() + "x" + dimension.getHeight());
 		webcam.setViewSize(dimension);
 		webcam.open(true);
+		webcam.addWebcamListener(wd);
 		System.out.println(webcam.getViewSize());
 		WebcamDefaultDevice.FAULTY = false;
 	}
@@ -164,6 +166,7 @@ public class WebcamCapture
 
 	public static void shutdown()
 	{
+		webcam.removeWebcamListener(wd);
 		webcam.close();
 		ArrayList<WebcamWebSocketHandler> handlers = (ArrayList<WebcamWebSocketHandler>) socketHandlers.clone();
 		for (WebcamWebSocketHandler handler : handlers)
@@ -175,12 +178,10 @@ public class WebcamCapture
 	public static synchronized void addSocketHandler(WebcamWebSocketHandler handler)
 	{
 		socketHandlers.add(handler);
-		webcam.addWebcamListener(handler);
 	}
 
 	public static synchronized void removeSocketHandler(WebcamWebSocketHandler handler)
 	{
 		socketHandlers.remove(handler);
-		webcam.removeWebcamListener(handler);
 	}
 }
