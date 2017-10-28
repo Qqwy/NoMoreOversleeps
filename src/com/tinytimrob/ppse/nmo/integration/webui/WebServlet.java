@@ -26,7 +26,11 @@ import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
+
+import freemarker.core.ParseException;
+import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateNotFoundException;
 
 public class WebServlet extends HttpServlet
 {
@@ -68,153 +72,194 @@ public class WebServlet extends HttpServlet
 		String PATH = request.getPathInfo();
 		if (PATH.equals("/favicon.ico"))
 		{
-			InputStream fis = null;
-			OutputStream out = null;
-			try
-			{
-				response.setContentType("image/x-icon");
-				fis = WebServlet.class.getResourceAsStream("/resources/icon.ico");
-				out = response.getOutputStream();
-				IOUtils.copy(fis, out);
-			}
-			finally
-			{
-				IOUtils.closeQuietly(out);
-				IOUtils.closeQuietly(fis);
-			}
-			return;
+			sendFavicon(response);
 		}
 		else if (PATH.equals("/ui/log"))
 		{
-			// send log
-			int x = 0;
-			StringWriter writer = new StringWriter();
-			writer.write("log updated " + CommonUtils.convertTimestamp(System.currentTimeMillis()) + "\n\n");
-			ListIterator<String> li = MainDialog.events.listIterator(MainDialog.events.size());
-			while (li.hasPrevious())
-			{
-				x++;
-				String s = li.previous();
-				writer.write(s + "\n");
-				if (x == 20)
-					break;
-			}
-			response.getWriter().append(writer.toString());
+			sendLog(response);
 		}
 		else if (PATH.equals("/ui/json"))
 		{
-			// send json update
-			JsonData data = new JsonData();
-			long now = System.currentTimeMillis();
-			boolean paused = MainDialog.isCurrentlyPaused.get();
-			data.update = CommonUtils.convertTimestamp(now);
-			data.activity = paused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + String.format("%.3f", (now - MainDialog.lastActivityTime) / 1000.0) + "s ago from " + MainDialog.lastActivitySource + ")";
-			data.active_timer = MainDialog.timer == null ? "null" : MainDialog.timer.name + " (" + MainDialog.timer.secondsForFirstWarning + "s/" + MainDialog.timer.secondsForSubsequentWarnings + "s)";
-			if (paused)
-			{
-				data.pause_state = "PAUSED for \"" + MainDialog.pauseReason + "\" until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil);
-			}
-			else
-			{
-				data.pause_state = "RUNNING";
-			}
-			data.conn_count = WebcamCapture.count();
-			data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
-			String state = "";
-			if (IntegrationPhilipsHue.INSTANCE.isEnabled())
-			{
-				for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
-				{
-					state += (!state.isEmpty() ? "<br/>" : "");
-					int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
-					state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
-				}
-			}
-			if (IntegrationTPLink.INSTANCE.isEnabled())
-			{
-				for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
-				{
-					TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
-					state += (!state.isEmpty() ? "<br/>" : "");
-					state += "<b>" + tpde.name + "</b>:  " + (tpde.isSwitchedOn ? "ON" : "OFF");
-				}
-			}
-			data.ha_state = state;
-			String sn = NMOConfiguration.instance.scheduleName;
-			if (sn == null || sn.isEmpty())
-			{
-				sn = "UNKNOWN SCHEDULE";
-			}
-			data.schedule_name = "<b>" + sn + "</b>";
-			if (NMOStatistics.instance.scheduleStartedOn > 0)
-			{
-				data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOStatistics.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)";
-			}
-			data.schedule = MainDialog.scheduleStatus;
-			response.getWriter().append(CommonUtils.GSON.toJson(data));
+			sendJsonState(response);
 		}
 		else if (PATH.equals("/ui/"))
 		{
-			// send main web page
-			HashMap<String, Object> model = new HashMap<String, Object>();
-			model.put("version", Main.VERSION);
-			// determine buttons
-			String actionButtons = "";
-			String[] colours = { "danger", "info", "success", "primary", "purple", "warning" };
-			int colour = -1;
-			for (Integration integration : Main.integrations)
-			{
-				LinkedHashMap<String, Action> actions = integration.getActions();
-				// secret action fix
-				int actionsNotSecret = 0;
-				for (Action action : actions.values())
-				{
-					if (!action.isHiddenFromWebUI())
-					{
-						actionsNotSecret++;
-					}
-				}
-				if (actionsNotSecret > 0)
-				{
-					colour++;
-					if (colour >= colours.length)
-						colour = 0;
-				}
-				for (String key : actions.keySet())
-				{
-					Action action = actions.get(key);
-					if (!action.isHiddenFromWebUI())
-					{
-						actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-action-button'>" + action.getName() + "</button></form>";
-					}
-				}
-			}
-			model.put("system", PlatformData.computerName);
-			model.put("actionButtons", actionButtons);
-			model.put("webcamKey", NMOConfiguration.instance.integrations.webUI.webcamSecurityKey);
-			for (Integration integration : Main.integrations)
-			{
-				model.put("integration_" + integration.id, integration.isEnabled());
-			}
-			try
-			{
-				WebTemplate.renderTemplate("nmo.ftl", response, model);
-			}
-			catch (TemplateException e)
-			{
-				throw new ServletException(e);
-			}
+			sendMainPage(response);
 		}
 		else if (PATH.equals("/"))
 		{
 			response.sendRedirect("/ui/");
-			return;
 		}
 		else
 		{
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			return;
 		}
+	}
+
+	private void sendFavicon(HttpServletResponse response) throws IOException {
+		InputStream fis = null;
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("image/x-icon");
+			fis = WebServlet.class.getResourceAsStream("/resources/icon.ico");
+			out = response.getOutputStream();
+			IOUtils.copy(fis, out);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(fis);
+		}
+		return;
+	}
+
+	/**
+	 * Sends the log in a text-based format.
+	 * @param response
+	 * @throws IOException
+	 */
+	private void sendLog(HttpServletResponse response) throws IOException {
+		int x = 0;
+		StringWriter writer = new StringWriter();
+		writer.write("log updated " + CommonUtils.convertTimestamp(System.currentTimeMillis()) + "\n\n");
+		ListIterator<String> logged_events = MainDialog.events.listIterator(MainDialog.events.size());
+		while (logged_events.hasPrevious())
+		{
+			++x;
+			String s = logged_events.previous();
+			writer.write(s + "\n");
+			if (x == 20)
+				break;
+		}
+		response.getWriter().append(writer.toString());
+	}
+
+	/**
+	 * Sends the main HTML page of the WebUI.
+	 * 
+	 * @param response
+	 * @throws TemplateNotFoundException
+	 * @throws MalformedTemplateNameException
+	 * @throws ParseException
+	 * @throws IOException
+	 * @throws ServletException
+	 */
+	private void sendMainPage(HttpServletResponse response) throws TemplateNotFoundException,
+			MalformedTemplateNameException, ParseException, IOException, ServletException {
+		HashMap<String, Object> model = new HashMap<String, Object>();
+		model.put("version", Main.VERSION);
+		model.put("system", PlatformData.computerName);
+		model.put("actionButtons", determineWebUIButtons());
+		model.put("webcamKey", NMOConfiguration.instance.integrations.webUI.webcamSecurityKey);
+		for (Integration integration : Main.integrations)
+		{
+			model.put("integration_" + integration.id, integration.isEnabled());
+		}
+		try
+		{
+			WebTemplate.renderTemplate("nmo.ftl", response, model);
+		}
+		catch (TemplateException e)
+		{
+			throw new ServletException(e);
+		}
+	}
+
+	/**
+	 * Creates the HTML representing the list of buttons that users of the WebUI can interact with
+	 * to perform actions in NMO.
+	 * 
+	 * @return A snippet of HTML representing the list of buttons.
+	 */
+	private String determineWebUIButtons() {
+		String actionButtons = "";
+		String[] colours = { "danger", "info", "success", "primary", "purple", "warning" };
+		int colour = -1;
+		for (Integration integration : Main.integrations)
+		{
+			LinkedHashMap<String, Action> actions = integration.getActions();
+			// secret action fix
+			int actionsNotSecret = 0;
+			for (Action action : actions.values())
+			{
+				if (!action.isHiddenFromWebUI())
+				{
+					actionsNotSecret++;
+				}
+			}
+			if (actionsNotSecret > 0)
+			{
+				++colour;
+				if (colour >= colours.length)
+					colour = 0;
+			}
+			for (String key : actions.keySet())
+			{
+				Action action = actions.get(key);
+				if (!action.isHiddenFromWebUI())
+				{
+					actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-action-button'>" + action.getName() + "</button></form>";
+				}
+			}
+		}
+		return actionButtons;
+	}
+
+	/**
+	 * Sends a short JSON-response containing high-level status information about how NMO is running.
+	 * @param response
+	 * @throws IOException
+	 */
+	private void sendJsonState(HttpServletResponse response) throws IOException {
+		JsonData data = new JsonData();
+		long now = System.currentTimeMillis();
+		boolean isPaused = MainDialog.isCurrentlyPaused.get();
+		data.update = CommonUtils.convertTimestamp(now);
+		data.activity = isPaused ? "Disabled while paused" : CommonUtils.convertTimestamp(MainDialog.lastActivityTime) + " (" + String.format("%.3f", (now - MainDialog.lastActivityTime) / 1000.0) + "s ago from " + MainDialog.lastActivitySource + ")";
+		data.active_timer = MainDialog.timer == null ? "null" : MainDialog.timer.name + " (" + MainDialog.timer.secondsForFirstWarning + "s/" + MainDialog.timer.secondsForSubsequentWarnings + "s)";
+		if (isPaused)
+		{
+			data.pause_state = "PAUSED for \"" + MainDialog.pauseReason + "\" until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil);
+		}
+		else
+		{
+			data.pause_state = "RUNNING";
+		}
+		data.conn_count = WebcamCapture.count();
+		data.noise_state = IntegrationNoise.INSTANCE.getNoiseList();
+		String state = "";
+		if (IntegrationPhilipsHue.INSTANCE.isEnabled())
+		{
+			for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
+			{
+				state += (!state.isEmpty() ? "<br/>" : "");
+				int val = IntegrationPhilipsHue.INSTANCE.lightStates.get(key);
+				state += "<b>" + key + "</b>:  " + (val > -1 ? "ON, LIGHT LEVEL " + val : "OFF");
+			}
+		}
+		if (IntegrationTPLink.INSTANCE.isEnabled())
+		{
+			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			{
+				TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
+				state += (!state.isEmpty() ? "<br/>" : "");
+				state += "<b>" + tpde.name + "</b>:  " + (tpde.isSwitchedOn ? "ON" : "OFF");
+			}
+		}
+		data.ha_state = state;
+		String sn = NMOConfiguration.instance.scheduleName;
+		if (sn == null || sn.isEmpty())
+		{
+			sn = "UNKNOWN SCHEDULE";
+		}
+		data.schedule_name = "<b>" + sn + "</b>";
+		if (NMOStatistics.instance.scheduleStartedOn > 0)
+		{
+			data.schedule_name += "<br/>Started: " + CommonUtils.dateFormatter.format(NMOStatistics.instance.scheduleStartedOn) + "<br/>(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)";
+		}
+		data.schedule = MainDialog.scheduleStatus;
+		response.getWriter().append(CommonUtils.GSON.toJson(data));
 	}
 
 	@Override
