@@ -26,7 +26,6 @@ import com.tinytimrob.ppse.nmo.integration.philipshue.IntegrationPhilipsHue;
 import com.tinytimrob.ppse.nmo.integration.tplink.IntegrationTPLink;
 import com.tinytimrob.ppse.nmo.integration.tplink.TPLinkDeviceEntry;
 import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
-
 import freemarker.core.ParseException;
 import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
@@ -72,19 +71,19 @@ public class WebServlet extends HttpServlet
 		String PATH = request.getPathInfo();
 		if (PATH.equals("/favicon.ico"))
 		{
-			sendFavicon(response);
+			this.sendFavicon(response);
 		}
 		else if (PATH.equals("/ui/log"))
 		{
-			sendLog(response);
+			this.sendLog(response);
 		}
 		else if (PATH.equals("/ui/json"))
 		{
-			sendJsonState(response);
+			this.sendJsonState(response);
 		}
 		else if (PATH.equals("/ui/"))
 		{
-			sendMainPage(response);
+			this.sendMainPage(response);
 		}
 		else if (PATH.equals("/"))
 		{
@@ -96,7 +95,8 @@ public class WebServlet extends HttpServlet
 		}
 	}
 
-	private void sendFavicon(HttpServletResponse response) throws IOException {
+	private void sendFavicon(HttpServletResponse response) throws IOException
+	{
 		InputStream fis = null;
 		OutputStream out = null;
 		try
@@ -119,7 +119,8 @@ public class WebServlet extends HttpServlet
 	 * @param response
 	 * @throws IOException
 	 */
-	private void sendLog(HttpServletResponse response) throws IOException {
+	private void sendLog(HttpServletResponse response) throws IOException
+	{
 		int x = 0;
 		StringWriter writer = new StringWriter();
 		writer.write("log updated " + CommonUtils.convertTimestamp(System.currentTimeMillis()) + "\n\n");
@@ -145,12 +146,12 @@ public class WebServlet extends HttpServlet
 	 * @throws IOException
 	 * @throws ServletException
 	 */
-	private void sendMainPage(HttpServletResponse response) throws TemplateNotFoundException,
-			MalformedTemplateNameException, ParseException, IOException, ServletException {
+	private void sendMainPage(HttpServletResponse response) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, ServletException
+	{
 		HashMap<String, Object> model = new HashMap<String, Object>();
 		model.put("version", Main.VERSION);
 		model.put("system", PlatformData.computerName);
-		model.put("actionButtons", determineWebUIButtons());
+		model.put("actionButtons", this.determineWebUIButtons());
 		model.put("webcamKey", NMOConfiguration.instance.integrations.webUI.webcamSecurityKey);
 		for (Integration integration : Main.integrations)
 		{
@@ -172,7 +173,8 @@ public class WebServlet extends HttpServlet
 	 * 
 	 * @return A snippet of HTML representing the list of buttons.
 	 */
-	private String determineWebUIButtons() {
+	private String determineWebUIButtons()
+	{
 		String actionButtons = "";
 		String[] colours = { "danger", "info", "success", "primary", "purple", "warning" };
 		int colour = -1;
@@ -211,7 +213,8 @@ public class WebServlet extends HttpServlet
 	 * @param response
 	 * @throws IOException
 	 */
-	private void sendJsonState(HttpServletResponse response) throws IOException {
+	private void sendJsonState(HttpServletResponse response) throws IOException
+	{
 		JsonData data = new JsonData();
 		long now = System.currentTimeMillis();
 		boolean isPaused = MainDialog.isCurrentlyPaused.get();
