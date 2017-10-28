@@ -127,9 +127,7 @@ To update the code to the newest release, the procedure is simply to `hg pull` a
 * Occasionally logging in to Pavlok just results in a 404 screen. I have no idea why. Just keep restarting the app and retrying until it works.
 * When your login key to Pavlok API expires it isn't renewed. This doesn't seem to make any difference because it doesn't appear to matter that it's expired and is accepted by the API anyway :/
 * The Pavlok integration is not very useful due to the glitchy and unreliable nature of the Pavlok's bluetooth connection and push notifications.
-* The webcam feed isn't visible on iOS devices because the authentication is not passed along to the web socket. Need to come up with a strategy to fix this.
 * The log in the web UI flashes because it was implemented as a refreshing iframe. It should eventually be replaced with Ajax.
-* Pressing buttons in the web UI is done as a form action, causing the entire page to reload, including a reset of the webcam socket. It should eventually be replaced with Ajax.
 * Currently the webcam feed has to be uploaded separately to every person watching your feed and does not include any form of automated frame skip. This means if you have slow upload the webcam feed can fall behind.
 * TP-LINK switches, WeMo switches and Philips Hue bridges are connected via IP address which means that the config must be updated if the IP of the switch/bridge changes. It would be better to use name-based device detection over UPnP instead.
 
