@@ -19,7 +19,7 @@ public class PauseFakeIntegration extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.webUI.allowRemotePauseControl;
+		return NMOConfiguration.INSTANCE.integrations.webUI.allowRemotePauseControl;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class PauseFakeIntegration extends Integration
 					public void run()
 					{
 						MainDialog.pausedUntil = 0;
-						MainDialog.triggerEvent("Triggered unpause", NMOConfiguration.instance.events.pauseCancelled);
+						MainDialog.triggerEvent("Triggered unpause", NMOConfiguration.INSTANCE.events.pauseCancelled);
 					}
 				});
 			}
@@ -81,7 +81,7 @@ public class PauseFakeIntegration extends Integration
 						{
 							MainDialog.pausedUntil = MainDialog.now + (j * 60000);
 							MainDialog.pauseReason = getName();
-							MainDialog.triggerEvent("Triggered pause for " + j + " minutes (until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil) + ")", NMOConfiguration.instance.events.pauseInitiated);
+							MainDialog.triggerEvent("Triggered pause for " + j + " minutes (until " + CommonUtils.dateFormatter.format(MainDialog.pausedUntil) + ")", NMOConfiguration.INSTANCE.events.pauseInitiated);
 						}
 					});
 				}

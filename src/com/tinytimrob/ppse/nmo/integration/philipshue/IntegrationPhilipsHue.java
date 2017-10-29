@@ -39,15 +39,15 @@ public class IntegrationPhilipsHue extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.philipsHue.enabled;
+		return NMOConfiguration.INSTANCE.integrations.philipsHue.enabled;
 	}
 
 	@Override
 	public void init()
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.philipsHue.lights.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.philipsHue.lights.length; i++)
 		{
-			final String bulbName = NMOConfiguration.instance.integrations.philipsHue.lights[i];
+			final String bulbName = NMOConfiguration.INSTANCE.integrations.philipsHue.lights[i];
 			this.lightStates.put(bulbName, -1);
 			this.actions.put("/philipshue/" + i + "/on", new Action()
 			{
@@ -223,12 +223,12 @@ public class IntegrationPhilipsHue extends Integration
 			@Override
 			public void onBridgeConnected(PHBridge bridge, String username)
 			{
-				log.info("Connection to Hue Bridge at " + NMOConfiguration.instance.integrations.philipsHue.bridgeIP + " has been established");
+				log.info("Connection to Hue Bridge at " + NMOConfiguration.INSTANCE.integrations.philipsHue.bridgeIP + " has been established");
 				log.info("Bridge API authorization username: " + username);
 				IntegrationPhilipsHue.this.sdk.setSelectedBridge(bridge);
 				IntegrationPhilipsHue.this.sdk.enableHeartbeat(bridge, 1000);
 				IntegrationPhilipsHue.this.activeBridge = bridge;
-				NMOConfiguration.instance.integrations.philipsHue.bridgeUsername = username;
+				NMOConfiguration.INSTANCE.integrations.philipsHue.bridgeUsername = username;
 				try
 				{
 					NMOConfiguration.save();
@@ -254,7 +254,7 @@ public class IntegrationPhilipsHue extends Integration
 			public void onAuthenticationRequired(PHAccessPoint accessPoint)
 			{
 				log.info("Authentication required. Please push the authentication button on the Hue Bridge!");
-				NMOConfiguration.instance.integrations.philipsHue.bridgeIP = accessPoint.getIpAddress();
+				NMOConfiguration.INSTANCE.integrations.philipsHue.bridgeIP = accessPoint.getIpAddress();
 				IntegrationPhilipsHue.this.sdk.startPushlinkAuthentication(accessPoint);
 			}
 
@@ -273,8 +273,8 @@ public class IntegrationPhilipsHue extends Integration
 
 		log.info("Attempting to reconnect to Hue Bridge...");
 		PHAccessPoint accessPoint = new PHAccessPoint();
-		accessPoint.setIpAddress(NMOConfiguration.instance.integrations.philipsHue.bridgeIP);
-		accessPoint.setUsername(NMOConfiguration.instance.integrations.philipsHue.bridgeUsername);
+		accessPoint.setIpAddress(NMOConfiguration.INSTANCE.integrations.philipsHue.bridgeIP);
+		accessPoint.setUsername(NMOConfiguration.INSTANCE.integrations.philipsHue.bridgeUsername);
 		this.sdk.connect(accessPoint);
 	}
 

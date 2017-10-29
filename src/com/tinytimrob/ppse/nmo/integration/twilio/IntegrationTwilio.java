@@ -22,31 +22,31 @@ public class IntegrationTwilio extends Integration
 
 	public void call(String fromS, String toS)
 	{
-		TwilioRestClient client = new TwilioRestClient.Builder(NMOConfiguration.instance.integrations.twilio.accountSID, NMOConfiguration.instance.integrations.twilio.authToken).build();
+		TwilioRestClient client = new TwilioRestClient.Builder(NMOConfiguration.INSTANCE.integrations.twilio.accountSID, NMOConfiguration.INSTANCE.integrations.twilio.authToken).build();
 		PhoneNumber from = new PhoneNumber(fromS);
 		PhoneNumber to = new PhoneNumber(toS);
-		URI uri = URI.create(NMOConfiguration.instance.integrations.twilio.callingURI);
+		URI uri = URI.create(NMOConfiguration.INSTANCE.integrations.twilio.callingURI);
 		Call call = Call.creator(to, from, uri).create(client);
 		log.info("Call from " + fromS + " to " + toS + " executed with SID " + call.getSid());
 	}
 
 	public void call(StoredPhoneNumber number)
 	{
-		this.call(NMOConfiguration.instance.integrations.twilio.numberFrom, number.number);
+		this.call(NMOConfiguration.INSTANCE.integrations.twilio.numberFrom, number.number);
 	}
 
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.twilio.enabled;
+		return NMOConfiguration.INSTANCE.integrations.twilio.enabled;
 	}
 
 	@Override
 	public void init()
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.twilio.phoneNumbers.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.twilio.phoneNumbers.length; i++)
 		{
-			final StoredPhoneNumber number = NMOConfiguration.instance.integrations.twilio.phoneNumbers[i];
+			final StoredPhoneNumber number = NMOConfiguration.INSTANCE.integrations.twilio.phoneNumbers[i];
 			this.actions.put("/twilio/" + i, new Action()
 			{
 				@Override

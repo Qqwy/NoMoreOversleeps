@@ -23,7 +23,7 @@ public class IntegrationKeyboard extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.keyboard.enabled;
+		return NMOConfiguration.INSTANCE.integrations.keyboard.enabled;
 	}
 
 	@Override

@@ -24,15 +24,15 @@ public class IntegrationWemo extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.wemo.enabled;
+		return NMOConfiguration.INSTANCE.integrations.wemo.enabled;
 	}
 
 	@Override
 	public void init() throws Exception
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.wemo.devices.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.wemo.devices.length; i++)
 		{
-			final WemoDeviceEntry entry = NMOConfiguration.instance.integrations.wemo.devices[i];
+			final WemoDeviceEntry entry = NMOConfiguration.INSTANCE.integrations.wemo.devices[i];
 			this.actions.put("/wemo/" + i + "/on", new Action()
 			{
 				@Override

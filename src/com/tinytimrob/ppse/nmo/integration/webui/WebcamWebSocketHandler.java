@@ -1,14 +1,9 @@
 package com.tinytimrob.ppse.nmo.integration.webui;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.imageio.ImageIO;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -17,14 +12,12 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import com.github.sarxos.webcam.WebcamEvent;
-import com.github.sarxos.webcam.WebcamListener;
 import com.tinytimrob.common.CommonUtils;
 import com.tinytimrob.common.LogWrapper;
 import com.tinytimrob.ppse.nmo.config.NMOConfiguration;
 
 @WebSocket
-public class WebcamWebSocketHandler implements WebcamListener
+public class WebcamWebSocketHandler implements Runnable
 {
 	private static final Logger log = LogWrapper.getLogger();
 	private Session session;
@@ -56,7 +49,7 @@ public class WebcamWebSocketHandler implements WebcamListener
 	{
 		Map<String, List<String>> params = session.getUpgradeRequest().getParameterMap();
 		List<String> keys = params.get("key");
-		if (keys == null || keys.size() != 1 || !keys.get(0).equals(NMOConfiguration.instance.integrations.webUI.webcamSecurityKey))
+		if (keys == null || keys.size() != 1 || !keys.get(0).equals(NMOConfiguration.INSTANCE.integrations.webUI.webcamSecurityKey))
 		{
 			throw new AuthenticationException("Not authorized");
 		}
@@ -64,6 +57,37 @@ public class WebcamWebSocketHandler implements WebcamListener
 		this.connectionIP = session.getRemoteAddress().getAddress().toString();
 		log.info("WebSocket connect from " + this.connectionIP);
 		WebcamCapture.addSocketHandler(this);
+		new Thread(this).start();
+	}
+
+	@Override
+	public void run()
+	{
+		log.info(">> Started sending data to " + this.connectionIP);
+		Map<String, Object> message = new HashMap<String, Object>();
+		message.put("type", "image");
+		while (this.session != null)
+		{
+			message.put("image", WebcamData.imageBase64);
+			try
+			{
+				this.send(message);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				break;
+			}
+			try
+			{
+				Thread.sleep(100);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		log.info(">> Stopped sending data to " + this.connectionIP);
 	}
 
 	@OnWebSocketMessage
@@ -85,87 +109,16 @@ public class WebcamWebSocketHandler implements WebcamListener
 		this.teardown();
 	}
 
-	private void send(String message)
+	private void send(String message) throws IOException
 	{
 		if (this.session != null && this.session.isOpen())
 		{
-			try
-			{
-				this.session.getRemote().sendStringByFuture(message);
-			}
-			catch (Exception e)
-			{
-				log.error("Exception when sending string", e);
-			}
+			this.session.getRemote().sendString(message);
 		}
 	}
 
-	private void send(Object object)
+	private void send(Object object) throws IOException
 	{
-		try
-		{
-			this.send(CommonUtils.GSON.toJson(object));
-		}
-		catch (Throwable e)
-		{
-			log.error(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void webcamOpen(WebcamEvent we)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void webcamClosed(WebcamEvent we)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void webcamDisposed(WebcamEvent we)
-	{
-		// TODO Auto-generated method stub
-	}
-
-	int frame = -1;
-	boolean send = true;
-
-	@Override
-	public void webcamImageObtained(WebcamEvent we)
-	{
-		this.frame++;
-		if (this.frame % NMOConfiguration.instance.integrations.webUI.webcamFrameSkip != 0)
-		{
-			return;
-		}
-		this.frame = 0;
-		BufferedImage image = WebcamCapture.getImage();
-		if (image == null)
-			return;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try
-		{
-			ImageIO.write(image, "JPG", baos);
-		}
-		catch (IOException e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		String base64 = null;
-		try
-		{
-			base64 = new String(Base64.getEncoder().encode(baos.toByteArray()), "UTF8");
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			log.error(e.getMessage(), e);
-		}
-		Map<String, Object> message = new HashMap<String, Object>();
-		message.put("type", "image");
-		message.put("image", base64);
-		this.send(message);
+		this.send(CommonUtils.GSON.toJson(object));
 	}
 }

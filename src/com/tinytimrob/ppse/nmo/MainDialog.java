@@ -138,18 +138,18 @@ public class MainDialog extends Application
 		nextActivityWarningID = 0;
 		oversleepWarningTriggered = false;
 
-		Collections.sort(NMOConfiguration.instance.schedule);
-		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		Collections.sort(NMOConfiguration.INSTANCE.schedule);
+		for (SleepEntry entry : NMOConfiguration.INSTANCE.schedule)
 		{
 			triggerEvent("Adding sleep block: " + entry.describe(), null);
 			entry.updateNextTriggerTime();
 		}
-		for (ActivityTimer entry : NMOConfiguration.instance.timers)
+		for (ActivityTimer entry : NMOConfiguration.INSTANCE.timers)
 		{
 			triggerEvent("Adding activity timer: " + entry.name + " " + entry.secondsForFirstWarning + "s/" + entry.secondsForSubsequentWarnings + "s", null);
 		}
 		int q = 0;
-		for (CustomEventAction action : NMOConfiguration.instance.events.custom)
+		for (CustomEventAction action : NMOConfiguration.INSTANCE.events.custom)
 		{
 			action.originalOrder = q;
 			q++;
@@ -159,7 +159,7 @@ public class MainDialog extends Application
 		}
 		Collections.sort(customActions);
 
-		if (NMOConfiguration.instance.integrations.pavlok.enabled)
+		if (NMOConfiguration.INSTANCE.integrations.pavlok.enabled)
 		{
 			try
 			{
@@ -169,14 +169,14 @@ public class MainDialog extends Application
 			catch (Throwable t)
 			{
 				t.printStackTrace();
-				NMOConfiguration.instance.integrations.pavlok.auth = null;
+				NMOConfiguration.INSTANCE.integrations.pavlok.auth = null;
 			}
 		}
 
 		// fix bad "last oversleep" value
-		if (NMOStatistics.instance.scheduleLastOversleep < NMOStatistics.instance.scheduleStartedOn)
+		if (NMOStatistics.INSTANCE.scheduleLastOversleep < NMOStatistics.INSTANCE.scheduleStartedOn)
 		{
-			NMOStatistics.instance.scheduleLastOversleep = NMOStatistics.instance.scheduleStartedOn;
+			NMOStatistics.INSTANCE.scheduleLastOversleep = NMOStatistics.INSTANCE.scheduleStartedOn;
 		}
 
 		//==================================================================
@@ -235,7 +235,7 @@ public class MainDialog extends Application
 		//==================================================================
 		// PAVLOK CRAP
 		//==================================================================
-		if (NMOConfiguration.instance.integrations.pavlok.enabled && NMOConfiguration.instance.integrations.pavlok.auth == null)
+		if (NMOConfiguration.INSTANCE.integrations.pavlok.enabled && NMOConfiguration.INSTANCE.integrations.pavlok.auth == null)
 		{
 			final String url = "https://pavlok-mvp.herokuapp.com/oauth/authorize?client_id=" + Main.CLIENT_ID + "&redirect_uri=" + Main.CLIENT_CALLBACK + "&response_type=code";
 			BorderPane authPane = new BorderPane();
@@ -273,7 +273,7 @@ public class MainDialog extends Application
 									String value = param.split("=")[1];
 									map.put(name, value);
 								}
-								NMOConfiguration.instance.integrations.pavlok.auth = IntegrationPavlok.postAuthToken(map.get("code"));
+								NMOConfiguration.INSTANCE.integrations.pavlok.auth = IntegrationPavlok.postAuthToken(map.get("code"));
 								NMOConfiguration.save();
 								IntegrationPavlok.INSTANCE.vibration(255, "Connection test");
 								triggerEvent("<VIBRATE PAVLOK> Connection test", null);
@@ -379,14 +379,14 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			String sn = NMOConfiguration.instance.scheduleName;
+			String sn = NMOConfiguration.INSTANCE.scheduleName;
 			if (sn == null || sn.isEmpty())
 			{
 				sn = "UNKNOWN SCHEDULE";
 			}
 			statusBox.getChildren().add(JavaFxHelper.createLabel(sn, Color.WHITE, "-fx-font-weight: bold; -fx-font-size: 14pt;"));
 
-			if (NMOStatistics.instance.scheduleStartedOn > 0)
+			if (NMOStatistics.INSTANCE.scheduleStartedOn > 0)
 			{
 				final Label started = JavaFxHelper.createLabel("Started: ", Color.WHITE, "-fx-font-weight: bold;");
 				final Label startedG = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: normal;");
@@ -427,7 +427,7 @@ public class MainDialog extends Application
 			s.setPadding(new Insets(6, 0, 2, 0));
 			statusBox.getChildren().add(s);
 
-			for (SleepEntry entry : NMOConfiguration.instance.schedule)
+			for (SleepEntry entry : NMOConfiguration.INSTANCE.schedule)
 			{
 				statusBox.getChildren().add(JavaFxHelper.createLabel(entry.name, Color.WHITE, "-fx-font-weight: bold;"));
 				statusBox.getChildren().add(JavaFxHelper.createLabel(entry.describeTime() + "    (" + entry.approachWarning + "m approach warning)", Color.WHITE, "", new Insets(0, 0, 0, 8)));
@@ -538,7 +538,7 @@ public class MainDialog extends Application
 			statusBox.getChildren().add(midi);
 			if (IntegrationMidiTransmitter.INSTANCE.isEnabled())
 			{
-				for (String transmitter : NMOConfiguration.instance.integrations.midiTransmitter.transmitters)
+				for (String transmitter : NMOConfiguration.INSTANCE.integrations.midiTransmitter.transmitters)
 				{
 					final Label transmitterlabel = JavaFxHelper.createLabel("> " + transmitter, Color.YELLOW, "", new Insets(0, 0, 0, 8));
 					statusBox.getChildren().add(transmitterlabel);
@@ -620,7 +620,7 @@ public class MainDialog extends Application
 				{
 					pausedUntil = 0;
 					isCurrentlyPaused.set(false);
-					triggerEvent("Unpaused manually", NMOConfiguration.instance.events.pauseCancelled);
+					triggerEvent("Unpaused manually", NMOConfiguration.INSTANCE.events.pauseCancelled);
 				}
 			});
 			unpauseButton.disableProperty().bind(isCurrentlyPaused.not());
@@ -632,7 +632,7 @@ public class MainDialog extends Application
 			VBox webcamBox = new VBox(6);
 			webcamBox.setMinWidth(326);
 			webcamBox.setMaxWidth(326);
-			if (NMOConfiguration.instance.integrations.webUI.enabled)
+			if (NMOConfiguration.INSTANCE.integrations.webUI.enabled)
 			{
 				Label l = JavaFxHelper.createLabel("", Color.WHITE, "-fx-font-weight: bold;");
 				l.setPadding(new Insets(0, 0, 0, 2));
@@ -673,8 +673,8 @@ public class MainDialog extends Application
 				{
 					try
 					{
-						String hostname = NMOConfiguration.instance.integrations.webUI.hostname.isEmpty() ? PortForwarding.getExternalIP() : NMOConfiguration.instance.integrations.webUI.hostname;
-						DesktopHelper.browse("http://" + hostname + ":" + NMOConfiguration.instance.integrations.webUI.jettyPort + "/");
+						String hostname = NMOConfiguration.INSTANCE.integrations.webUI.hostname.isEmpty() ? PortForwarding.getExternalIP() : NMOConfiguration.INSTANCE.integrations.webUI.hostname;
+						DesktopHelper.browse("http://" + hostname + ":" + NMOConfiguration.INSTANCE.integrations.webUI.jettyPort + "/");
 					}
 					catch (Throwable e)
 					{
@@ -682,7 +682,7 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			jfxButtonWebUI.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
+			jfxButtonWebUI.setDisable(!NMOConfiguration.INSTANCE.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonWebUI);
 
 			final Button jfxButtonPortForward = JavaFxHelper.createButton("Attempt port auto-forward", JavaFxHelper.createIcon(FontAwesomeIcon.PLUG, "11", Color.BLACK));
@@ -711,7 +711,7 @@ public class MainDialog extends Application
 					}
 				}
 			});
-			jfxButtonPortForward.setDisable(!NMOConfiguration.instance.integrations.webUI.enabled);
+			jfxButtonPortForward.setDisable(!NMOConfiguration.INSTANCE.integrations.webUI.enabled);
 			heading.getChildren().add(jfxButtonPortForward);
 
 			final Button jfxButtonConfigure = JavaFxHelper.createButton("Configure", JavaFxHelper.createIcon(FontAwesomeIcon.COGS, "11", Color.BLACK));
@@ -893,16 +893,16 @@ public class MainDialog extends Application
 			hbox.getChildren().add(statusBox);
 			HBox.setHgrow(statusBox, Priority.ALWAYS);
 
-			this.addEventSummaryToStatusBox(statusBox, "When sleep block is approaching", NMOConfiguration.instance.events.sleepBlockApproaching);
-			this.addEventSummaryToStatusBox(statusBox, "When sleep block starts", NMOConfiguration.instance.events.sleepBlockStarted);
-			this.addEventSummaryToStatusBox(statusBox, "When sleep block ends", NMOConfiguration.instance.events.sleepBlockEnded);
-			this.addEventSummaryToStatusBox(statusBox, "On first activity warning", NMOConfiguration.instance.events.activityWarning1);
-			this.addEventSummaryToStatusBox(statusBox, "On oversleep warning (activity warning " + NMOConfiguration.instance.oversleepWarningThreshold + ")", NMOConfiguration.instance.events.oversleepWarning);
-			this.addEventSummaryToStatusBox(statusBox, "On all other warnings", NMOConfiguration.instance.events.activityWarning2);
-			this.addEventSummaryToStatusBox(statusBox, "When manually pausing", NMOConfiguration.instance.events.pauseInitiated);
-			this.addEventSummaryToStatusBox(statusBox, "When manually unpausing", NMOConfiguration.instance.events.pauseCancelled);
-			this.addEventSummaryToStatusBox(statusBox, "When pause auto-expires", NMOConfiguration.instance.events.pauseExpired);
-			for (CustomEventAction action : NMOConfiguration.instance.events.custom)
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block is approaching", NMOConfiguration.INSTANCE.events.sleepBlockApproaching);
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block starts", NMOConfiguration.INSTANCE.events.sleepBlockStarted);
+			this.addEventSummaryToStatusBox(statusBox, "When sleep block ends", NMOConfiguration.INSTANCE.events.sleepBlockEnded);
+			this.addEventSummaryToStatusBox(statusBox, "On first activity warning", NMOConfiguration.INSTANCE.events.activityWarning1);
+			this.addEventSummaryToStatusBox(statusBox, "On oversleep warning (activity warning " + NMOConfiguration.INSTANCE.oversleepWarningThreshold + ")", NMOConfiguration.INSTANCE.events.oversleepWarning);
+			this.addEventSummaryToStatusBox(statusBox, "On all other warnings", NMOConfiguration.INSTANCE.events.activityWarning2);
+			this.addEventSummaryToStatusBox(statusBox, "When manually pausing", NMOConfiguration.INSTANCE.events.pauseInitiated);
+			this.addEventSummaryToStatusBox(statusBox, "When manually unpausing", NMOConfiguration.INSTANCE.events.pauseCancelled);
+			this.addEventSummaryToStatusBox(statusBox, "When pause auto-expires", NMOConfiguration.INSTANCE.events.pauseExpired);
+			for (CustomEventAction action : NMOConfiguration.INSTANCE.events.custom)
 			{
 				this.addEventSummaryToStatusBox(statusBox, action.name + " (" + action.describe() + ")", action.actions);
 			}
@@ -1073,7 +1073,7 @@ public class MainDialog extends Application
 			if (IntegrationFileWriter.INSTANCE.isEnabled())
 			{
 				final Label scheduleName = JavaFxHelper.createLabel("scheduleName: ", Color.WHITE, "-fx-font-weight: bold;");
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleName)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleName)
 				{
 					scheduleName.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
 					scheduleName.setContentDisplay(ContentDisplay.RIGHT);
@@ -1086,7 +1086,7 @@ public class MainDialog extends Application
 				statusBox.getChildren().add(scheduleName);
 
 				final Label scheduleStartedOn = JavaFxHelper.createLabel("scheduleStartedOn: ", Color.WHITE, "-fx-font-weight: bold;");
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleStartedOn)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleStartedOn)
 				{
 					scheduleStartedOn.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
 					scheduleStartedOn.setContentDisplay(ContentDisplay.RIGHT);
@@ -1099,7 +1099,7 @@ public class MainDialog extends Application
 				statusBox.getChildren().add(scheduleStartedOn);
 
 				final Label scheduleLastOversleep = JavaFxHelper.createLabel("scheduleLastOversleep: ", Color.WHITE, "-fx-font-weight: bold;");
-				if (NMOConfiguration.instance.integrations.fileWriter.scheduleLastOversleep)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.scheduleLastOversleep)
 				{
 					scheduleLastOversleep.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
 					scheduleLastOversleep.setContentDisplay(ContentDisplay.RIGHT);
@@ -1112,7 +1112,7 @@ public class MainDialog extends Application
 				statusBox.getChildren().add(scheduleLastOversleep);
 
 				final Label schedulePersonalBest = JavaFxHelper.createLabel("schedulePersonalBest: ", Color.WHITE, "-fx-font-weight: bold;");
-				if (NMOConfiguration.instance.integrations.fileWriter.schedulePersonalBest)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.schedulePersonalBest)
 				{
 					schedulePersonalBest.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
 					schedulePersonalBest.setContentDisplay(ContentDisplay.RIGHT);
@@ -1125,7 +1125,7 @@ public class MainDialog extends Application
 				statusBox.getChildren().add(schedulePersonalBest);
 
 				final Label timeToNextSleepBlock = JavaFxHelper.createLabel("timeToNextSleepBlock: ", Color.WHITE, "-fx-font-weight: bold;");
-				if (NMOConfiguration.instance.integrations.fileWriter.timeToNextSleepBlock)
+				if (NMOConfiguration.INSTANCE.integrations.fileWriter.timeToNextSleepBlock)
 				{
 					timeToNextSleepBlock.setGraphic(JavaFxHelper.createLabel("ENABLED", Color.LIME));
 					timeToNextSleepBlock.setContentDisplay(ContentDisplay.RIGHT);
@@ -1307,7 +1307,7 @@ public class MainDialog extends Application
 			{
 				pausedUntil = now + (pp * 60000);
 				pauseReason = reason.getText();
-				triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.instance.events.pauseInitiated);
+				triggerEvent("Paused for " + hm + " (until " + CommonUtils.dateFormatter.format(pausedUntil) + ") for \"" + pauseReason + "\"", NMOConfiguration.INSTANCE.events.pauseInitiated);
 				dialog.close();
 			}
 		});
@@ -1479,9 +1479,9 @@ public class MainDialog extends Application
 	protected void tick()
 	{
 		tick++;
-		if (tick >= NMOConfiguration.instance.garbageCollectionFrequency)
+		if (tick >= NMOConfiguration.INSTANCE.garbageCollectionFrequency)
 		{
-			tick -= NMOConfiguration.instance.garbageCollectionFrequency;
+			tick -= NMOConfiguration.INSTANCE.garbageCollectionFrequency;
 			System.gc();
 		}
 		if (tick % 2 == 1)
@@ -1493,22 +1493,22 @@ public class MainDialog extends Application
 		boolean paused = pausedUntil > now;
 
 		// Update next trigger time for all sleep blocks
-		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		for (SleepEntry entry : NMOConfiguration.INSTANCE.schedule)
 		{
 			entry.updateNextTriggerTime();
 		}
 
-		if (NMOStatistics.instance.scheduleStartedOn > 0)
+		if (NMOStatistics.INSTANCE.scheduleStartedOn > 0)
 		{
-			startedString.set(CommonUtils.dateFormatter2.format(NMOStatistics.instance.scheduleStartedOn));
-			startedString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleStartedOn) + " ago)");
-			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOStatistics.instance.scheduleLastOversleep));
-			lastOversleepString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.instance.scheduleLastOversleep) + " ago)");
-			if ((now - NMOStatistics.instance.scheduleLastOversleep) > NMOStatistics.instance.schedulePersonalBest)
+			startedString.set(CommonUtils.dateFormatter2.format(NMOStatistics.INSTANCE.scheduleStartedOn));
+			startedString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.INSTANCE.scheduleStartedOn) + " ago)");
+			lastOversleepString.set(CommonUtils.dateFormatter2.format(NMOStatistics.INSTANCE.scheduleLastOversleep));
+			lastOversleepString2.set("(" + FormattingHelper.formatTimeElapsedWithDays(now, NMOStatistics.INSTANCE.scheduleLastOversleep) + " ago)");
+			if ((now - NMOStatistics.INSTANCE.scheduleLastOversleep) > NMOStatistics.INSTANCE.schedulePersonalBest)
 			{
-				NMOStatistics.instance.schedulePersonalBest = now - NMOStatistics.instance.scheduleLastOversleep;
+				NMOStatistics.INSTANCE.schedulePersonalBest = now - NMOStatistics.INSTANCE.scheduleLastOversleep;
 			}
-			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.schedulePersonalBest, 0));
+			personalBestString.set(FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.schedulePersonalBest, 0));
 		}
 
 		// update next trigger time for next sleep block
@@ -1519,7 +1519,7 @@ public class MainDialog extends Application
 
 		SleepEntry nextSleepBlockDetected = null;
 		long startTimeDetected = Long.MAX_VALUE;
-		for (SleepEntry entry : NMOConfiguration.instance.schedule)
+		for (SleepEntry entry : NMOConfiguration.INSTANCE.schedule)
 		{
 			if (entry.containsTimeValue(now) || entry.nextStartTime >= now && entry.nextStartTime < startTimeDetected)
 			{
@@ -1527,9 +1527,9 @@ public class MainDialog extends Application
 				startTimeDetected = entry.nextStartTime;
 			}
 		}
-		if (nextSleepBlockDetected == null && !NMOConfiguration.instance.schedule.isEmpty())
+		if (nextSleepBlockDetected == null && !NMOConfiguration.INSTANCE.schedule.isEmpty())
 		{
-			nextSleepBlockDetected = NMOConfiguration.instance.schedule.get(0);
+			nextSleepBlockDetected = NMOConfiguration.INSTANCE.schedule.get(0);
 		}
 		if (nextSleepBlockDetected != null)
 		{
@@ -1538,7 +1538,7 @@ public class MainDialog extends Application
 				long tims = nextSleepBlockDetected.nextEndTime;
 				if (!scheduleStatus.startsWith("SLEEPING"))
 				{
-					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.instance.events.sleepBlockStarted);
+					triggerEvent("Entering sleep block: " + nextSleepBlockDetected.name, NMOConfiguration.INSTANCE.events.sleepBlockStarted);
 				}
 				// determine second value
 				long secondsRemaining = (((tims + 999) - now) / 1000);
@@ -1575,7 +1575,7 @@ public class MainDialog extends Application
 				// determine minute value				
 				long minutesRemaining = (((tims + 59999) - now) / 60000);
 				// determine status
-				String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				// populate the display fields
 				scheduleStatusString.set(pros);
 				scheduleNextBlockString.set("Next block: " + nextSleepBlockDetected.name);
@@ -1586,7 +1586,7 @@ public class MainDialog extends Application
 				{
 					if (nextSleepBlockDetected.approachWarning != -1)
 					{
-						triggerEvent(minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s") + " until next sleep block", NMOConfiguration.instance.events.sleepBlockApproaching);
+						triggerEvent(minutesRemaining + " minute" + (minutesRemaining == 1 ? "" : "s") + " until next sleep block", NMOConfiguration.INSTANCE.events.sleepBlockApproaching);
 					}
 					lastSleepBlockWarning = nextSleepBlockDetected;
 				}
@@ -1598,13 +1598,13 @@ public class MainDialog extends Application
 		}
 		if (nextSleepBlock != null && nextSleepBlock != nextSleepBlockDetected)
 		{
-			triggerEvent("Exiting sleep block: " + nextSleepBlock.name, NMOConfiguration.instance.events.sleepBlockEnded);
+			triggerEvent("Exiting sleep block: " + nextSleepBlock.name, NMOConfiguration.INSTANCE.events.sleepBlockEnded);
 		}
 		boolean wasPaused = isCurrentlyPaused.get();
 		isCurrentlyPaused.set(paused);
 		if (!paused && wasPaused)
 		{
-			triggerEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired", NMOConfiguration.instance.events.pauseExpired);
+			triggerEvent("Unpaused automatically - time alotted for \"" + pauseReason + "\" has expired", NMOConfiguration.INSTANCE.events.pauseExpired);
 		}
 		if (nextSleepBlockDetected != null && nextSleepBlock != nextSleepBlockDetected)
 		{
@@ -1671,20 +1671,20 @@ public class MainDialog extends Application
 				this.setNextActivityWarningForTimer(timer, timeDiff);
 				try
 				{
-					String pros = nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID >= 0 ? "MISSING" : "AWAKE";
+					String pros = nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold ? "OVERSLEEPING" : nextActivityWarningID >= 0 ? "MISSING" : "AWAKE";
 					// the first time, you get an alternative lighter warning, just in case you forgot to pause
 					if (nextActivityWarningID == 1)
 					{
-						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning1);
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.INSTANCE.events.activityWarning1);
 					}
-					else if (nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold && !oversleepWarningTriggered)
+					else if (nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold && !oversleepWarningTriggered)
 					{
-						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.oversleepWarning);
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.INSTANCE.events.oversleepWarning);
 						oversleepWarningTriggered = true;
 					}
 					else
 					{
-						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.instance.events.activityWarning2);
+						triggerEvent(pros + "(" + nextActivityWarningID + "): No activity detected for " + nawtd + " seconds", NMOConfiguration.INSTANCE.events.activityWarning2);
 					}
 				}
 				catch (Exception e)
@@ -1697,12 +1697,12 @@ public class MainDialog extends Application
 		}
 		activeTimerString.set("Active timer:   " + timer.name + " (" + timer.secondsForFirstWarning + "s/" + timer.secondsForSubsequentWarnings + "s)");
 
-		if (NMOConfiguration.instance.integrations.pavlok.enabled)
+		if (NMOConfiguration.INSTANCE.integrations.pavlok.enabled)
 		{
-			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.instance.integrations.pavlok.auth.created_at + NMOConfiguration.instance.integrations.pavlok.auth.expires_in)));
+			loginTokenValidUntilString.set("Login expires: " + CommonUtils.dateFormatter.format(1000 * (NMOConfiguration.INSTANCE.integrations.pavlok.auth.created_at + NMOConfiguration.INSTANCE.integrations.pavlok.auth.expires_in)));
 		}
 
-		if (NMOConfiguration.instance.integrations.philipsHue.enabled)
+		if (NMOConfiguration.INSTANCE.integrations.philipsHue.enabled)
 		{
 			String state = "";
 			for (String key : IntegrationPhilipsHue.INSTANCE.lightStates.keySet())
@@ -1714,19 +1714,19 @@ public class MainDialog extends Application
 			lightingStateString.set(state);
 		}
 
-		if (NMOConfiguration.instance.integrations.tplink.enabled)
+		if (NMOConfiguration.INSTANCE.integrations.tplink.enabled)
 		{
 			String state = "";
-			for (int i = 0; i < NMOConfiguration.instance.integrations.tplink.devices.length; i++)
+			for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.tplink.devices.length; i++)
 			{
-				TPLinkDeviceEntry tpde = NMOConfiguration.instance.integrations.tplink.devices[i];
+				TPLinkDeviceEntry tpde = NMOConfiguration.INSTANCE.integrations.tplink.devices[i];
 				state += (!state.isEmpty() ? "\n" : "");
 				state += tpde.name + ":  " + (tpde.isSwitchedOn ? "ON" : "OFF");
 			}
 			tplinkStateString.set(state);
 		}
 
-		if (NMOConfiguration.instance.integrations.webUI.enabled)
+		if (NMOConfiguration.INSTANCE.integrations.webUI.enabled)
 		{
 			WebcamWebSocketHandler[] sockets = WebcamCapture.getConnections();
 			String socketString = sockets.length + " active web sockets";

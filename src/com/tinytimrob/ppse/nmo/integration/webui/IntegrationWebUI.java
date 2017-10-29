@@ -16,15 +16,15 @@ public class IntegrationWebUI extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.webUI.enabled;
+		return NMOConfiguration.INSTANCE.integrations.webUI.enabled;
 	}
 
 	@Override
 	public void init() throws Exception
 	{
-		if (CommonUtils.isNullOrEmpty(NMOConfiguration.instance.integrations.webUI.webcamSecurityKey))
+		if (CommonUtils.isNullOrEmpty(NMOConfiguration.INSTANCE.integrations.webUI.webcamSecurityKey))
 		{
-			NMOConfiguration.instance.integrations.webUI.webcamSecurityKey = CommonUtils.generateAsciiCryptoKey(64);
+			NMOConfiguration.INSTANCE.integrations.webUI.webcamSecurityKey = CommonUtils.generateAsciiCryptoKey(64);
 			NMOConfiguration.save();
 		}
 		WebcamCapture.init();

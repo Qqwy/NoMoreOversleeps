@@ -40,49 +40,127 @@ form {
 .btn {
 	padding: 3px !important;
 }
-.btn-purple { 
+.btn-nmo-orange { 
   color: #ffffff; 
-  background-color: #764CAD; 
-  border-color: #534E6B; 
+  background-color: #D97F4F; 
+  border-color: #D4703A; 
 } 
- 
-.btn-purple:hover, 
-.btn-purple:focus, 
-.btn-purple:active, 
-.btn-purple.active, 
-.open .dropdown-toggle.btn-purple { 
+.btn-nmo-orange:hover, 
+.btn-nmo-orange:focus, 
+.btn-nmo-orange:active, 
+.btn-nmo-orange.active, 
+.open .dropdown-toggle.btn-nmo-orange { 
   color: #ffffff; 
-  background-color: #49247A; 
-  border-color: #534E6B; 
+  background-color: #C9622C; 
+  border-color: #D4703A; 
 } 
- 
-.btn-purple:active, 
-.btn-purple.active, 
-.open .dropdown-toggle.btn-purple { 
+.btn-nmo-orange:active, 
+.btn-nmo-orange.active, 
+.open .dropdown-toggle.btn-nmo-orange { 
   background-image: none; 
 } 
- 
-.btn-purple.disabled, 
-.btn-purple[disabled], 
-fieldset[disabled] .btn-purple, 
-.btn-purple.disabled:hover, 
-.btn-purple[disabled]:hover, 
-fieldset[disabled] .btn-purple:hover, 
-.btn-purple.disabled:focus, 
-.btn-purple[disabled]:focus, 
-fieldset[disabled] .btn-purple:focus, 
-.btn-purple.disabled:active, 
-.btn-purple[disabled]:active, 
-fieldset[disabled] .btn-purple:active, 
-.btn-purple.disabled.active, 
-.btn-purple[disabled].active, 
-fieldset[disabled] .btn-purple.active { 
-  background-color: #764CAD; 
-  border-color: #534E6B; 
+.btn-nmo-orange.disabled, 
+.btn-nmo-orange[disabled], 
+fieldset[disabled] .btn-nmo-orange, 
+.btn-nmo-orange.disabled:hover, 
+.btn-nmo-orange[disabled]:hover, 
+fieldset[disabled] .btn-nmo-orange:hover, 
+.btn-nmo-orange.disabled:focus, 
+.btn-nmo-orange[disabled]:focus, 
+fieldset[disabled] .btn-nmo-orange:focus, 
+.btn-nmo-orange.disabled:active, 
+.btn-nmo-orange[disabled]:active, 
+fieldset[disabled] .btn-nmo-orange:active, 
+.btn-nmo-orange.disabled.active, 
+.btn-nmo-orange[disabled].active, 
+fieldset[disabled] .btn-nmo-orange.active { 
+  background-color: #D97F4F; 
+  border-color: #D4703A; 
 } 
- 
-.btn-purple .badge { 
-  color: #764CAD; 
+.btn-nmo-orange .badge { 
+  color: #D97F4F; 
+  background-color: #ffffff; 
+}
+.btn-nmo-gold { 
+  color: #ffffff; 
+  background-color: #D9AB4F; 
+  border-color: #D4A13A; 
+} 
+.btn-nmo-gold:hover, 
+.btn-nmo-gold:focus, 
+.btn-nmo-gold:active, 
+.btn-nmo-gold.active, 
+.open .dropdown-toggle.btn-nmo-gold { 
+  color: #ffffff; 
+  background-color: #C9942C; 
+  border-color: #D4A13A; 
+} 
+.btn-nmo-gold:active, 
+.btn-nmo-gold.active, 
+.open .dropdown-toggle.btn-nmo-gold { 
+  background-image: none; 
+} 
+.btn-nmo-gold.disabled, 
+.btn-nmo-gold[disabled], 
+fieldset[disabled] .btn-nmo-gold, 
+.btn-nmo-gold.disabled:hover, 
+.btn-nmo-gold[disabled]:hover, 
+fieldset[disabled] .btn-nmo-gold:hover, 
+.btn-nmo-gold.disabled:focus, 
+.btn-nmo-gold[disabled]:focus, 
+fieldset[disabled] .btn-nmo-gold:focus, 
+.btn-nmo-gold.disabled:active, 
+.btn-nmo-gold[disabled]:active, 
+fieldset[disabled] .btn-nmo-gold:active, 
+.btn-nmo-gold.disabled.active, 
+.btn-nmo-gold[disabled].active, 
+fieldset[disabled] .btn-nmo-gold.active { 
+  background-color: #D9AB4F; 
+  border-color: #D4A13A; 
+} 
+.btn-nmo-gold .badge { 
+  color: #D9AB4F; 
+  background-color: #ffffff; 
+}
+.btn-nmo-purp { 
+  color: #ffffff; 
+  background-color: #685395; 
+  border-color: #5F4790; 
+}
+.btn-nmo-purp:hover, 
+.btn-nmo-purp:focus, 
+.btn-nmo-purp:active, 
+.btn-nmo-purp.active, 
+.open .dropdown-toggle.btn-nmo-purp { 
+  color: #ffffff; 
+  background-color: #553D87; 
+  border-color: #5F4790; 
+} 
+.btn-nmo-purp:active, 
+.btn-nmo-purp.active, 
+.open .dropdown-toggle.btn-nmo-purp { 
+  background-image: none; 
+} 
+.btn-nmo-purp.disabled, 
+.btn-nmo-purp[disabled], 
+fieldset[disabled] .btn-nmo-purp, 
+.btn-nmo-purp.disabled:hover, 
+.btn-nmo-purp[disabled]:hover, 
+fieldset[disabled] .btn-nmo-purp:hover, 
+.btn-nmo-purp.disabled:focus, 
+.btn-nmo-purp[disabled]:focus, 
+fieldset[disabled] .btn-nmo-purp:focus, 
+.btn-nmo-purp.disabled:active, 
+.btn-nmo-purp[disabled]:active, 
+fieldset[disabled] .btn-nmo-purp:active, 
+.btn-nmo-purp.disabled.active, 
+.btn-nmo-purp[disabled].active, 
+fieldset[disabled] .btn-nmo-purp.active { 
+  background-color: #685395; 
+  border-color: #5F4790; 
+} 
+.btn-nmo-purp .badge { 
+  color: #685395; 
   background-color: #ffffff; 
 }
 .nmo-lhs-pane {
@@ -195,7 +273,7 @@ fieldset[disabled] .btn-purple.active {
   <div></div>
   <div style="clear:both;"></div>
   <h4>Log</h4>
-  <iframe id="logframe" style="width:100%; height:390px" src="/ui/log"></iframe>
+  <pre id="nmo_log_container"></pre>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js" integrity="sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC" crossorigin="anonymous" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous" type="text/javascript"></script>
@@ -244,8 +322,11 @@ fieldset[disabled] .btn-purple.active {
                     $('#nmo_schedule_name').html(json.schedule_name);
                     $('#nmo_noise_state').html(json.noise_state);
                     $('#nmo_ha_state').html(json.ha_state);
-                    $('#logframe').attr('src',function(i,val){return val;});
                 }
+            });
+            
+            $.get("/ui/log", function(log){
+            	$("#nmo_log_container").text(log);
             });
         }
         pollState();

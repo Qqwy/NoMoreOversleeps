@@ -5,16 +5,16 @@ import com.tinytimrob.common.Configuration;
 
 public class NMOStatistics
 {
-	public static NMOStatistics instance;
+	public static NMOStatistics INSTANCE;
 
 	public static void load() throws Exception
 	{
-		instance = Configuration.load(NMOStatistics.class, "stats.json");
+		INSTANCE = Configuration.load(NMOStatistics.class, "stats.json");
 	}
 
 	public static void save() throws Exception
 	{
-		Configuration.save(instance, "stats.json");
+		Configuration.save(INSTANCE, "stats.json");
 	}
 
 	@Expose

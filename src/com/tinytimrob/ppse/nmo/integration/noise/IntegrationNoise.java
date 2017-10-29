@@ -24,15 +24,15 @@ public class IntegrationNoise extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.noise.enabled;
+		return NMOConfiguration.INSTANCE.integrations.noise.enabled;
 	}
 
 	@Override
 	public void init()
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.noise.noises.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.noise.noises.length; i++)
 		{
-			final StoredNoise noise = NMOConfiguration.instance.integrations.noise.noises[i];
+			final StoredNoise noise = NMOConfiguration.INSTANCE.integrations.noise.noises[i];
 			this.actions.put("/noise/" + i, new Action()
 			{
 				@Override

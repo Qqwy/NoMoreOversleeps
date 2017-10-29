@@ -20,21 +20,21 @@ public class ActivityTimerFakeIntegration extends Integration
 	@Override
 	public void init() throws Exception
 	{
-		if (NMOConfiguration.instance.timers.isEmpty())
+		if (NMOConfiguration.INSTANCE.timers.isEmpty())
 		{
 			ActivityTimer activityWarningTimer = new ActivityTimer();
 			activityWarningTimer.name = "DEFAULT TIMER";
 			activityWarningTimer.secondsForFirstWarning = 300;
 			activityWarningTimer.secondsForSubsequentWarnings = 10;
-			NMOConfiguration.instance.timers.add(activityWarningTimer);
+			NMOConfiguration.INSTANCE.timers.add(activityWarningTimer);
 			NMOConfiguration.save();
 		}
-		final int numTimers = NMOConfiguration.instance.timers.size();
+		final int numTimers = NMOConfiguration.INSTANCE.timers.size();
 		if (numTimers > 1)
 		{
 			for (int i = 0; i < numTimers; i++)
 			{
-				final ActivityTimer timer = NMOConfiguration.instance.timers.get(i);
+				final ActivityTimer timer = NMOConfiguration.INSTANCE.timers.get(i);
 				this.actions.put("/timer/" + i, new Action()
 				{
 					@Override
@@ -69,7 +69,7 @@ public class ActivityTimerFakeIntegration extends Integration
 				});
 			}
 		}
-		MainDialog.timer = NMOConfiguration.instance.timers.get(0);
+		MainDialog.timer = NMOConfiguration.INSTANCE.timers.get(0);
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class IntegrationPavlok extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.pavlok.enabled;
+		return NMOConfiguration.INSTANCE.integrations.pavlok.enabled;
 	}
 
 	@Override
@@ -203,24 +203,24 @@ public class IntegrationPavlok extends Integration
 	public void led(long amount, String reason) throws Exception
 	{
 		log.info("Sending: led " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("led", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/led/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
+		Communicator.basicJsonMessage("led", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/led/" + amount, new Stimuli(amount, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token);
 	}
 
 	public void beep(long amount, String reason) throws Exception
 	{
 		log.info("Sending: beep " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("beep", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/beep/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
+		Communicator.basicJsonMessage("beep", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/beep/" + amount, new Stimuli(amount, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token);
 	}
 
 	public void vibration(long amount, String reason) throws Exception
 	{
 		log.info("Sending: vibration " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("vibration", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/vibration/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
+		Communicator.basicJsonMessage("vibration", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/vibration/" + amount, new Stimuli(amount, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token);
 	}
 
 	public void shock(long amount, String reason) throws Exception
 	{
 		log.info("Sending: shock " + amount + " (" + reason + ")");
-		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.instance.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.instance.integrations.pavlok.auth.access_token);
+		Communicator.basicJsonMessage("shock", "http://pavlok-mvp.herokuapp.com/api/v1/stimuli/shock/" + amount, new Stimuli(amount, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token, reason), null, false, NMOConfiguration.INSTANCE.integrations.pavlok.auth.access_token);
 	}
 }

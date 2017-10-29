@@ -24,7 +24,7 @@ public class IntegrationMidiTransmitter extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.midiTransmitter.enabled;
+		return NMOConfiguration.INSTANCE.integrations.midiTransmitter.enabled;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class IntegrationMidiTransmitter extends Integration
 			for (int i = 0; i < infos.length; i++)
 			{
 				MidiDevice device = MidiSystem.getMidiDevice(infos[i]);
-				if (NMOConfiguration.instance.integrations.midiTransmitter.transmitters.contains(device.getDeviceInfo().getName()))
+				if (NMOConfiguration.INSTANCE.integrations.midiTransmitter.transmitters.contains(device.getDeviceInfo().getName()))
 				{
 					if (!device.isOpen() && device.getMaxTransmitters() != 0)
 					{

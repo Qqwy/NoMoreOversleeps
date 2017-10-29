@@ -22,6 +22,7 @@ import com.tinytimrob.ppse.nmo.utils.FormattingHelper;
 public class WebcamCapture
 {
 	private static final Logger log = LogWrapper.getLogger();
+	private static WebcamData wd = new WebcamData();
 
 	public static class WebcamTransformer implements WebcamImageTransformer
 	{
@@ -39,9 +40,9 @@ public class WebcamCapture
 			graphics.setColor(Color.WHITE);
 			long now = System.currentTimeMillis();
 			String str = CommonUtils.convertTimestamp(now);
-			if (NMOStatistics.instance.scheduleStartedOn != 0)
+			if (NMOStatistics.INSTANCE.scheduleStartedOn != 0)
 			{
-				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.instance.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.instance.scheduleLastOversleep);
+				str = str + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleStartedOn) + "   " + FormattingHelper.formatTimeElapsedWithDays(NMOStatistics.INSTANCE.scheduleStartedOn == 0 ? 0 : now, NMOStatistics.INSTANCE.scheduleLastOversleep);
 			}
 			graphics.drawString(str, 4, 14);
 			if (MainDialog.isCurrentlyPaused.get())
@@ -54,7 +55,7 @@ public class WebcamCapture
 			}
 			else
 			{
-				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.instance.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
+				String pros = MainDialog.nextActivityWarningID >= NMOConfiguration.INSTANCE.oversleepWarningThreshold ? "OVERSLEEPING" : MainDialog.nextActivityWarningID > 0 ? "MISSING" : "AWAKE";
 				graphics.setColor(Color.BLACK);
 				graphics.fillRect(0, 220, 320, 20);
 				graphics.setColor(Color.WHITE);
@@ -74,7 +75,7 @@ public class WebcamCapture
 		for (Webcam cam : cams)
 		{
 			log.info("Found webcam: " + cam.getName());
-			if (cam.getName().equals(NMOConfiguration.instance.integrations.webUI.webcamName))
+			if (cam.getName().equals(NMOConfiguration.INSTANCE.integrations.webUI.webcamName))
 			{
 				webcam = cam;
 			}
@@ -82,7 +83,7 @@ public class WebcamCapture
 		if (webcam == null)
 		{
 			webcam = Webcam.getDefault();
-			NMOConfiguration.instance.integrations.webUI.webcamName = webcam.getName();
+			NMOConfiguration.INSTANCE.integrations.webUI.webcamName = webcam.getName();
 			try
 			{
 				NMOConfiguration.save();
@@ -111,6 +112,7 @@ public class WebcamCapture
 		log.info("Selected image dimension: " + dimension.getWidth() + "x" + dimension.getHeight());
 		webcam.setViewSize(dimension);
 		webcam.open(true);
+		webcam.addWebcamListener(wd);
 		System.out.println(webcam.getViewSize());
 		WebcamDefaultDevice.FAULTY = false;
 	}
@@ -164,6 +166,7 @@ public class WebcamCapture
 
 	public static void shutdown()
 	{
+		webcam.removeWebcamListener(wd);
 		webcam.close();
 		ArrayList<WebcamWebSocketHandler> handlers = (ArrayList<WebcamWebSocketHandler>) socketHandlers.clone();
 		for (WebcamWebSocketHandler handler : handlers)
@@ -175,12 +178,10 @@ public class WebcamCapture
 	public static synchronized void addSocketHandler(WebcamWebSocketHandler handler)
 	{
 		socketHandlers.add(handler);
-		webcam.addWebcamListener(handler);
 	}
 
 	public static synchronized void removeSocketHandler(WebcamWebSocketHandler handler)
 	{
 		socketHandlers.remove(handler);
-		webcam.removeWebcamListener(handler);
 	}
 }

@@ -22,7 +22,7 @@ public class IntegrationXboxController extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.xboxController.enabled;
+		return NMOConfiguration.INSTANCE.integrations.xboxController.enabled;
 	}
 
 	@Override

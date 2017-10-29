@@ -20,7 +20,7 @@ public class IntegrationMouse extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.mouse.enabled;
+		return NMOConfiguration.INSTANCE.integrations.mouse.enabled;
 	}
 
 	@Override

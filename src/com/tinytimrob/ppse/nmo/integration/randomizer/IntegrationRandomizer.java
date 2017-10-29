@@ -18,15 +18,15 @@ public class IntegrationRandomizer extends Integration
 	@Override
 	public boolean isEnabled()
 	{
-		return NMOConfiguration.instance.integrations.randomizer.enabled;
+		return NMOConfiguration.INSTANCE.integrations.randomizer.enabled;
 	}
 
 	@Override
 	public void init() throws Exception
 	{
-		for (int i = 0; i < NMOConfiguration.instance.integrations.randomizer.randomizers.length; i++)
+		for (int i = 0; i < NMOConfiguration.INSTANCE.integrations.randomizer.randomizers.length; i++)
 		{
-			final RandomizerEntry randomizer = NMOConfiguration.instance.integrations.randomizer.randomizers[i];
+			final RandomizerEntry randomizer = NMOConfiguration.INSTANCE.integrations.randomizer.randomizers[i];
 			this.actions.put("/randomizer/" + i, new Action()
 			{
 				@Override
