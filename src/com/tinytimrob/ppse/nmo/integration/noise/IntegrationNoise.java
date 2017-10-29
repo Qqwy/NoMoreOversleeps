@@ -46,6 +46,11 @@ public class IntegrationNoise extends Integration
 				{
 					return "PLAY " + noise.name;
 				}
+				
+				public String getDescription()
+				{
+					return "Plays the audio clip `" + noise.name + "`.\n\n" + noise.description;
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()
@@ -82,6 +87,12 @@ public class IntegrationNoise extends Integration
 			public String getName()
 			{
 				return "STOP ALL NOISES";
+			}
+			
+			@Override
+			public String getDescription()
+			{
+				return "Stops all noises from playing immediately.";
 			}
 
 			@Override

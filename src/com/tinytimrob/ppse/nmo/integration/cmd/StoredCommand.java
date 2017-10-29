@@ -6,6 +6,9 @@ public class StoredCommand
 {
 	@Expose
 	public String name;
+	
+	@Expose
+	public String description;
 
 	@Expose
 	public String[] command;

@@ -40,6 +40,13 @@ public class IntegrationTPLink extends Integration
 				{
 					return "TURN ON " + entry.name;
 				}
+				
+				
+				@Override
+				public String getDescription()
+				{
+					return "Turns on TPLink device " + entry.name + ".\n\n" +  entry.description;
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()
@@ -71,6 +78,12 @@ public class IntegrationTPLink extends Integration
 				public String getName()
 				{
 					return "TURN OFF " + entry.name;
+				}
+				
+				@Override
+				public String getDescription()
+				{
+					return "Turns off TPLink device " + entry.name + ".\n\n" +  entry.description;
 				}
 
 				@Override

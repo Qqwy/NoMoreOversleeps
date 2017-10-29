@@ -56,6 +56,11 @@ public class IntegrationDiscord extends Integration
 				{
 					return "SEND " + message.name;
 				}
+				
+				public String getDescription()
+				{
+					return message.description;
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()

@@ -6,6 +6,9 @@ public class RandomizerEntry
 {
 	@Expose
 	public String name = "";
+	
+	@Expose
+	public String description = "";
 
 	@Expose
 	public String[] actions = new String[0];

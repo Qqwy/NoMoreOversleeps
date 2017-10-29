@@ -46,6 +46,12 @@ public class IntegrationWemo extends Integration
 				{
 					return "TURN ON " + entry.name;
 				}
+				
+				@Override
+				public String getDescription()
+				{
+					return "Turns on the WEMO device "+ entry.name +".\n\n" + entry.description;
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()
@@ -77,6 +83,13 @@ public class IntegrationWemo extends Integration
 				public String getName()
 				{
 					return "TURN OFF " + entry.name;
+				}
+				
+				
+				@Override
+				public String getDescription()
+				{
+					return "Turns off the WEMO device "+ entry.name +".\n\n" + entry.description;
 				}
 
 				@Override

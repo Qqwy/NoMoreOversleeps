@@ -176,16 +176,16 @@ public class WebServlet extends HttpServlet
 				}
 				if (actionsNotSecret > 0)
 				{
-					colour++;
+					++colour;
 					if (colour >= colours.length)
 						colour = 0;
 				}
-				for (String key : actions.keySet())
+				for (String action_key : actions.keySet())
 				{
-					Action action = actions.get(key);
+					Action action = actions.get(action_key);
 					if (!action.isHiddenFromWebUI())
 					{
-						actionButtons += "<form method='POST' data-js-ajax-form='true' action='/ui" + key + "'><button type='submit' class='btn btn-" + colours[colour] + " nmo-action-button'>" + action.getName() + "</button></form>";
+						actionButtons += buttonFormHTML(colours[colour], action_key, action.getName(), action.getDescription());
 					}
 				}
 			}
@@ -215,6 +215,13 @@ public class WebServlet extends HttpServlet
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
+	}
+
+	private String buttonFormHTML(String colour_name, String action_key, String name, String description) {
+		return "<form method='POST' data-js-ajax-form='true' action='/ui" + action_key + "'>"
+				+ "<button type='submit' class='btn btn-" + colour_name + " nmo-action-button' title='" + description + "'>"
+				  + name 
+				+ "</button></form>";
 	}
 
 	@Override

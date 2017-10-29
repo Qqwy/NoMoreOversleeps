@@ -6,6 +6,9 @@ public class SendableMessage
 {
 	@Expose
 	public String name;
+	
+	@Expose
+	public String description;
 
 	@Expose
 	public DiscordTargetType targetType;

@@ -62,6 +62,13 @@ public class IntegrationPhilipsHue extends Integration
 				{
 					return "TURN ON " + bulbName;
 				}
+				
+				
+				@Override
+				public String getDescription()
+				{
+					return "Will turn the light called" + bulbName + " on.";
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()
@@ -93,6 +100,12 @@ public class IntegrationPhilipsHue extends Integration
 				public String getName()
 				{
 					return "TURN OFF " + bulbName;
+				}
+				
+				@Override
+				public String getDescription()
+				{
+					return "Will turn the light called" + bulbName + " off.";
 				}
 
 				@Override
@@ -126,6 +139,13 @@ public class IntegrationPhilipsHue extends Integration
 				{
 					return "TOGGLE " + bulbName;
 				}
+				
+				@Override
+				public String getDescription()
+				{
+					return "Will toggle the state (on/off) of the light called" + bulbName + ".";
+				}
+
 
 				@Override
 				public boolean isHiddenFromFrontend()

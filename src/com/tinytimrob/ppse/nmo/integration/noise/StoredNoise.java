@@ -6,6 +6,9 @@ public class StoredNoise
 {
 	@Expose
 	public String name;
+	
+	@Expose
+	public String description = "";
 
 	@Expose
 	public String path;

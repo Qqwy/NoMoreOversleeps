@@ -39,6 +39,11 @@ public class IntegrationCommandLine extends Integration
 				{
 					return command.name;
 				}
+				
+				public String getDescription()
+				{
+					return command.description;
+				}
 
 				@Override
 				public boolean isHiddenFromFrontend()
